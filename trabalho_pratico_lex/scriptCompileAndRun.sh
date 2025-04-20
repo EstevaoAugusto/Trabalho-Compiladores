@@ -17,11 +17,11 @@ fi
 
 cd "$NOME_COMPILACAO"
 
-echo highlight -S c -O latex -o "$NOME_COMPILACAO.tex" "$NOME_COMPILACAO.l"
-echo pdflatex "$NOME_COMPILACAO.tex"
-highlight -S c -O latex -o "$NOME_COMPILACAO.tex" "$NOME_COMPILACAO.l"
-pdflatex "$NOME_COMPILACAO.tex" > /dev/null
-rm "$NOME_COMPILACAO.tex" 
+# echo highlight -S c -O latex -o "$NOME_COMPILACAO.tex" "$NOME_COMPILACAO.l"
+# echo pdflatex "$NOME_COMPILACAO.tex"
+# highlight -S c -O latex -o "$NOME_COMPILACAO.tex" "$NOME_COMPILACAO.l"
+# pdflatex "$NOME_COMPILACAO.tex" > /dev/null
+# rm "$NOME_COMPILACAO.tex" 
 
 # Gera o analisador léxico com flex
 echo flex "$NOME_COMPILACAO.l"
