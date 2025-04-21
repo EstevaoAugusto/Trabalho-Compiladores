@@ -73,41 +73,41 @@ programa                        {declaracao_lista}
 %}
 
 {comment}                       { column_number+=yyleng; }
-"if"                            { fprintf(yyout, "%d(%d): %s (KW: IF)\n", line_number, column_number, yytext); column_number += yyleng; }
-"else"                          { fprintf(yyout, "%d(%d): %s (KW: ELSE)\n", line_number, column_number, yytext); column_number += yyleng; }
-"while"                         { fprintf(yyout, "%d(%d): %s (KW: WHILE)\n", line_number, column_number, yytext); column_number += yyleng; }
-"return"                        { fprintf(yyout, "%d(%d): %s (KW: RETURN)\n", line_number, column_number, yytext); column_number += yyleng; }
-"int"                           { fprintf(yyout, "%d(%d): %s (Tipo: INT)\n", line_number, column_number, yytext); column_number += yyleng; }
-"float"                         { fprintf(yyout, "%d(%d): %s (Tipo: FLOAT)\n", line_number, column_number, yytext); column_number += yyleng; }
-"char"                          { fprintf(yyout, "%d(%d): %s (Tipo: CHAR)\n", line_number, column_number, yytext); column_number += yyleng; }
-"struct"                        { fprintf(yyout, "%d(%d): %s (KW: STRUCT)\n", line_number, column_number, yytext); column_number += yyleng; }
-"void"                          { fprintf(yyout, "%d(%d): %s (Tipo: VOID)\n", line_number, column_number, yytext); column_number += yyleng; }
+"if"                            { fprintf(yyout, "%d(%d): %s (KEYWORD)\n", line_number, column_number, yytext); column_number += yyleng; }
+"else"                          { fprintf(yyout, "%d(%d): %s (KEYWORD)\n", line_number, column_number, yytext); column_number += yyleng; }
+"while"                         { fprintf(yyout, "%d(%d): %s (KEYWORD)\n", line_number, column_number, yytext); column_number += yyleng; }
+"return"                        { fprintf(yyout, "%d(%d): %s (KEYWORD)\n", line_number, column_number, yytext); column_number += yyleng; }
+"int"                           { fprintf(yyout, "%d(%d): %s (KEYWORD)\n", line_number, column_number, yytext); column_number += yyleng; }
+"float"                         { fprintf(yyout, "%d(%d): %s (KEYWORD)\n", line_number, column_number, yytext); column_number += yyleng; }
+"char"                          { fprintf(yyout, "%d(%d): %s (KEYWORD)\n", line_number, column_number, yytext); column_number += yyleng; }
+"struct"                        { fprintf(yyout, "%d(%d): %s (KEYWORD)\n", line_number, column_number, yytext); column_number += yyleng; }
+"void"                          { fprintf(yyout, "%d(%d): %s (KEYWORD)\n", line_number, column_number, yytext); column_number += yyleng; }
 "=="                            { fprintf(yyout, "%d(%d): %s (RELOP) \n", line_number, column_number, yytext); column_number += yyleng; }
 "!="                            { fprintf(yyout, "%d(%d): %s (RELOP) \n", line_number, column_number, yytext); column_number += yyleng; }
 "<="                            { fprintf(yyout, "%d(%d): %s (RELOP) \n", line_number, column_number, yytext); column_number += yyleng; }
 ">="                            { fprintf(yyout, "%d(%d): %s (RELOP) \n", line_number, column_number, yytext); column_number += yyleng; }
 "<"                             { fprintf(yyout, "%d(%d): %s (RELOP) \n", line_number, column_number, yytext); column_number += yyleng; }
 ">"                             { fprintf(yyout, "%d(%d): %s (RELOP) \n", line_number, column_number, yytext); column_number += yyleng; }
-"="                             { fprintf(yyout, "%d(%d): %s (Atribuicao) \n", line_number, column_number, yytext); column_number += yyleng; }
-{abre_chave}                    { fprintf(yyout,"%d(%d): %s (Abre Chave) \n",line_number,column_number,yytext); column_number+=yyleng; }
-{fecha_chave}                   { fprintf(yyout,"%d(%d): %s (Fecha Chave) \n",line_number,column_number,yytext); column_number+=yyleng; }
-{abre_colchete}                 { fprintf(yyout,"%d(%d): %s (Abre Colchetes) \n",line_number,column_number,yytext); column_number+=yyleng; }
-{fecha_colchete}                { fprintf(yyout,"%d(%d): %s (Fecha Colchetes) \n",line_number,column_number,yytext); column_number+=yyleng; }
-{abre_parenteses}               { fprintf(yyout,"%d(%d): %s (Abre Parenteses) \n",line_number,column_number,yytext); column_number+=yyleng; }
-{fecha_parenteses}              { fprintf(yyout,"%d(%d): %s (Fecha Parenteses) \n",line_number,column_number,yytext); column_number+=yyleng; }
+"="                             { fprintf(yyout, "%d(%d): %s (RELOP) \n", line_number, column_number, yytext); column_number += yyleng; }
+{abre_chave}                    { fprintf(yyout,"%d(%d): %s (DELIMITER) \n",line_number,column_number,yytext); column_number+=yyleng; }
+{fecha_chave}                   { fprintf(yyout,"%d(%d): %s (DELIMITER) \n",line_number,column_number,yytext); column_number+=yyleng; }
+{abre_colchete}                 { fprintf(yyout,"%d(%d): %s (DELIMITER) \n",line_number,column_number,yytext); column_number+=yyleng; }
+{fecha_colchete}                { fprintf(yyout,"%d(%d): %s (DELIMITER) \n",line_number,column_number,yytext); column_number+=yyleng; }
+{abre_parenteses}               { fprintf(yyout,"%d(%d): %s (DELIMITER) \n",line_number,column_number,yytext); column_number+=yyleng; }
+{fecha_parenteses}              { fprintf(yyout,"%d(%d): %s (DELIMITER) \n",line_number,column_number,yytext); column_number+=yyleng; }
 
-{char_literal}                  { fprintf(yyout, "%d(%d): %s (Char Literal)\n", line_number, column_number, yytext); column_number += yyleng; }
-{string_literal}                { fprintf(yyout, "%d(%d): %s (String)\n", line_number, column_number, yytext); column_number += yyleng;}
+{char_literal}                  { fprintf(yyout, "%d(%d): %s (CONSTCHAR)\n", line_number, column_number, yytext); column_number += yyleng; }
+{string_literal}                { fprintf(yyout, "%d(%d): %s (CONSTSTRING)\n", line_number, column_number, yytext); column_number += yyleng;}
 
-{soma}                          { fprintf(yyout,"%d(%d): %s (SOMA) \n",line_number,column_number,yytext); column_number+=yyleng; }
-{multi}                         { fprintf(yyout,"%d(%d): %s (MULTI) \n",line_number,column_number,yytext); column_number+=yyleng; }
-";"                             { fprintf(yyout, "%d(%d): %s (Ponto e Vírgula)\n", line_number, column_number, yytext); column_number += yyleng; }
-","                             { fprintf(yyout, "%d(%d): %s (Vírgula)\n", line_number, column_number, yytext); column_number += yyleng; }
+{soma}                          { fprintf(yyout,"%d(%d): %s (ARITHOP) \n",line_number,column_number,yytext); column_number+=yyleng; }
+{multi}                         { fprintf(yyout,"%d(%d): %s (ARITHOP) \n",line_number,column_number,yytext); column_number+=yyleng; }
+";"                             { fprintf(yyout, "%d(%d): %s (DELIMITER)\n", line_number, column_number, yytext); column_number += yyleng; }
+","                             { fprintf(yyout, "%d(%d): %s (DELIMITER)\n", line_number, column_number, yytext); column_number += yyleng; }
 
 
-{num_int}                       { fprintf(yyout,"%d(%d): %s (Numero_Int) \n",line_number,column_number,yytext); column_number+=yyleng; }
-{num}                           { fprintf(yyout,"%d(%d): %s (Numero) \n",line_number,column_number,yytext); column_number+=yyleng; }
-{ident}                         { fprintf(yyout,"%d(%d): %s (ID) \n",line_number,column_number,yytext); column_number+=yyleng; }
+{num_int}                       { fprintf(yyout,"%d(%d): %s (CONSTINT) \n",line_number,column_number,yytext); column_number+=yyleng; }
+{num}                           { fprintf(yyout,"%d(%d): %s (CONSTFLOAT) \n",line_number,column_number,yytext); column_number+=yyleng; }
+{ident}                         { fprintf(yyout,"%d(%d): %s (IDENTIFIER) \n",line_number,column_number,yytext); column_number+=yyleng; }
 \n                              { line_number++; column_number = 1; }
 {ws}                            {}
 {other}                         {   
