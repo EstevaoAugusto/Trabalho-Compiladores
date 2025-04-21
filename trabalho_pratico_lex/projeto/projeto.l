@@ -16,7 +16,7 @@ tipo_especificador              (int|float|char|void|struct{ident}{abre_chave}{a
 atributos_declaracao            {var_declaracao}+
 func_declaracao                 {tipo_especificador}{ident}\({params}\){composto_decl}
 params                          {params_lista}|void
-params_lista                    {param}([,]{param})*
+params_lista                    {param}(,{param})*
 param                           ({tipo_especificador}{ident}|{tipo_especificador}{ident}{abre_colchete}{fecha_colchete})
 composto_decl                   {abre_chave}{local_declaracoes}{comando_lista}{fecha_chave}
 local_declaracoes               {var_declaracao}*
@@ -31,9 +31,9 @@ var                             {ident}|{ident}({abre_colchete}{expressao}{fecha
 expressao_simples               {expressao_soma}{relacional}{expressao_soma}|{expressao_soma}
 relacional                      <=|<|>=|>|==|!=
 expressao_soma                  {termo}({soma}{termo})*
-soma                            +|-
+soma                            \+|\-
 termo                           {fator}({multi}{fator})*
-multi                           /|*
+multi                           \/|\*
 fator                           \({expressao}\)|{var}|{ativacao}|{num}|{num_int}
 ativacao                        {ident}\({args}\)
 args                            {arg_lista}?
@@ -43,10 +43,10 @@ num_int                         {digito}+
 digito                          [0-9]
 ident                           {letra}({letra}|{digito})*
 letra                           [a-z]
-abre_chave                      {
-fecha_chave                     }
-abre_colchete                   [
-fecha_colchete                  ]
+abre_chave                      \{
+fecha_chave                     \}
+abre_colchete                   \[
+fecha_colchete                  \]
 other                           .
 delim                           [ \t\n]
 ws                              {delim}+
@@ -60,9 +60,13 @@ comment                         "/*"([^*]|\*+[^/])*\*+"/"
 /*----------------------------- Regras -----------------------------*/
 %}
 
+{relacional}                          { fprintf(yyout,"%s\n", yytext);}
 \n                              {line_number++; column_number = 1; }
 {ws}                            {}
-{other}                         { fprintf(yyout, "'%s' não foi identificado\n", yytext);}
+{other}                         {   
+                                    fprintf(yyout, "%d(%d): '%s' não foi identificado\n", line_number, column_number, yytext);
+                                    column_number += yyleng;
+                                }
 
 %%
 
