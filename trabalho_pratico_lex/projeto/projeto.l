@@ -56,7 +56,7 @@ param                           ({tipo_especificador}{ident}|{tipo_especificador
 params_lista                    {param}(,{param})*
 params                          {params_lista}|void
 
-var_declaracao                  {tipo_especificador}{ident};|{tipo_especificador}{ident}({abre_colchete}{num_int}{fecha_colchete})+
+var_declaracao                  {tipo_especificador}{ident};|{tipo_especificador}{ident}({abre_colchete}{num_int}{fecha_colchete})+;
 atributos_declaracao            {var_declaracao}+
 tipo_especificador              (int|float|char|void|struct{ident}{abre_chave}{atributos_declaracao}{fecha_chave})
 func_declaracao                 {tipo_especificador}{ident}\({params}\){composto_decl}
