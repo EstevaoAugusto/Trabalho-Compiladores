@@ -4,6 +4,30 @@
 
 int line_number = 1;
 int column_number = 1;
+static int start_line;   // Variável estática para linha inicial do comentário
+static int start_col;    // Variável estática para coluna inicial do comentário
+
+void processa_avanco_posicao(const char* texto_token, int tamanho_token) {
+    for (int i = 0; i < tamanho_token; ++i) {
+        if (texto_token[i] == '\n') {
+            line_number++; 
+            column_number = 1; 
+        } else if (texto_token[i] == '\t') {
+            column_number += 4; 
+        } else {
+            column_number++;
+        }
+    }
+}
+
+void printToken(const char* tokenType, const char* lexeme, int line, int col) {
+    fprintf(yyout, "%d(%d): %s (%s)\n", line, col, lexeme, tokenType);
+}
+
+void printError(const char* errorMessage, const char* lexeme, int line, int col) {
+    fprintf(yyout, "Erro léxico na linha %d, coluna %d: %s '%s'\n", line, col, errorMessage, lexeme);
+}
+
 %}
 
 /*-------------------------- Definições --------------------------*/
@@ -65,6 +89,7 @@ declaracao_lista                {declaracao}+
 programa                        {declaracao_lista}
 
 
+
 %%
 
 %{
@@ -72,49 +97,83 @@ programa                        {declaracao_lista}
 /*----------------------------- Regras -----------------------------*/
 %}
 
-{comment}                       { column_number+=yyleng; }
-"if"                            { fprintf(yyout, "%d(%d): %s (KEYWORD)\n", line_number, column_number, yytext); column_number += yyleng; }
-"else"                          { fprintf(yyout, "%d(%d): %s (KEYWORD)\n", line_number, column_number, yytext); column_number += yyleng; }
-"while"                         { fprintf(yyout, "%d(%d): %s (KEYWORD)\n", line_number, column_number, yytext); column_number += yyleng; }
-"return"                        { fprintf(yyout, "%d(%d): %s (KEYWORD)\n", line_number, column_number, yytext); column_number += yyleng; }
-"int"                           { fprintf(yyout, "%d(%d): %s (KEYWORD)\n", line_number, column_number, yytext); column_number += yyleng; }
-"float"                         { fprintf(yyout, "%d(%d): %s (KEYWORD)\n", line_number, column_number, yytext); column_number += yyleng; }
-"char"                          { fprintf(yyout, "%d(%d): %s (KEYWORD)\n", line_number, column_number, yytext); column_number += yyleng; }
-"struct"                        { fprintf(yyout, "%d(%d): %s (KEYWORD)\n", line_number, column_number, yytext); column_number += yyleng; }
-"void"                          { fprintf(yyout, "%d(%d): %s (KEYWORD)\n", line_number, column_number, yytext); column_number += yyleng; }
-"=="                            { fprintf(yyout, "%d(%d): %s (RELOP) \n", line_number, column_number, yytext); column_number += yyleng; }
-"!="                            { fprintf(yyout, "%d(%d): %s (RELOP) \n", line_number, column_number, yytext); column_number += yyleng; }
-"<="                            { fprintf(yyout, "%d(%d): %s (RELOP) \n", line_number, column_number, yytext); column_number += yyleng; }
-">="                            { fprintf(yyout, "%d(%d): %s (RELOP) \n", line_number, column_number, yytext); column_number += yyleng; }
-"<"                             { fprintf(yyout, "%d(%d): %s (RELOP) \n", line_number, column_number, yytext); column_number += yyleng; }
-">"                             { fprintf(yyout, "%d(%d): %s (RELOP) \n", line_number, column_number, yytext); column_number += yyleng; }
-"="                             { fprintf(yyout, "%d(%d): %s (RELOP) \n", line_number, column_number, yytext); column_number += yyleng; }
-{abre_chave}                    { fprintf(yyout,"%d(%d): %s (DELIMITER) \n",line_number,column_number,yytext); column_number+=yyleng; }
-{fecha_chave}                   { fprintf(yyout,"%d(%d): %s (DELIMITER) \n",line_number,column_number,yytext); column_number+=yyleng; }
-{abre_colchete}                 { fprintf(yyout,"%d(%d): %s (DELIMITER) \n",line_number,column_number,yytext); column_number+=yyleng; }
-{fecha_colchete}                { fprintf(yyout,"%d(%d): %s (DELIMITER) \n",line_number,column_number,yytext); column_number+=yyleng; }
-{abre_parenteses}               { fprintf(yyout,"%d(%d): %s (DELIMITER) \n",line_number,column_number,yytext); column_number+=yyleng; }
-{fecha_parenteses}              { fprintf(yyout,"%d(%d): %s (DELIMITER) \n",line_number,column_number,yytext); column_number+=yyleng; }
 
-{char_literal}                  { fprintf(yyout, "%d(%d): %s (CONSTCHAR)\n", line_number, column_number, yytext); column_number += yyleng; }
-{string_literal}                { fprintf(yyout, "%d(%d): %s (CONSTSTRING)\n", line_number, column_number, yytext); column_number += yyleng;}
+[ \t]+          { 
+                    /* Apenas avança a posição, não imprime token para whitespace */
+                    processa_avanco_posicao(yytext, yyleng); 
+                }
 
-{soma}                          { fprintf(yyout,"%d(%d): %s (ARITHOP) \n",line_number,column_number,yytext); column_number+=yyleng; }
-{multi}                         { fprintf(yyout,"%d(%d): %s (ARITHOP) \n",line_number,column_number,yytext); column_number+=yyleng; }
-";"                             { fprintf(yyout, "%d(%d): %s (DELIMITER)\n", line_number, column_number, yytext); column_number += yyleng; }
-","                             { fprintf(yyout, "%d(%d): %s (DELIMITER)\n", line_number, column_number, yytext); column_number += yyleng; }
+\n              { 
+                    /* Apenas atualiza linha e reseta coluna, não imprime token */
+                    line_number++; 
+                    column_number = 1; 
+                }
+
+{comment}       { 
+                    int linha_token = line_number;    // Posição inicial do token
+                    int coluna_token = column_number; // Posição inicial do token
+                    /* Opcional: imprimir um token para comentário. Ex: */
+                    /* fprintf(yyout, "%d(%d): lexema '%s' (COMENTARIO)\n", linha_token, coluna_token, yytext); */
+                    processa_avanco_posicao(yytext, yyleng); /* Essencial para tratar novas linhas dentro do comentário */
+                }
+
+"if"            { int l = line_number; int c = column_number; printToken("KEYWORD", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+"else"          { int l = line_number; int c = column_number; printToken("KEYWORD", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+"while"         { int l = line_number; int c = column_number; printToken("KEYWORD", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+"return"        { int l = line_number; int c = column_number; printToken("KEYWORD", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+"int"           { int l = line_number; int c = column_number; printToken("KEYWORD", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+"float"         { int l = line_number; int c = column_number; printToken("KEYWORD", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+"char"          { int l = line_number; int c = column_number; printToken("KEYWORD", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+"struct"        { int l = line_number; int c = column_number; printToken("KEYWORD", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+"void"          { int l = line_number; int c = column_number; printToken("KEYWORD", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+
+"=="            { int l = line_number; int c = column_number; printToken("RELOP", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+"!="            { int l = line_number; int c = column_number; printToken("RELOP", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+"<="            { int l = line_number; int c = column_number; printToken("RELOP", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+">="            { int l = line_number; int c = column_number; printToken("RELOP", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+"<"             { int l = line_number; int c = column_number; printToken("RELOP", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+">"             { int l = line_number; int c = column_number; printToken("RELOP", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+
+"="             { int l = line_number; int c = column_number; printToken("ASSIGNOP", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+
+{abre_chave}        { int l = line_number; int c = column_number; printToken("DELIMITER", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+{fecha_chave}       { int l = line_number; int c = column_number; printToken("DELIMITER", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+{abre_colchete}     { int l = line_number; int c = column_number; printToken("DELIMITER", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+{fecha_colchete}    { int l = line_number; int c = column_number; printToken("DELIMITER", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+{abre_parenteses}   { int l = line_number; int c = column_number; printToken("DELIMITER", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+{fecha_parenteses}  { int l = line_number; int c = column_number; printToken("DELIMITER", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+";"                 { int l = line_number; int c = column_number; printToken("DELIMITER", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+","                 { int l = line_number; int c = column_number; printToken("DELIMITER", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+
+{char_literal}      { int l = line_number; int c = column_number; printToken("CONSTCHAR", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+{string_literal}    { int l = line_number; int c = column_number; printToken("CONSTSTRING", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+
+{soma}              { int l = line_number; int c = column_number; printToken("ARITHOP", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+{multi}             { int l = line_number; int c = column_number; printToken("ARITHOP", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
 
 
-{num_int}                       { fprintf(yyout,"%d(%d): %s (CONSTINT) \n",line_number,column_number,yytext); column_number+=yyleng; }
-{num}                           { fprintf(yyout,"%d(%d): %s (CONSTFLOAT) \n",line_number,column_number,yytext); column_number+=yyleng; }
-{ident}                         { fprintf(yyout,"%d(%d): %s (IDENTIFIER) \n",line_number,column_number,yytext); column_number+=yyleng; }
-\n                              { line_number++; column_number = 1; }
-{ws}                            {}
-{other}                         {   
-                                    fprintf(yyout, "Erro léxico na linha %d, coluna %d: símbolo inválido '%s'\n", line_number, column_number, yytext);
-                                    column_number += yyleng;
-                                }
+{num_int}       { 
+                    int linha_token = line_number; int coluna_token = column_number;
+                    fprintf(yyout,"%d(%d): %s (CONSTINT)\n",linha_token,coluna_token,yytext); 
+                    processa_avanco_posicao(yytext, yyleng);
+                }
+{num}           { /* Alterado de {num_real} para {num} para corresponder à sua definição */
+                    int linha_token = line_number; int coluna_token = column_number;
+                    fprintf(yyout,"%d(%d): %s (CONSTFLOAT)\n",linha_token,coluna_token,yytext); 
+                    processa_avanco_posicao(yytext, yyleng);
+                }
+{ident}         { 
+                    int linha_token = line_number; int coluna_token = column_number;
+                    fprintf(yyout,"%d(%d): %s (IDENTIFIER)\n",linha_token,coluna_token,yytext); 
+                    processa_avanco_posicao(yytext, yyleng);
+                }
 
+.               { 
+                    int linha_token = line_number;
+                    int coluna_token = column_number;
+                    printError("símbolo inválido", yytext, line_number, column_number);
+                    processa_avanco_posicao(yytext, yyleng); 
+                }
 %%
 
 int yywrap() {
