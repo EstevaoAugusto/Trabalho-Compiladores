@@ -117,39 +117,41 @@ programa                        {declaracao_lista}
                     processa_avanco_posicao(yytext, yyleng); /* Essencial para tratar novas linhas dentro do comentário */
                 }
 
-"if"            { int l = line_number; int c = column_number; printToken("KEYWORD", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
-"else"          { int l = line_number; int c = column_number; printToken("KEYWORD", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
-"while"         { int l = line_number; int c = column_number; printToken("KEYWORD", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
-"return"        { int l = line_number; int c = column_number; printToken("KEYWORD", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
-"int"           { int l = line_number; int c = column_number; printToken("KEYWORD", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
-"float"         { int l = line_number; int c = column_number; printToken("KEYWORD", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
-"char"          { int l = line_number; int c = column_number; printToken("KEYWORD", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
-"struct"        { int l = line_number; int c = column_number; printToken("KEYWORD", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
-"void"          { int l = line_number; int c = column_number; printToken("KEYWORD", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+"if"            { int l = line_number; int c = column_number; printToken("IF", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+"else"          { int l = line_number; int c = column_number; printToken("ELSE", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+"while"         { int l = line_number; int c = column_number; printToken("WHILE", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+"return"        { int l = line_number; int c = column_number; printToken("RETURN", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+"int"           { int l = line_number; int c = column_number; printToken("INT", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+"float"         { int l = line_number; int c = column_number; printToken("FLOAT", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+"char"          { int l = line_number; int c = column_number; printToken("CHAR", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+"struct"        { int l = line_number; int c = column_number; printToken("STRUCT", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+"void"          { int l = line_number; int c = column_number; printToken("VOID", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
 
-"=="            { int l = line_number; int c = column_number; printToken("RELOP", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
-"!="            { int l = line_number; int c = column_number; printToken("RELOP", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
-"<="            { int l = line_number; int c = column_number; printToken("RELOP", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
-">="            { int l = line_number; int c = column_number; printToken("RELOP", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
-"<"             { int l = line_number; int c = column_number; printToken("RELOP", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
-">"             { int l = line_number; int c = column_number; printToken("RELOP", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+"=="            { int l = line_number; int c = column_number; printToken("EQUAL_OP", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+"!="            { int l = line_number; int c = column_number; printToken("NOT_EQUAL_OP", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+"<="            { int l = line_number; int c = column_number; printToken("LESS_EQUAL_OP", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+">="            { int l = line_number; int c = column_number; printToken("RIGHT_EQUAL_OP", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+"<"             { int l = line_number; int c = column_number; printToken("LEFT_OP", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+">"             { int l = line_number; int c = column_number; printToken("RIGHT_OP", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
 
-"="             { int l = line_number; int c = column_number; printToken("ASSIGNOP", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+"="             { int l = line_number; int c = column_number; printToken("ASSIGN_OP", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
 
-{abre_chave}        { int l = line_number; int c = column_number; printToken("DELIMITER", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
-{fecha_chave}       { int l = line_number; int c = column_number; printToken("DELIMITER", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
-{abre_colchete}     { int l = line_number; int c = column_number; printToken("DELIMITER", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
-{fecha_colchete}    { int l = line_number; int c = column_number; printToken("DELIMITER", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
-{abre_parenteses}   { int l = line_number; int c = column_number; printToken("DELIMITER", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
-{fecha_parenteses}  { int l = line_number; int c = column_number; printToken("DELIMITER", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
-";"                 { int l = line_number; int c = column_number; printToken("DELIMITER", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
-","                 { int l = line_number; int c = column_number; printToken("DELIMITER", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+{abre_chave}        { int l = line_number; int c = column_number; printToken("LEFT_BRACE", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+{fecha_chave}       { int l = line_number; int c = column_number; printToken("RIGHT_BRACE", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+{abre_colchete}     { int l = line_number; int c = column_number; printToken("LEFT_BRACKET", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+{fecha_colchete}    { int l = line_number; int c = column_number; printToken("RIGHT_BRACKET", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+{abre_parenteses}   { int l = line_number; int c = column_number; printToken("LEFT_PAREN", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+{fecha_parenteses}  { int l = line_number; int c = column_number; printToken("RIGHT_PAREN", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+";"                 { int l = line_number; int c = column_number; printToken("SEMICOLON", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+","                 { int l = line_number; int c = column_number; printToken("COMMA", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
 
 {char_literal}      { int l = line_number; int c = column_number; printToken("CONSTCHAR", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
 {string_literal}    { int l = line_number; int c = column_number; printToken("CONSTSTRING", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
 
-{soma}              { int l = line_number; int c = column_number; printToken("ARITHOP", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
-{multi}             { int l = line_number; int c = column_number; printToken("ARITHOP", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+"+"                 { int l = line_number; int c = column_number; printToken("PLUS", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+"-"                 { int l = line_number; int c = column_number; printToken("MINUS", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+"/"                 { int l = line_number; int c = column_number; printToken("DIVISION", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+"*"                 { int l = line_number; int c = column_number; printToken("MULTIPLY", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
 
 
 {num_int}       { 
