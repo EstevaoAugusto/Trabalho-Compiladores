@@ -49,6 +49,7 @@ delim                           [ \t\n]
 ws                              {delim}+
 comment                         "/*"([^*]|\*+[^/])*\*+"/"
 char_literal                    \'([^\\\n]|\\.)\'
+char_invalido                   \'([^\\\n]|\\.){2,}\'    // Dois ou mais caracteres entre aspas simples
 string_literal                  \"([^\\\"\n]|\\.)*\"
 other                           .
 
@@ -145,14 +146,22 @@ programa                        {declaracao_lista}
 ";"                 { int l = line_number; int c = column_number; printToken("SEMICOLON", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
 ","                 { int l = line_number; int c = column_number; printToken("COMMA", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
 
+\'([^\\\n]|\\.){2,}\' { printError("char literal com mais de um caractere", yytext, line_number, column_number); processa_avanco_posicao(yytext, yyleng); }
 {char_literal}      { int l = line_number; int c = column_number; printToken("CONSTCHAR", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
 {string_literal}    { int l = line_number; int c = column_number; printToken("CONSTSTRING", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+\"([^\\\"\n]|\\.)*   { printError("string não fechada", yytext, line_number, column_number); processa_avanco_posicao(yytext, yyleng); }
+
+[\u201C\u201D]       { printError("uso de aspas inválidas (aspas curvas)", yytext, line_number, column_number); processa_avanco_posicao(yytext, yyleng); }
 
 "+"                 { int l = line_number; int c = column_number; printToken("PLUS", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
 "-"                 { int l = line_number; int c = column_number; printToken("MINUS", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
 "/"                 { int l = line_number; int c = column_number; printToken("DIVISION", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
 "*"                 { int l = line_number; int c = column_number; printToken("MULTIPLY", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
 
+[0-9]+[a-zA-Z_]+    { 
+                        printError("identificador inválido iniciado com número", yytext, line_number, column_number);
+                        processa_avanco_posicao(yytext, yyleng);
+                    }
 
 {num_int}       { 
                     int linha_token = line_number; int coluna_token = column_number;
