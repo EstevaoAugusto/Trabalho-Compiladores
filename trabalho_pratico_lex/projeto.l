@@ -1,7 +1,7 @@
 %{
 /*-------------------------- Definitions --------------------------*/
 #include <stdio.h>
-#include "projeto.tab.h"
+#include "parser.tab.h"
 
 
 int line_number = 1;
@@ -147,7 +147,7 @@ programa                        {declaracao_lista}
 {fecha_colchete}    { int l = line_number; int c = column_number; printToken("RIGHT_BRACKET", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
 {abre_parenteses}   { int l = line_number; int c = column_number; printToken("LEFT_PAREN", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
 {fecha_parenteses}  { int l = line_number; int c = column_number; printToken("RIGHT_PAREN", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
-";"                 { int l = line_number; int c = column_number; printToken("SEMICOLON", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
+";"                 { int l = line_number; int c = column_number; printToken("SEMICOLON", yytext, l, c); processa_avanco_posicao(yytext, yyleng); return SEMICOLON; }
 ","                 { int l = line_number; int c = column_number; printToken("COMMA", yytext, l, c); processa_avanco_posicao(yytext, yyleng); }
 
 \'([^\\\n]|\\.){2,}\' { printError("char literal com mais de um caractere", yytext, line_number, column_number); processa_avanco_posicao(yytext, yyleng); }

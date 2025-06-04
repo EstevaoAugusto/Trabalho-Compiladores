@@ -1,17 +1,42 @@
-inta a;             /* Erro 1: palavra reservada incorreta "inta" */
-float b
-string c;           /* Erro 2: falta de ponto e vírgula na linha anterior */
+    int x  /* Erro 1: Falta de ponto-e-vírgula na declaração de x */
+    real y;
+    bool flag;
 
-a = "texto";        /* Erro 3: atribuição de string para inteiro */
-b = 5..2;           /* Erro 4: número de ponto flutuante inválido */
-c = Teste;          /* Erro 5: string sem aspas */
+    x = 10  /* Erro 2: Falta de ponto-e-vírgula após a atribuição */
+    y = 3.14; 
+    flag = true;
 
-if a > 3 {          /* Erro 6: falta de parênteses no if */
-    b = b + 1.0;
-}
+    if x > 0 then {  /* Erro 3: Parênteses ausentes na condição do if */
+        write("Positive");
+    } else 
+        write("Non-positive");  /* Erro 4: Bloco do else sem chaves */
 
-while (a < 10)      /* Erro 7: falta de chaves no while */
-    a = a + 1;      /* Erro 8: falta de bloco ou chaves obrigatórias */
+    while (x > 0 {  /* Erro 5: Parêntese de fechamento ausente na condição do while */
+        x = x - 1;
+        write(x);
+    }
 
-read();             /* Erro 9: read sem parâmetro */
-write(x);           /* Erro 10: variável 'x' não declarada */
+    for int i = 0; i < 5; i = i + 1) {  /* Erro 6: Estrutura incorreta do for (falta abrir parênteses após "for") */
+        write("i: ");
+        write(i);
+    }
+
+    switch (x) {
+        case 0: 
+            write("Zero");
+        case )10: {  /* Erro 7: Parêntese extra e sintaxe incorreta no case para o número 10 */
+            write("Ten");
+        break;        /* Erro 8: 'break' mal posicionado devido à estrutura incorreta do case */
+        default: {
+            write("Other");
+        }
+    /* Erro 9: Chave de fechamento ausente para o bloco switch */
+
+    fucntion soma(int a, int b) {  /* Erro 10: Palavra-chave incorreta ("fucntion" em vez de "function") */
+        return a + b;
+    /* Erro 11: Chave de fechamento ausente para o corpo da função 'soma' */
+
+    int result;
+    result = soma(x, 5);
+    write("Result: ");
+    write(result);
