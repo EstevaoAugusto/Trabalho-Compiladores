@@ -1,6 +1,8 @@
 %{
 /*-------------------------- Definitions --------------------------*/
 #include <stdio.h>
+#include "projeto.tab.h"
+
 
 int line_number = 1;
 int column_number = 1;
@@ -29,6 +31,8 @@ void printError(const char* errorMessage, const char* lexeme, int line, int col)
 }
 
 %}
+
+%option noyywrap
 
 /*-------------------------- Definições --------------------------*/
 
@@ -185,15 +189,5 @@ programa                        {declaracao_lista}
                     printError("símbolo inválido", yytext, line_number, column_number);
                     processa_avanco_posicao(yytext, yyleng); 
                 }
+
 %%
-
-int yywrap() {
-    return 1;
-}
-
-int main(int argc, char *argv[]) {
-    printf("Enter string input: ");
-    yylex();
-    
-    return 0;
-}
