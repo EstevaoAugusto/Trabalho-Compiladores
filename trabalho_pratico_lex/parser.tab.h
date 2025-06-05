@@ -71,7 +71,8 @@
      CONSTFLOAT = 287,
      CONSTCHAR = 288,
      CONSTSTRING = 289,
-     IDENTIFIER = 290
+     IDENTIFIER = 290,
+     UMINUS = 291
    };
 #endif
 
