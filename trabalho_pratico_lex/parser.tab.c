@@ -81,11 +81,12 @@
     extern int column_number;
 
     void yyerror(const char *s);
-    void msg_erro(const char *msg, int line, int column);
+    void msg_erro(const char *msg);
+    int syntax_error = 0;
 
 
 /* Line 189 of yacc.c  */
-#line 89 "parser.tab.c"
+#line 90 "parser.tab.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -162,7 +163,7 @@ typedef int YYSTYPE;
 
 
 /* Line 264 of yacc.c  */
-#line 166 "parser.tab.c"
+#line 167 "parser.tab.c"
 
 #ifdef short
 # undef short
@@ -480,15 +481,15 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    48,    48,    53,    54,    59,    60,    65,    66,    67,
-      72,    73,    74,    80,    81,    82,    83,    84,    89,    90,
-      95,    96,    98,   104,   105,   110,   111,   116,   117,   118,
-     124,   129,   130,   135,   136,   141,   142,   143,   144,   145,
-     151,   152,   157,   158,   164,   165,   166,   172,   173,   178,
-     179,   184,   185,   186,   187,   188,   189,   194,   195,   196,
-     202,   203,   207,   208,   213,   214,   215,   216,   217,   218,
-     219,   220,   226,   227,   233,   234,   239,   240,   245,   246,
-     250,   251,   252
+       0,    49,    49,    54,    55,    60,    61,    66,    67,    68,
+      73,    74,    75,    81,    82,    83,    84,    85,    90,    91,
+      96,    97,    99,   105,   106,   111,   112,   117,   118,   119,
+     125,   130,   131,   136,   137,   142,   143,   144,   145,   146,
+     152,   153,   158,   159,   165,   166,   167,   173,   174,   179,
+     180,   185,   186,   187,   188,   189,   190,   195,   196,   197,
+     203,   204,   208,   209,   214,   215,   216,   217,   218,   219,
+     220,   221,   227,   228,   234,   235,   240,   241,   246,   247,
+     251,   252,   253
 };
 #endif
 
@@ -1499,91 +1500,91 @@ yyreduce:
         case 9:
 
 /* Line 1455 of yacc.c  */
-#line 68 "parser.y"
-    { msg_erro("ERRO: Declaracao de variavel invalida", line_number, column_number); yyerrok; ;}
+#line 69 "parser.y"
+    { msg_erro("ERRO: Declaracao de variavel invalida"); yyerrok; ;}
     break;
 
   case 12:
 
 /* Line 1455 of yacc.c  */
-#line 75 "parser.y"
-    { msg_erro("ERRO: Dimensao do array invalida", line_number, column_number); yyerrok; ;}
+#line 76 "parser.y"
+    { msg_erro("ERRO: Dimensao do array invalida"); yyerrok; ;}
     break;
 
   case 21:
 
 /* Line 1455 of yacc.c  */
-#line 97 "parser.y"
-    { msg_erro("ERRO: Função inexistente ou invalida apos o tipo de retorno", line_number, column_number); yyerrok; ;}
+#line 98 "parser.y"
+    { msg_erro("ERRO: Função inexistente ou invalida apos o tipo de retorno"); yyerrok; ;}
     break;
 
   case 22:
 
 /* Line 1455 of yacc.c  */
-#line 99 "parser.y"
-    { msg_erro("ERRO: Lista de parâmetros malformada na declaração de função", line_number, column_number); yyerrok; ;}
+#line 100 "parser.y"
+    { msg_erro("ERRO: Lista de parâmetros malformada na declaração de função"); yyerrok; ;}
     break;
 
   case 29:
 
 /* Line 1455 of yacc.c  */
-#line 119 "parser.y"
-    { msg_erro("ERRO: Falta de abrir colchetes", line_number, column_number); yyerrok; ;}
+#line 120 "parser.y"
+    { msg_erro("ERRO: Falta de abrir colchetes"); yyerrok; ;}
     break;
 
   case 39:
 
 /* Line 1455 of yacc.c  */
-#line 146 "parser.y"
-    { msg_erro("ERRO: Comando invalido sintaticamente ou incompleto", line_number, column_number); yyerrok; ;}
+#line 147 "parser.y"
+    { msg_erro("ERRO: Comando invalido sintaticamente ou incompleto"); yyerrok; ;}
     break;
 
   case 43:
 
 /* Line 1455 of yacc.c  */
-#line 159 "parser.y"
-    { msg_erro("ERRO: Comando WHILE invalido", line_number, column_number); yyerrok; ;}
+#line 160 "parser.y"
+    { msg_erro("ERRO: Comando WHILE invalido"); yyerrok; ;}
     break;
 
   case 46:
 
 /* Line 1455 of yacc.c  */
-#line 167 "parser.y"
-    { msg_erro("ERRO: Retorno invalido", line_number, column_number); yyerrok; ;}
+#line 168 "parser.y"
+    { msg_erro("ERRO: Retorno invalido"); yyerrok; ;}
     break;
 
   case 59:
 
 /* Line 1455 of yacc.c  */
-#line 197 "parser.y"
-    { msg_erro("ERRO: Expressao invalida, falta um operador ou operando", line_number, column_number); yyerrok; ;}
+#line 198 "parser.y"
+    { msg_erro("ERRO: Expressao invalida, falta um operador ou operando"); yyerrok; ;}
     break;
 
   case 71:
 
 /* Line 1455 of yacc.c  */
-#line 221 "parser.y"
-    { msg_erro("ERRO: Expressao Vazia", line_number, column_number); yyerrok; ;}
+#line 222 "parser.y"
+    { msg_erro("ERRO: Expressao Vazia"); yyerrok; ;}
     break;
 
   case 73:
 
 /* Line 1455 of yacc.c  */
-#line 228 "parser.y"
-    { msg_erro("ERRO: Argumentos invalidos no retorno da funcao", line_number, column_number); yyerrok; ;}
+#line 229 "parser.y"
+    { msg_erro("ERRO: Argumentos invalidos no retorno da funcao"); yyerrok; ;}
     break;
 
   case 82:
 
 /* Line 1455 of yacc.c  */
-#line 253 "parser.y"
-    { msg_erro("ERRO: Acesso invalido do array", line_number, column_number); yyerrok; ;}
+#line 254 "parser.y"
+    { msg_erro("ERRO: Acesso invalido do array"); yyerrok; ;}
     break;
 
 
 
 /* Line 1455 of yacc.c  */
-#line 1587 "parser.tab.c"
+#line 1588 "parser.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1795,17 +1796,18 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 256 "parser.y"
+#line 257 "parser.y"
 
 
 /*------------------------ Funções auxiliares ------------------------*/
 
 void yyerror(const char *s) {
-    fprintf(stderr, "Erro na linha %d, coluna %d: %s\n", line_number, column_number, s);
+    fprintf(stderr, "Erro na linha %d, coluna %d:\n", line_number, column_number);
+    syntax_error++;
 }
 
-void msg_erro(const char *msg, int line, int column) {
-    fprintf(stderr, "%s na linha %d, coluna %d\n\n", msg, line, column);
+void msg_erro(const char *msg) {
+    fprintf(stderr, "ATENCAO: %s\n\n", msg);
 }
 
 int main(int argc, char **argv) {
@@ -1821,9 +1823,9 @@ int main(int argc, char **argv) {
     }
 
     yyin = compiled_arq;
-    int result = yyparse();
+    yyparse();
 
-    if (result == 0) {
+    if (syntax_error == 0) {
         printf("ANALISE SINTATICA CONCLUIDA!\n");
     } else {
         printf("ANALISE SINTATICA CONCLUIDA COM ERROS!!!\n");

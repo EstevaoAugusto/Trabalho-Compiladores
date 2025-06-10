@@ -1,23 +1,44 @@
-int ;                      /* ERRO: Declaração de variável inválida */
-float x{ ;                 /* ERRO: Valor inválido */
-char nome[10];             /* Correto */
-char a;
-
-struct Pessoa[             /* Incompleto, faltando corpo */
-    int idade
-    float peso;
-];                         /* ERRO: Declaração de variável inválida */
-
-int soma(int a, b) {       /* ERRO: Lista de parâmetros malformada */
-    int x
-    x = 10 + ;             /* ERRO: Expressão inválida, falta operando */
-    while (x < 100)        /* ERRO: Comando WHILE inválido (sem bloco) */
-    return x + ;           /* ERRO: Retorno inválido */
+/* declaração depois de atribuição de valor */
+void declaracoes(void) {
+    int i;
+    i = 0;
+    char a;
 }
 
-int main() {
-    x = 5 + (3 * );        /* ERRO: Expressão vazia */
-    y[5 + ] = 10;          /* ERRO: Acesso inválido ao array */
-    chamadaFunc(1, 2,, 3); /* ERRO: Argumentos inválidos no retorno da função */
-    return;                /* Correto */
+/* sem parâmetro */
+void exemplo() {
+    int num;
 }
+
+/* declaração errado de matriz */
+char tabela [5][int];
+
+/* erro ao somar se não estiver dentro de uma função */
+int num;
+
+/* declaração e atribuição na mesma linha */
+int num = 4;
+
+/* não passar o tipo dos parâmetros */
+int soma(a) {
+    int b;
+    return a + b;
+}
+
+/* struct sem o id no final */
+struct ponto {
+    float x;
+    float y;
+};
+
+/* if sem condições */
+if() {
+    char a;
+}
+
+/* sem fechamento de chaves */
+while (i < 10) {
+        i = i + 1;
+
+/* sem ; */
+float numFloat

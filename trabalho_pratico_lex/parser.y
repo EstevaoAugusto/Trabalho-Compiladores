@@ -10,7 +10,8 @@
     extern int column_number;
 
     void yyerror(const char *s);
-    void msg_erro(const char *msg, int line, int column);
+    void msg_erro(const char *msg);
+    int syntax_error = 0;
 %}
 
 /*------------------------ Tokens ------------------------*/
@@ -65,14 +66,14 @@ var_declaracao
     : tipo_especificador IDENTIFIER SEMICOLON
     | tipo_especificador IDENTIFIER arrayDimensao SEMICOLON
     | tipo_especificador IDENTIFIER error
-    { msg_erro("ERRO: Declaracao de variavel invalida", line_number, column_number); yyerrok; }
+    { msg_erro("ERRO: Declaracao de variavel invalida"); yyerrok; }
     ;
 
 arrayDimensao
     : LEFT_BRACKET CONSTINT RIGHT_BRACKET arrayDimensao
     | LEFT_BRACKET CONSTINT RIGHT_BRACKET
     | LEFT_BRACKET error RIGHT_BRACKET
-    { msg_erro("ERRO: Dimensao do array invalida", line_number, column_number); yyerrok; }
+    { msg_erro("ERRO: Dimensao do array invalida"); yyerrok; }
     ; 
 
 /*----- 5° -----*/
@@ -94,9 +95,9 @@ varDeclList
 func_declaracao
     : tipo_especificador IDENTIFIER LEFT_PAREN params RIGHT_PAREN composto_decl
     | tipo_especificador error LEFT_PAREN params RIGHT_PAREN composto_decl
-    { msg_erro("ERRO: Função inexistente ou invalida apos o tipo de retorno", line_number, column_number); yyerrok; }
+    { msg_erro("ERRO: Função inexistente ou invalida apos o tipo de retorno"); yyerrok; }
     | tipo_especificador IDENTIFIER LEFT_PAREN error RIGHT_PAREN composto_decl
-    { msg_erro("ERRO: Lista de parâmetros malformada na declaração de função", line_number, column_number); yyerrok; }
+    { msg_erro("ERRO: Lista de parâmetros malformada na declaração de função"); yyerrok; }
     ;
 
 /*----- 8° -----*/
@@ -116,7 +117,7 @@ param
     : tipo_especificador IDENTIFIER
     | tipo_especificador IDENTIFIER LEFT_BRACKET RIGHT_BRACKET
     | tipo_especificador IDENTIFIER error RIGHT_BRACKET
-    { msg_erro("ERRO: Falta de abrir colchetes", line_number, column_number); yyerrok; }
+    { msg_erro("ERRO: Falta de abrir colchetes"); yyerrok; }
     ;
 
 /*----- 11° -----*/
@@ -143,7 +144,7 @@ comando
     | iteracao_decl
     | retorno_decl
     | error SEMICOLON
-    { msg_erro("ERRO: Comando invalido sintaticamente ou incompleto", line_number, column_number); yyerrok; }
+    { msg_erro("ERRO: Comando invalido sintaticamente ou incompleto"); yyerrok; }
     ;
 
 /*----- 15° -----*/
@@ -156,7 +157,7 @@ expressao_decl
 iteracao_decl
     : WHILE LEFT_PAREN expressao RIGHT_PAREN comando
     | WHILE LEFT_PAREN error RIGHT_PAREN comando
-    { msg_erro("ERRO: Comando WHILE invalido", line_number, column_number); yyerrok; }
+    { msg_erro("ERRO: Comando WHILE invalido"); yyerrok; }
     ;
 
 /*----- 18° -----*/
@@ -164,7 +165,7 @@ retorno_decl
     : RETURN SEMICOLON
     | RETURN expressao SEMICOLON
     | RETURN error SEMICOLON
-    { msg_erro("ERRO: Retorno invalido", line_number, column_number); yyerrok; }
+    { msg_erro("ERRO: Retorno invalido"); yyerrok; }
     ;
 
 /*----- 19° -----*/
@@ -194,7 +195,7 @@ expressao_soma
     : termo
     | termo exp_soma
     | error exp_soma
-    { msg_erro("ERRO: Expressao invalida, falta um operador ou operando", line_number, column_number); yyerrok; }
+    { msg_erro("ERRO: Expressao invalida, falta um operador ou operando"); yyerrok; }
     ;
 
 /*----- 23°: Operação de Soma mesmo -----*/
@@ -218,14 +219,14 @@ fator
     | CONSTCHAR
     | CONSTSTRING
     | LEFT_PAREN error RIGHT_PAREN
-    { msg_erro("ERRO: Expressao Vazia", line_number, column_number); yyerrok; }
+    { msg_erro("ERRO: Expressao Vazia"); yyerrok; }
     ;
 
 /*----- 25° -----*/
 ativacao
     : IDENTIFIER LEFT_PAREN args RIGHT_PAREN
     | IDENTIFIER LEFT_PAREN error RIGHT_PAREN
-    { msg_erro("ERRO: Argumentos invalidos no retorno da funcao", line_number, column_number); yyerrok; }
+    { msg_erro("ERRO: Argumentos invalidos no retorno da funcao"); yyerrok; }
     ;
 
 /*----- 26° -----*/
@@ -250,7 +251,7 @@ var_auxiliar
     : LEFT_BRACKET expressao RIGHT_BRACKET
     | LEFT_BRACKET expressao RIGHT_BRACKET var_auxiliar
     | LEFT_BRACKET error RIGHT_BRACKET
-    { msg_erro("ERRO: Acesso invalido do array", line_number, column_number); yyerrok; }
+    { msg_erro("ERRO: Acesso invalido do array"); yyerrok; }
     ;
 
 %%
@@ -258,11 +259,12 @@ var_auxiliar
 /*------------------------ Funções auxiliares ------------------------*/
 
 void yyerror(const char *s) {
-    fprintf(stderr, "Erro na linha %d, coluna %d: %s\n", line_number, column_number, s);
+    fprintf(stderr, "Erro na linha %d, coluna %d:\n", line_number, column_number);
+    syntax_error++;
 }
 
-void msg_erro(const char *msg, int line, int column) {
-    fprintf(stderr, "%s na linha %d, coluna %d\n\n", msg, line, column);
+void msg_erro(const char *msg) {
+    fprintf(stderr, "ATENCAO: %s\n\n", msg);
 }
 
 int main(int argc, char **argv) {
@@ -278,9 +280,9 @@ int main(int argc, char **argv) {
     }
 
     yyin = compiled_arq;
-    int result = yyparse();
+    yyparse();
 
-    if (result == 0) {
+    if (syntax_error == 0) {
         printf("ANALISE SINTATICA CONCLUIDA!\n");
     } else {
         printf("ANALISE SINTATICA CONCLUIDA COM ERROS!!!\n");
