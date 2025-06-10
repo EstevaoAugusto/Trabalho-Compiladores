@@ -1,22 +1,22 @@
-int ;                      // ERRO: Declaração de variável inválida
-float x[ ;                 // ERRO: Valor inválido ou ausente para o tamanho do vetor
-char nome[10];             // Correto
+int ;                      /* ERRO: Declaração de variável inválida */
+float x[ ;                 /* ERRO: Valor inválido */
+char nome[10];             /* Correto */
 
-struct Pessoa[             // Incompleto, faltando corpo
+struct Pessoa[             /* Incompleto, faltando corpo */
     int idade
     float peso;
-];                         // ERRO: Declaração de variável inválida
+];                         /* ERRO: Declaração de variável inválida */
 
-int soma(int a, b) {       // ERRO: Lista de parâmetros malformada
+int soma(int a, b) {       /* ERRO: Lista de parâmetros malformada */
     int x
-    x = 10 + ;             // ERRO: Expressão inválida, falta operando
-    while (x < 100)        // ERRO: Comando WHILE inválido (sem bloco)
-    return x + ;           // ERRO: Retorno inválido
+    x = 10 + ;             /* ERRO: Expressão inválida, falta operando */
+    while (x < 100)        /* ERRO: Comando WHILE inválido (sem bloco) */
+    return x + ;           /* ERRO: Retorno inválido */
 }
 
 int main() {
-    x = 5 + (3 * );        // ERRO: Expressão vazia
-    y[5 + ] = 10;          // ERRO: Acesso inválido ao array
-    chamadaFunc(1, 2,, 3); // ERRO: Argumentos inválidos no retorno da função
-    return;                // Correto
+    x = 5 + (3 * );        /* ERRO: Expressão vazia */
+    y[5 + ] = 10;          /* ERRO: Acesso inválido ao array */
+    chamadaFunc(1, 2,, 3); /* ERRO: Argumentos inválidos no retorno da função */
+    return;                /* Correto */
 }

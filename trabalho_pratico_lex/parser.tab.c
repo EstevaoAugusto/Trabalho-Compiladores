@@ -1814,11 +1814,11 @@ yyreturn:
 /*------------------------ Funções auxiliares ------------------------*/
 
 void yyerror(const char *s) {
-    fprintf(stderr, "Erro sintático %s na linha %d, coluna %d: %s\n", s, line_number, column_number);
+    fprintf(stderr, "Erro na linha %d, coluna %d: %s\n", line_number, column_number, s);
 }
 
 void msg_erro(const char *msg, int line, int column) {
-    fprintf(stderr, "ERRO: %s na linha %d, coluna %d\n\n", msg, line, column);
+    fprintf(stderr, "%s na linha %d, coluna %d\n\n", msg, line, column);
 }
 
 int main(int argc, char **argv) {
@@ -1834,9 +1834,9 @@ int main(int argc, char **argv) {
     }
 
     yyin = compiled_arq;
-    yyparse();
+    int result = yyparse();
 
-    if (yyparse() == 0) {
+    if (result == 0) {
         printf("ANALISE SINTATICA CONCLUIDA!\n");
     } else {
         printf("ANALISE SINTATICA CONCLUIDA COM ERROS!\n");

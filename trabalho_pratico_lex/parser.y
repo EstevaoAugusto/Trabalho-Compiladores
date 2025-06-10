@@ -65,7 +65,7 @@ var_declaracao
     : tipo_especificador IDENTIFIER SEMICOLON
     | tipo_especificador IDENTIFIER arrayDimensao SEMICOLON
     | tipo_especificador SEMICOLON error
-    { msg_erro("ERRO: Declaração de variavel invalida", line_number, column_number); yyerrok; }
+    { msg_erro("ERRO: Declaracao de variavel invalida", line_number, column_number); yyerrok; }
     | tipo_especificador IDENTIFIER LEFT_BRACKET error RIGHT_BRACKET SEMICOLON
     { msg_erro("ERRO: Valor invalido ou ausente para o tamanho do vetor", line_number, column_number); yyerrok; }
     ;
@@ -260,11 +260,11 @@ var_auxiliar
 /*------------------------ Funções auxiliares ------------------------*/
 
 void yyerror(const char *s) {
-    fprintf(stderr, "Erro sintático %s na linha %d, coluna %d: %s\n", s, line_number, column_number);
+    fprintf(stderr, "Erro na linha %d, coluna %d: %s\n", line_number, column_number, s);
 }
 
 void msg_erro(const char *msg, int line, int column) {
-    fprintf(stderr, "ERRO: %s na linha %d, coluna %d\n\n", msg, line, column);
+    fprintf(stderr, "%s na linha %d, coluna %d\n\n", msg, line, column);
 }
 
 int main(int argc, char **argv) {
@@ -280,9 +280,9 @@ int main(int argc, char **argv) {
     }
 
     yyin = compiled_arq;
-    yyparse();
+    int result = yyparse();
 
-    if (yyparse() == 0) {
+    if (result == 0) {
         printf("ANALISE SINTATICA CONCLUIDA!\n");
     } else {
         printf("ANALISE SINTATICA CONCLUIDA COM ERROS!\n");
