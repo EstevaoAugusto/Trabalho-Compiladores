@@ -1,14 +1,12 @@
-int i                   /* Declaracao Invalida */
+int i                 /* Declaracao Invalida */
 
 char a;                 /* Acesso de Array Invalido */
 
-char tabela [5][int];   /* Declaracao Erronea de Matriz */
+char tabel [1][int];   /* Declaracao Erronea de Matriz */
 
 void function() {       /* Passagem Sem Parametro */
     int num;
 }
-
-int number = 4;          /* Declara e Atribui ao mesmo tempo /*
 
 int soma(a) {            /* não passar o tipo dos parâmetros */
     int b;
@@ -27,5 +25,7 @@ struct cachorro {            /* Falta de IDENTIFIER no fim da instrução
     float peso;
 };
 
+/* int number = 4; */         /* Declara e Atribui ao mesmo tempo */
+
 while (i < 5) {           /* Chavers Abertas
-        i = i + 1;
+    i = i + 1;
