@@ -84,10 +84,10 @@ multi                           \/|\*
 "/"                 { column_number += yyleng; return DIVISION; }
 "*"                 { column_number += yyleng; return MULTIPLY; }
 
-[0-9]+[a-zA-Z_]+        { fprintf(yyout, "Lexical Error: identificador inválido iniciado com número\n", line_number, column_number, yytext); }
-[\u201C\u201D]          { fprintf(yyout, "Lexical Error: uso de aspas inválidas (aspas curvas)\n", line_number, column_number, yytext); }
-\'([^\\\n]|\\.){2,}\'   { fprintf(yyout, "Lexical Error: constante char com mais de um caractere\n", line_number, column_number, yytext); }
-\"([^\\\"\n]|\\.)*      { fprintf(yyout, "Lexical Error: string não fechada\n", line_number, column_number, yytext); }
-{other}                 { fprintf(yyout, "Lexical Error: símbolo inválido\n", line_number, column_number, yytext); }
+[0-9]+[a-zA-Z_]+        { fprintf(yyout, "Lexical Error: identificador invalido iniciado com numero na linha %d, coluna %d: %s\n", line_number, column_number, yytext); }
+[\u201C\u201D]          { fprintf(yyout, "Lexical Error: uso de aspas invalidas (aspas curvas) na linha %d, coluna %d: %s\n", line_number, column_number, yytext); }
+\'([^\\\n]|\\.){2,}\'   { fprintf(yyout, "Lexical Error: constante char com mais de um caractere na linha %d, coluna %d: %s\n", line_number, column_number, yytext); }
+\"([^\\\"\n]|\\.)*      { fprintf(yyout, "Lexical Error: string nao fechada na linha %d, coluna %d: %s\n", line_number, column_number, yytext); }
+{other}                 { fprintf(yyout, "Lexical Error: simbolo invalido na linha %d, coluna %d: %s\n", line_number, column_number, yytext); }
 
 %%
