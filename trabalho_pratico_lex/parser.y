@@ -82,7 +82,7 @@ tipo_especificador
     | FLOAT
     | CHAR
     | VOID
-    | STRUCT IDENTIFIER LEFT_BRACKET varDeclList RIGHT_BRACKET
+    | STRUCT IDENTIFIER LEFT_BRACE varDeclList RIGHT_BRACE SEMICOLON
     ;
 
 /*----- 6°: sequência de declarações de variáveis -----*/
