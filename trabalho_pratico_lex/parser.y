@@ -4,18 +4,20 @@
 
     extern FILE *yyin;
     extern int yylex();
-    extern int yyparse(void);
-    void yyerror(const char *s);
+    extern int yyparse();
 
     extern int line_number;
     extern int column_number;
+
+    void yyerror(const char *s);
+    void msg_erro(const char *msg, int line, int column);
 %}
 
 /*------------------------ Tokens ------------------------*/
 %token IF ELSE WHILE RETURN
 %token INT FLOAT CHAR VOID STRUCT
 
-%token PLUS MINUS MULTIPLY DIVISION
+%token PLUS MINUS DIVISION
 %token EQUAL_OP NOT_EQUAL_OP LESS_EQUAL_OP RIGHT_EQUAL_OP LEFT_OP RIGHT_OP
 %token ASSIGN_OP
 
@@ -30,11 +32,12 @@
 
 /*------------------------ Precedências ------------------------*/
 
-%left PLUS MINUS
-%left MULTIPLY DIVISION
-%right UMINUS
+%left PLUS
+%left MULTIPLY
+%right ASSIGN_OP
+%left EQUAL_OP NOT_EQUAL_OP LESS_EQUAL_OP
+%left  RIGHT_EQUAL_OP LEFT_OP RIGHT_OP
 
-%start programa
 
 %%
 
@@ -43,278 +46,213 @@
 /*----- 1° -----*/
 programa
     : declaracao_lista
-    { printf("Redução: programa -> declaracao_lista\n"); }
     ;
 
 /*----- 2° -----*/
 declaracao_lista
     : declaracao
-    { printf("Redução: declaracao_lista -> declaracao\n"); }
     | declaracao_lista declaracao
-    { printf("Redução: declaracao_lista -> declaracao_lista declaracao\n"); }
     ;
 
 /*----- 3° -----*/
 declaracao
     : func_declaracao
-    { printf("Redução: declaracao -> func_declaracao\n"); }
     | var_declaracao
-    { printf("Redução: declaracao -> var_declaracao\n"); }
     ;
 
 /*----- 4° -----*/
 var_declaracao
     : tipo_especificador IDENTIFIER SEMICOLON
-    { printf("Redução: var_declaracao -> tipo_especificador IDENTIFIER SEMICOLON\n"); }
-    | tipo_especificador IDENTIFIER LEFT_BRACKET CONSTINT RIGHT_BRACKET arrayDimensao SEMICOLON
-    | STRUCT IDENTIFIER LEFT_BRACE varDeclList RIGHT_BRACE
-    { printf("Redução: var_declaracao -> tipo_especificador IDENTIFIER LEFT_BRACKET CONSTINT RIGHT_BRACKET arrayDimensao SEMICOLON\n"); }
-    | tipo_especificador error SEMICOLON
-    { printf("ERRO: declaração de variavel invalida na linha %d, coluna %d\n", line_number, column_number); yyerrok; }
+    | tipo_especificador IDENTIFIER arrayDimensao SEMICOLON
+    | tipo_especificador SEMICOLON error
+    { msg_erro("ERRO: Declaração de variavel invalida", line_number, column_number); yyerrok; }
     | tipo_especificador IDENTIFIER LEFT_BRACKET error RIGHT_BRACKET SEMICOLON
-    { printf("ERRO: valor invalido ou ausente para o tamanho do vetor na linha %d, coluna %d\n", line_number, column_number); yyerrok; }
+    { msg_erro("ERRO: Valor invalido ou ausente para o tamanho do vetor", line_number, column_number); yyerrok; }
     ;
 
 arrayDimensao
     : LEFT_BRACKET CONSTINT RIGHT_BRACKET arrayDimensao
-    { printf("Redução: arrayDimensao -> LEFT_BRACKET CONSTINT RIGHT_BRACKET arrayDimensao\n"); }
-    | /* vazio */
-    { printf("Redução: arrayDimensao -> ε\n"); }
+    | LEFT_BRACKET CONSTINT RIGHT_BRACKET
+    | LEFT_BRACKET error RIGHT_BRACKET
+    { msg_erro("ERRO: Dimensao do array invalida", line_number, column_number); yyerrok; }
     ; 
 
 /*----- 5° -----*/
 tipo_especificador
     : INT
-    { printf("Redução: tipo_especificador -> INT\n"); }
     | FLOAT
-    { printf("Redução: tipo_especificador -> FLOAT\n"); }
     | CHAR
-    { printf("Redução: tipo_especificador -> CHAR\n"); }
     | VOID
-    { printf("Redução: tipo_especificador -> VOID\n"); }
+    | STRUCT IDENTIFIER LEFT_BRACKET varDeclList RIGHT_BRACKET
     ;
 
 /*----- 6°: sequência de declarações de variáveis -----*/
 varDeclList
     : var_declaracao
-    { printf("Redução: varDeclList -> var_declaracao\n"); }
     | var_declaracao varDeclList
-    { printf("Redução: varDeclList -> var_declaracao varDeclList\n"); }
     ;
 
 /*----- 7° -----*/
 func_declaracao
     : tipo_especificador IDENTIFIER LEFT_PAREN params RIGHT_PAREN composto_decl
-    { printf("Redução: func_declaracao -> tipo_especificador IDENTIFIER LEFT_PAREN params RIGHT_PAREN composto_decl\n"); }
     | tipo_especificador error LEFT_PAREN params RIGHT_PAREN composto_decl
-    { printf("ERRO: Função inexistente ou invalida apos o tipo de retorno na linha %d, coluna %d\n", line_number, column_number); yyerrok; }
+    { msg_erro("ERRO: Função inexistente ou invalida apos o tipo de retorno", line_number, column_number); yyerrok; }
     | tipo_especificador IDENTIFIER LEFT_PAREN error RIGHT_PAREN composto_decl
-    { printf("ERRO: Lista de parâmetros malformada na declaração de função na linha %d, coluna %d\n", line_number, column_number); yyerrok; }
-    | error '\n' { printf("Redução: Erro na reducao para func_declaracao\n"); yyerrok;}
+    { msg_erro("ERRO: Lista de parâmetros malformada na declaração de função", line_number, column_number); yyerrok; }
     ;
 
 /*----- 8° -----*/
 params
     : params_lista
-    { printf("Redução: params -> params_lista\n"); }
     | VOID
-    { printf("Redução: params -> VOID\n"); }
     ;
 
 /*----- 9° -----*/
 params_lista
     : param
-    { printf("Redução: params_lista -> param\n"); }
-    | params_lista COMMA param
-    { printf("Redução: params_lista -> params_lista COMMA param\n"); }
+    | param COMMA params_lista
     ;
 
 /*----- 10° -----*/
 param
     : tipo_especificador IDENTIFIER
-    { printf("Redução: param -> tipo_especificador IDENTIFIER\n"); }
     | tipo_especificador IDENTIFIER LEFT_BRACKET RIGHT_BRACKET
-    { printf("Redução: param -> tipo_especificador IDENTIFIER LEFT_BRACKET RIGHT_BRACKET\n"); }
+    | tipo_especificador IDENTIFIER error RIGHT_BRACKET
+    { msg_erro("ERRO: Falta de abrir colchetes", line_number, column_number); yyerrok; }
     ;
 
 /*----- 11° -----*/
 composto_decl
     : LEFT_BRACE local_declaracoes comando_lista RIGHT_BRACE
-    { printf("Redução: composto_decl -> LEFT_BRACE local_declaracoes comando_lista RIGHT_BRACE\n"); }
     ;
 
 /*----- 12° -----*/
 local_declaracoes
     : local_declaracoes var_declaracao
-    { printf("Redução: local_declaracoes -> local_declaracoes var_declaracao\n"); }
     | /* vazio */
-    { printf("Redução: local_declaracoes -> ε\n"); }
     ;
 
 /*----- 13° -----*/
 comando_lista
-    : comando_lista comando
-    { printf("Redução: comando_lista -> comando_lista comando\n"); }
+    : comando comando_lista
     | /* vazio */
-    { printf("Redução: comando_lista -> ε\n"); }
     ;
 
 /*----- 14° -----*/
 comando
     : expressao_decl
-    { printf("Redução: comando -> expressao_decl\n"); }
     | composto_decl
-    { printf("Redução: comando -> composto_decl\n"); }
-    | selecao_decl
-    { printf("Redução: comando -> selecao_decl\n"); }
     | iteracao_decl
-    { printf("Redução: comando -> iteracao_decl\n"); }
     | retorno_decl
-    { printf("Redução: comando -> retorno_decl\n"); }
     | error SEMICOLON
-    { printf("ERRO: Comando invalido sintaticamente ou incompleto na linha %d, coluna %d\n", line_number, column_number); yyerrok; }
+    { msg_erro("ERRO: Comando invalido sintaticamente ou incompleto", line_number, column_number); yyerrok; }
     ;
 
 /*----- 15° -----*/
 expressao_decl
     : expressao SEMICOLON
-    { printf("Redução: expressao_decl -> expressao SEMICOLON\n"); }
     | SEMICOLON
-    { printf("Redução: expressao_decl -> SEMICOLON\n"); }
-    ;
-
-/*----- 16° -----*/
-selecao_decl
-    : IF LEFT_PAREN expressao RIGHT_PAREN comando
-    { printf("Redução: selecao_decl -> IF LEFT_PAREN expressao RIGHT_PAREN comando\n"); }
-    | IF LEFT_PAREN expressao RIGHT_PAREN comando ELSE comando
-    { printf("Redução: selecao_decl -> IF LEFT_PAREN expressao RIGHT_PAREN comando ELSE comando\n"); }
-    | IF LEFT_PAREN error RIGHT_PAREN comando
-    { printf("ERRO: Condição invalida no comando IF na linha %d, coluna %d\n", line_number, column_number); yyerrok; }
     ;
 
 /*----- 17° -----*/
 iteracao_decl
     : WHILE LEFT_PAREN expressao RIGHT_PAREN comando
-    { printf("Redução: iteracao_decl -> WHILE LEFT_PAREN expressao RIGHT_PAREN comando\n"); }
     | WHILE LEFT_PAREN error RIGHT_PAREN comando
-            { printf("ERRO: Comando WHILE inválido na linha %d, coluna %d\n", line_number, column_number); yyerrok; }
-            ;
+    { msg_erro("ERRO: Comando WHILE invalido", line_number, column_number); yyerrok; }
     ;
 
 /*----- 18° -----*/
 retorno_decl
     : RETURN SEMICOLON
-    { printf("Redução: retorno_decl -> RETURN SEMICOLON\n"); }
     | RETURN expressao SEMICOLON
-    { printf("Redução: retorno_decl -> RETURN expressao SEMICOLON\n"); }
     | RETURN error SEMICOLON
-    { printf("ERRO: Retorno inválido na linha %d, coluna %d\n", line_number, column_number); yyerrok; }
+    { msg_erro("ERRO: Retorno invalido", line_number, column_number); yyerrok; }
     ;
 
 /*----- 19° -----*/
 expressao
     : var ASSIGN_OP expressao
-    { printf("Redução: expressao -> var ASSIGN_OP expressao\n"); }
     | expressao_simples
-    { printf("Redução: expressao -> expressao_simples\n"); }
     ;
 
 /*----- 20° -----*/
 expressao_simples
     : expressao_soma relacional expressao_soma
-    { printf("Redução: expressao_simples -> expressao_soma relacional expressao_soma\n"); }
     | expressao_soma
-    { printf("Redução: expressao_simples -> expressao_soma\n"); }
     ;
 
 /*----- 21° -----*/
 relacional
     : LEFT_OP
-    { printf("Redução: relacional -> LEFT_OP\n"); }
     | RIGHT_OP
-    { printf("Redução: relacional -> RIGHT_OP\n"); }
     | LESS_EQUAL_OP
-    { printf("Redução: relacional -> LESS_EQUAL_OP\n"); }
     | RIGHT_EQUAL_OP
-    { printf("Redução: relacional -> RIGHT_EQUAL_OP\n"); }
     | EQUAL_OP
-    { printf("Redução: relacional -> EQUAL_OP\n"); }
     | NOT_EQUAL_OP
-    { printf("Redução: relacional -> NOT_EQUAL_OP\n"); }
     ;
 
 /*----- 22° -----*/
 expressao_soma
-    : expressao_soma PLUS termo
-    { printf("Redução: expressao_soma -> expressao_soma PLUS termo\n"); $$ = $1 + $3;}
-    | termo
-    { printf("Redução: expressao_soma -> termo\n"); }
+    : termo
+    | termo exp_soma
+    | error exp_soma
+    { msg_erro("ERRO: Expressao invalida, falta um operador ou operando", line_number, column_number); yyerrok; }
     ;
 
-/*----- 23° -----*/
+/*----- 23°: Operação de Soma mesmo -----*/
+exp_soma
+    : PLUS termo
+    | PLUS termo exp_soma
+    ;
+
 termo
     : termo MULTIPLY fator
-    { printf("Redução: termo -> termo MULTIPLY fator\n"); }
     | fator
-    { printf("Redução: termo -> fator\n"); }
     ;
 
 /*----- 24° -----*/
 fator
     : LEFT_PAREN expressao RIGHT_PAREN
-    { printf("Redução: fator -> LEFT_PAREN expressao RIGHT_PAREN\n"); $$ = $2;}
     | var
-    { printf("Redução: fator -> var\n"); }
     | ativacao
-    { printf("Redução: fator -> ativacao\n"); }
     | CONSTINT
-    { printf("Redução: fator -> CONSTINT\n"); }
     | CONSTFLOAT
-    { printf("Redução: fator -> CONSTFLOAT\n"); }
     | CONSTCHAR
-    { printf("Redução: fator -> CONSTCHAR\n"); }
     | CONSTSTRING
-    { printf("Redução: fator -> CONSTSTRING\n"); }
-    | '-' fator %prec UMINUS
-    { printf("Redução: fator -> - fator\n"); }
+    | LEFT_PAREN error RIGHT_PAREN
+    { msg_erro("ERRO: Expressao Vazia", line_number, column_number); yyerrok; }
     ;
 
 /*----- 25° -----*/
 ativacao
     : IDENTIFIER LEFT_PAREN args RIGHT_PAREN
-    { printf("Redução: ativacao -> IDENTIFIER LEFT_PAREN args RIGHT_PAREN\n"); }
+    | IDENTIFIER LEFT_PAREN error RIGHT_PAREN
+    { msg_erro("ERRO: Argumentos invalidos no retorno da funcao", line_number, column_number); yyerrok; }
     ;
 
 /*----- 26° -----*/
 args
     : arg_lista
-    { printf("Redução: args -> arg_lista\n"); }
     | /* vazio */
-    { printf("Redução: args -> ε\n"); }
     ;
 
 /*----- 27° -----*/
 arg_lista
-    : arg_lista COMMA expressao
-    { printf("Redução: arg_lista -> arg_lista COMMA expressao\n"); }
+    : expressao COMMA arg_lista 
     | expressao
-    { printf("Redução: arg_lista -> expressao\n"); }
     ;
 
 /*----- 28° -----*/
 var
     : IDENTIFIER
-    { printf("Redução: var -> IDENTIFIER\n"); }
-    | IDENTIFIER LEFT_BRACKET expressao RIGHT_BRACKET indice
-    { printf("Redução: var -> IDENTIFIER LEFT_BRACKET expressao RIGHT_BRACKET indice\n"); $$ = $1;}
+    | IDENTIFIER var_auxiliar
     ;
 
-indice
-    : indice LEFT_BRACKET expressao RIGHT_BRACKET
-    { printf("Redução: indice -> indice LEFT_BRACKET expressao RIGHT_BRACKET\n"); }
-    | /* vazio */
-    { printf("Redução: indice -> ε\n"); }
+var_auxiliar
+    : LEFT_BRACKET expressao RIGHT_BRACKET
+    | LEFT_BRACKET expressao RIGHT_BRACKET var_auxiliar
+    | LEFT_BRACKET error RIGHT_BRACKET
+    { msg_erro("ERRO: Acesso invalido do array", line_number, column_number); yyerrok; }
     ;
 
 %%
@@ -325,11 +263,16 @@ void yyerror(const char *s) {
     fprintf(stderr, "Erro sintático %s na linha %d, coluna %d: %s\n", s, line_number, column_number);
 }
 
+void msg_erro(const char *msg, int line, int column) {
+    fprintf(stderr, "ERRO: %s na linha %d, coluna %d\n\n", msg, line, column);
+}
+
 int main(int argc, char **argv) {
     if (argc < 2) {
         printf("Provenha o arquivo de entrada para o compilador.\n");
         return -1;
     }
+
     FILE *compiled_arq = fopen(argv[1], "r");
     if (!compiled_arq) {
         printf("O arquivo não é válido.\n");
@@ -337,8 +280,12 @@ int main(int argc, char **argv) {
     }
 
     yyin = compiled_arq;
+    yyparse();
+
     if (yyparse() == 0) {
-        printf("Analise sintatica concluida!\n");
+        printf("ANALISE SINTATICA CONCLUIDA!\n");
+    } else {
+        printf("ANALISE SINTATICA CONCLUIDA COM ERROS!\n");
     }
 
     fclose(compiled_arq);

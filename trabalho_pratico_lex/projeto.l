@@ -1,6 +1,7 @@
 %{
 /*-------------------------- Definitions --------------------------*/
 #include <stdio.h>
+#include<string.h>
 #include "parser.tab.h"
 
 
@@ -8,6 +9,8 @@ int line_number = 1;
 int column_number = 1;
 
 %}
+
+%option noyywrap
 
 /*-------------------------- Definições --------------------------*/
 
@@ -40,16 +43,7 @@ multi                           \/|\*
 
 \n              { line_number++; column_number = 1; }
 {ws}			{ column_number += yyleng; }
-
-{comment}       { for (int i = 0; i < yyleng; i++) {
-                        if (yytext[i] == '\n') {
-                            line_number++;
-                            column_number = 1;
-                        } else {
-                            column_number++;
-                        }
-                    }
-                }
+{comment}       { column_number += yyleng; }
 
 "if"                { column_number += yyleng; return IF; }
 "else"              { column_number += yyleng; return ELSE; }
@@ -82,7 +76,7 @@ multi                           \/|\*
 ";"                 { column_number += yyleng; return SEMICOLON; }
 ","                 { column_number += yyleng; return COMMA; }
 
-{char_literal}      { column_number += yyleng; return CONSTCHAR; }
+{char_literal}          { column_number += yyleng; return CONSTCHAR; }
 \"([^\\\"\n]|\\.)*\"    { column_number += yyleng; return CONSTSTRING; }
 
 "+"                 { column_number += yyleng; return PLUS; }
@@ -90,14 +84,10 @@ multi                           \/|\*
 "/"                 { column_number += yyleng; return DIVISION; }
 "*"                 { column_number += yyleng; return MULTIPLY; }
 
-[0-9]+[a-zA-Z_]+        { fprintf(yyout, "%-5d | %-6d | %-20s | Lexical Error: identificador inválido iniciado com número\n", line_number, column_number, yytext); }
-[\u201C\u201D]          { fprintf(yyout, "%-5d | %-6d | %-20s | Lexical Error: uso de aspas inválidas (aspas curvas)\n", line_number, column_number, yytext); }
-\'([^\\\n]|\\.){2,}\'   { fprintf(yyout, "%-5d | %-6d | %-20s | Lexical Error: constante char com mais de um caractere\n", line_number, column_number, yytext); }
-\"([^\\\"\n]|\\.)*      { fprintf(yyout, "%-5d | %-6d | %-20s | Lexical Error: string não fechada\n", line_number, column_number, yytext); }
-.                       { fprintf(yyout, "%-5d | %-6d | %-20s | Lexical Error: símbolo inválido\n", line_number, column_number, yytext); }
+[0-9]+[a-zA-Z_]+        { fprintf(yyout, "Lexical Error: identificador inválido iniciado com número\n", line_number, column_number, yytext); }
+[\u201C\u201D]          { fprintf(yyout, "Lexical Error: uso de aspas inválidas (aspas curvas)\n", line_number, column_number, yytext); }
+\'([^\\\n]|\\.){2,}\'   { fprintf(yyout, "Lexical Error: constante char com mais de um caractere\n", line_number, column_number, yytext); }
+\"([^\\\"\n]|\\.)*      { fprintf(yyout, "Lexical Error: string não fechada\n", line_number, column_number, yytext); }
+.                       { fprintf(yyout, "Lexical Error: símbolo inválido\n", line_number, column_number, yytext); }
 
 %%
-
-int yywrap(){
-    return 1;
-}
