@@ -16,7 +16,8 @@
 
 /*------------------------ Tokens ------------------------*/
 %token IF ELSE WHILE RETURN
-%token INT FLOAT CHAR VOID STRUCT
+%token INT FLOAT CHAR
+%token VOID STRUCT
 
 %token PLUS MINUS DIVISION
 %token EQUAL_OP NOT_EQUAL_OP LESS_EQUAL_OP RIGHT_EQUAL_OP LEFT_OP RIGHT_OP
@@ -36,8 +37,7 @@
 %left PLUS
 %left MULTIPLY
 %right ASSIGN_OP
-%left EQUAL_OP NOT_EQUAL_OP LESS_EQUAL_OP
-%left  RIGHT_EQUAL_OP LEFT_OP RIGHT_OP
+%left EQUAL_OP NOT_EQUAL_OP LESS_EQUAL_OP RIGHT_EQUAL_OP LEFT_OP RIGHT_OP
 
 
 %%
@@ -94,10 +94,10 @@ varDeclList
 /*----- 7° -----*/
 func_declaracao
     : tipo_especificador IDENTIFIER LEFT_PAREN params RIGHT_PAREN composto_decl
-    | tipo_especificador error LEFT_PAREN params RIGHT_PAREN composto_decl
+    | tipo_especificador IDENTIFIER LEFT_PAREN params error RIGHT_PAREN composto_decl
     { msg_erro("ERRO: Função inexistente ou invalida apos o tipo de retorno"); yyerrok; }
     | tipo_especificador IDENTIFIER LEFT_PAREN error RIGHT_PAREN composto_decl
-    { msg_erro("ERRO: Lista de parâmetros malformada na declaração de função"); yyerrok; }
+    { msg_erro("ERRO: Lista de parametros malformada na declaracao de funcao"); yyerrok; }
     ;
 
 /*----- 8° -----*/
@@ -143,8 +143,6 @@ comando
     | composto_decl
     | iteracao_decl
     | retorno_decl
-    | error SEMICOLON
-    { msg_erro("ERRO: Comando invalido sintaticamente ou incompleto"); yyerrok; }
     ;
 
 /*----- 15° -----*/
@@ -156,7 +154,7 @@ expressao_decl
 /*----- 17° -----*/
 iteracao_decl
     : WHILE LEFT_PAREN expressao RIGHT_PAREN comando
-    | WHILE LEFT_PAREN error RIGHT_PAREN comando
+    | WHILE LEFT_PAREN error RIGHT_PAREN
     { msg_erro("ERRO: Comando WHILE invalido"); yyerrok; }
     ;
 
@@ -205,8 +203,13 @@ exp_soma
     ;
 
 termo
-    : termo MULTIPLY fator
+    : fator termo_auxiliar
     | fator
+    ;
+
+termo_auxiliar
+    : MULTIPLY fator
+    | MULTIPLY fator termo_auxiliar
     ;
 
 /*----- 24° -----*/
@@ -286,6 +289,7 @@ int main(int argc, char **argv) {
         printf("ANALISE SINTATICA CONCLUIDA!\n");
     } else {
         printf("ANALISE SINTATICA CONCLUIDA COM ERROS!!!\n");
+        printf("Foram encontrados %d erro(s) sintatico(s).\n", syntax_error);
     }
 
     fclose(compiled_arq);

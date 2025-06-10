@@ -1,44 +1,31 @@
-/* declaração depois de atribuição de valor */
-void declaracoes(void) {
-    int i;
-    i = 0;
-    char a;
-}
+int i                   /* Declaracao Invalida */
 
-/* sem parâmetro */
-void exemplo() {
+char a;                 /* Acesso de Array Invalido */
+
+char tabela [5][int];   /* Declaracao Erronea de Matriz */
+
+void function() {       /* Passagem Sem Parametro */
     int num;
 }
 
-/* declaração errado de matriz */
-char tabela [5][int];
+int number = 4;          /* Declara e Atribui ao mesmo tempo /*
 
-/* erro ao somar se não estiver dentro de uma função */
-int num;
-
-/* declaração e atribuição na mesma linha */
-int num = 4;
-
-/* não passar o tipo dos parâmetros */
-int soma(a) {
+int soma(a) {            /* não passar o tipo dos parâmetros */
     int b;
     return a + b;
 }
 
-/* struct sem o id no final */
-struct ponto {
-    float x;
-    float y;
-};
+int soma;                 
+soma = 2 + 8;             /* Erro de somatório (Precisa estar dentro da função) */
 
-/* if sem condições */
-if() {
+if() {                     /* Sem Condições pra esse IF
     char a;
 }
 
-/* sem fechamento de chaves */
-while (i < 10) {
-        i = i + 1;
+struct cachorro {            /* Falta de IDENTIFIER no fim da instrução
+    float tamanho;
+    float peso;
+};
 
-/* sem ; */
-float numFloat
+while (i < 10) {           /* Chavers Abertas
+        i = i + 1;
