@@ -1,6 +1,7 @@
 int ;                      /* ERRO: Declaração de variável inválida */
-float x[ ;                 /* ERRO: Valor inválido */
+float x{ ;                 /* ERRO: Valor inválido */
 char nome[10];             /* Correto */
+char a;
 
 struct Pessoa[             /* Incompleto, faltando corpo */
     int idade

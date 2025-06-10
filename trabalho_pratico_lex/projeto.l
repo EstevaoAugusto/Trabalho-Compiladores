@@ -88,6 +88,6 @@ multi                           \/|\*
 [\u201C\u201D]          { fprintf(yyout, "Lexical Error: uso de aspas inválidas (aspas curvas)\n", line_number, column_number, yytext); }
 \'([^\\\n]|\\.){2,}\'   { fprintf(yyout, "Lexical Error: constante char com mais de um caractere\n", line_number, column_number, yytext); }
 \"([^\\\"\n]|\\.)*      { fprintf(yyout, "Lexical Error: string não fechada\n", line_number, column_number, yytext); }
-.                       { fprintf(yyout, "Lexical Error: símbolo inválido\n", line_number, column_number, yytext); }
+{other}                 { fprintf(yyout, "Lexical Error: símbolo inválido\n", line_number, column_number, yytext); }
 
 %%

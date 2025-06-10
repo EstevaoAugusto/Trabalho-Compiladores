@@ -64,10 +64,8 @@ declaracao
 var_declaracao
     : tipo_especificador IDENTIFIER SEMICOLON
     | tipo_especificador IDENTIFIER arrayDimensao SEMICOLON
-    | tipo_especificador SEMICOLON error
+    | tipo_especificador IDENTIFIER error
     { msg_erro("ERRO: Declaracao de variavel invalida", line_number, column_number); yyerrok; }
-    | tipo_especificador IDENTIFIER LEFT_BRACKET error RIGHT_BRACKET SEMICOLON
-    { msg_erro("ERRO: Valor invalido ou ausente para o tamanho do vetor", line_number, column_number); yyerrok; }
     ;
 
 arrayDimensao
@@ -285,7 +283,7 @@ int main(int argc, char **argv) {
     if (result == 0) {
         printf("ANALISE SINTATICA CONCLUIDA!\n");
     } else {
-        printf("ANALISE SINTATICA CONCLUIDA COM ERROS!\n");
+        printf("ANALISE SINTATICA CONCLUIDA COM ERROS!!!\n");
     }
 
     fclose(compiled_arq);
