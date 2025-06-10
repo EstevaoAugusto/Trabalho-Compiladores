@@ -27,5 +27,5 @@ struct cachorro {            /* Falta de IDENTIFIER no fim da instrução
     float peso;
 };
 
-while (i < 10) {           /* Chavers Abertas
+while (i < 5) {           /* Chavers Abertas
         i = i + 1;
