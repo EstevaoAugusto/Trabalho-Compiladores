@@ -1,4 +1,16 @@
 # Arquivos Objetos
 
 *.o
+
+# Arquivos Flex
+
 *.yy.c
+
+# Arquivos Yacc
+
+*.tab.c
+*.tab.h
+
+# Arquivos Executáveis
+
+*.exe
