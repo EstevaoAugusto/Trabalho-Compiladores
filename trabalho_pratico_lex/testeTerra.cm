@@ -1,0 +1,55 @@
+/* Declaração de variáveis */
+int x;
+float y;
+int arr[5];
+struct pessoa {
+    int idade;
+    float altura;
+}
+struct pessoa p;
+
+/* Função soma */
+int soma(int a, int b) {
+    return a + b;
+}
+
+/* Função principal */
+int main() {
+    /* Atribuição de valores */
+    x = 5;
+    y = 10.5;
+    pidade = 25 + 2 * 9;
+    paltura = 1.75;
+
+    /* Inicializando o arranjo */
+    arr[0] = 1;
+    arr[1] = 2;
+    arr[2] = 3;
+    arr[3] = 4;
+    arr[4] = 5;
+
+    /* Chamada de função */
+    int resultado;
+    resultado = soma(x, 10);
+
+    /* Condicional */
+    if (resultado > 10) {
+        x = resultado;
+    } else {
+        y = resultado;
+    }
+
+    /* Laço de repetição */
+    while (p.idade < 30) {
+        p.idade = p.idade + 1;
+    }
+
+    /* Utilizando o arranjo no laço */
+    int i = 0;
+    while (i < 5) {
+        arr[i] = arr[i] + 1;
+        i = i + 1;
+    }
+
+    return 0;
+}
