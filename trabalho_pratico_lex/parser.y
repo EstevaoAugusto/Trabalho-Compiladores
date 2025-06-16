@@ -37,7 +37,8 @@
 %right ASSIGN_OP
 %left EQUAL_OP NOT_EQUAL_OP LESS_EQUAL_OP
 %left  RIGHT_EQUAL_OP LEFT_OP RIGHT_OP
-
+%nonassoc "then"
+%nonassoc ELSE
 
 %%
 
@@ -64,6 +65,7 @@ declaracao
 var_declaracao
     : tipo_especificador IDENTIFIER SEMICOLON
     | tipo_especificador IDENTIFIER arrayDimensao SEMICOLON
+    | STRUCT IDENTIFIER LEFT_BRACE varDeclList RIGHT_BRACE SEMICOLON
     | tipo_especificador IDENTIFIER error SEMICOLON
     { msg_erro("ERRO: Declaracao de variavel invalida", line_number, column_number); yyerrok; }
     | tipo_especificador error SEMICOLON
@@ -134,7 +136,7 @@ local_declaracoes
 
 /*----- 13° -----*/
 comando_lista
-    : comando comando_lista
+    : comando_lista comando
     | /* vazio */
     ;
 
@@ -142,6 +144,7 @@ comando_lista
 comando
     : expressao_decl
     | composto_decl
+    | selecao_decl
     | iteracao_decl
     | retorno_decl
     | error SEMICOLON
@@ -153,6 +156,12 @@ expressao_decl
     : expressao SEMICOLON
     | SEMICOLON
     ;
+
+selecao_decl
+    : IF LEFT_PAREN expressao RIGHT_PAREN comando %prec "then"
+    | IF LEFT_PAREN expressao RIGHT_PAREN comando ELSE comando
+    | IF LEFT_PAREN error RIGHT_PAREN comando
+    { msg_erro("ERRO: Condição errada no comando IF", line_number, column_number); yyerrok;}
 
 /*----- 17° -----*/
 iteracao_decl
@@ -166,7 +175,7 @@ retorno_decl
     : RETURN SEMICOLON
     | RETURN expressao SEMICOLON
     | RETURN error SEMICOLON
-    { msg_erro("ERRO: Retorno invalido", line_number, column_number); yyerrok; }
+    { msg_erro("ERRO: Retorno invalido", line_number, column_number); yyerrok;}
     ;
 
 /*----- 19° -----*/
@@ -177,8 +186,8 @@ expressao
 
 /*----- 20° -----*/
 expressao_simples
-    : expressao_soma relacional expressao_soma
-    | expressao_soma
+    : exp_soma relacional exp_soma
+    | exp_soma
     ;
 
 /*----- 21° -----*/
@@ -191,18 +200,10 @@ relacional
     | NOT_EQUAL_OP
     ;
 
-/*----- 22° -----*/
-expressao_soma
-    : termo
-    | termo exp_soma
-    | error exp_soma
-    { msg_erro("ERRO: Expressao invalida, falta um operador ou operando", line_number, column_number); yyerrok; }
-    ;
-
 /*----- 23°: Operação de Soma mesmo -----*/
 exp_soma
-    : PLUS termo
-    | PLUS termo exp_soma
+    : exp_soma PLUS termo
+    | termo
     ;
 
 termo
@@ -215,8 +216,8 @@ fator
     : LEFT_PAREN expressao RIGHT_PAREN
     | var
     | ativacao
-    | CONSTINT
     | CONSTFLOAT
+    | CONSTINT
     | CONSTCHAR
     | CONSTSTRING
     | LEFT_PAREN error RIGHT_PAREN
@@ -233,28 +234,26 @@ ativacao
 /*----- 26° -----*/
 args
     : arg_lista
-    | /* vazio */
+    | 
     ;
 
 /*----- 27° -----*/
 arg_lista
-    : expressao COMMA arg_lista 
-    | expressao
+    : expressao 
+    | arg_lista COMMA expressao
     ;
 
 /*----- 28° -----*/
 var
     : IDENTIFIER
-    | IDENTIFIER var_auxiliar
+    | IDENTIFIER LEFT_BRACKET expressao RIGHT_BRACKET var_auxiliar
     ;
 
 /*---- 29° ----*/
 
 var_auxiliar
-    : LEFT_BRACKET expressao RIGHT_BRACKET
-    | LEFT_BRACKET expressao RIGHT_BRACKET var_auxiliar
-    | LEFT_BRACKET error RIGHT_BRACKET
-    { msg_erro("ERRO: Acesso invalido do array", line_number, column_number); yyerrok; }
+    : var_auxiliar LEFT_BRACKET expressao RIGHT_BRACKET
+    |
     ;
 
 %%

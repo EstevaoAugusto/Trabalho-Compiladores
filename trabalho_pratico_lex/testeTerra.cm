@@ -40,8 +40,8 @@ int main() {
     }
 
     /* Laço de repetição */
-    while (p.idade < 30) {
-        p.idade = p.idade + 1;
+    while (pidade < 30) {
+        pidade = pidade + 1;
     }
 
     /* Utilizando o arranjo no laço */
