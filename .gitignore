@@ -1,4 +1,68 @@
-# Arquivos Objetos
-
+# =============================
+# Arquivos de compilação em C
+# =============================
 *.o
-*.yy.c
+*.out
+*.exe
+*.a
+*.so
+*.dll
+*.dylib
+*.obj
+*.lib
+
+# =============================
+# Arquivos gerados por Yacc/Bison
+# =============================
+y.tab.c
+y.tab.h
+parser.tab.c
+parser.tab.h
+*.output
+*.yy
+
+# =============================
+# Arquivos gerados por Flex
+# =============================
+lex.yy.c
+
+# =============================
+# Backups e temporários
+# =============================
+*~
+*.swp
+*.bak
+*.tmp
+*.temp
+
+# =============================
+# Diretórios comuns de build
+# =============================
+/build/
+/bin/
+/obj/
+
+# =============================
+# Arquivos de log e depuração
+# =============================
+*.log
+*.trace
+
+# =============================
+# Outras ferramentas e IDEs
+# =============================
+
+# VSCode
+.vscode/
+
+# CLion / JetBrains
+.idea/
+
+# MacOS
+.DS_Store
+
+# Linux
+*.dSYM/
+
+# Arquivos do sistema
+Thumbs.db
