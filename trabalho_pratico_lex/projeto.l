@@ -91,31 +91,31 @@ other                           .
 "*"                 { column_number += yyleng; return MULTIPLY; }
 
 {num_int}{ident}        { 
-                            fprintf(yyout, "Lexical Error: identificador invalido iniciado com numero na linha %d, coluna %d: %s\n", line_number, column_number, yytext); 
+                            fprintf(yyout, "Erro Léxico: identificador invalido iniciado com numero na linha %d, coluna %d: %s\n", line_number, column_number, yytext); 
                             column_number += yyleng;
                             lexical_errors++;    
                         }
 
 [\u201C\u201D]          {
-                            fprintf(yyout, "Lexical Error: uso de aspas invalidas (aspas curvas) na linha %d, coluna %d: %s\n", line_number, column_number, yytext); 
+                            fprintf(yyout, "Erro Léxico: uso de aspas invalidas (aspas curvas) na linha %d, coluna %d: %s\n", line_number, column_number, yytext); 
                             column_number += yyleng;
                             lexical_errors++;    
                         }
 
 \'([^\\\n]|\\.){2,}\'   { 
-                            fprintf(yyout, "Lexical Error: constante char com mais de um caractere na linha %d, coluna %d: %s\n", line_number, column_number, yytext); 
+                            fprintf(yyout, "Erro Léxico: constante char com mais de um caractere na linha %d, coluna %d: %s\n", line_number, column_number, yytext); 
                             column_number += yyleng;
                             lexical_errors++;    
                         }
 
 \"([^\\\"\n]|\\.)*      { 
-                            fprintf(yyout, "Lexical Error: string nao fechada na linha %d, coluna %d: %s\n", line_number, column_number, yytext); 
+                            fprintf(yyout, "Erro Léxico: string nao fechada na linha %d, coluna %d: %s\n", line_number, column_number, yytext); 
                             column_number += yyleng;
                             lexical_errors++;
                         }  
 
 {other}                 { 
-                            fprintf(yyout, "Lexical Error: simbolo invalido na linha %d, coluna %d: %s\n", line_number, column_number, yytext); 
+                            fprintf(yyout, "Erro Léxico: simbolo invalido na linha %d, coluna %d: %s\n", line_number, column_number, yytext); 
                             column_number += yyleng;
                             lexical_errors++;    
                         }
