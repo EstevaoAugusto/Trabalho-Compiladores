@@ -9,6 +9,10 @@
     extern int line_number;
     extern int column_number;
 
+    extern int lexical_errors;
+    int syntax_errors = 0;
+
+
     void yyerror(const char *s);
     void msg_erro(const char *msg, int line, int column);
 %}
@@ -202,13 +206,19 @@ relacional
 
 /*----- 23°: Operação de Soma mesmo -----*/
 exp_soma
-    : exp_soma PLUS termo
-    | termo
+    : termo
+    | exp_soma PLUS termo
+    | exp_soma MINUS termo
     ;
 
-termo
-    : termo MULTIPLY fator
-    | fator
+termo 
+    : fator
+    | termo MULTIPLY fator
+    | termo DIVISION fator
+    | termo MULTIPLY fator error
+    { msg_erro("ERRO: Operação de '*' sem o fator", line_number, column_number); yyerrok; }
+    | termo DIVISION fator error 
+    { msg_erro("ERRO: Operação de '/' sem o fator", line_number, column_number); yyerrok; }
     ;
 
 /*----- 24° -----*/
@@ -241,6 +251,10 @@ args
 arg_lista
     : expressao 
     | arg_lista COMMA expressao
+    | arg_lista COMMA COMMA error
+    { msg_erro("ERRO: Falta de parametro", line_number, column_number); yyerrok; }
+    | arg_lista COMMA error
+    { msg_erro("ERRO: Virgula excedente ao final da lista de parametros.", line_number, column_number); yyerrok; }
     ;
 
 /*----- 28° -----*/
@@ -277,6 +291,7 @@ letra
 /*------------------------ Funções auxiliares ------------------------*/
 
 void yyerror(const char *s) {
+    syntax_errors++;
     fprintf(stderr, "Erro na linha %d, coluna %d: %s\n", line_number, column_number, s);
 }
 
@@ -299,11 +314,15 @@ int main(int argc, char **argv) {
     yyin = compiled_arq;
     int result = yyparse();
 
+    printf("\n=== Resultado da Análise ===\n");
     if (result == 0) {
         printf("ANALISE SINTATICA CONCLUIDA!\n");
     } else {
         printf("ANALISE SINTATICA CONCLUIDA COM ERROS!!!\n");
     }
+
+    printf("Total de erros léxicos: %d\n", lexical_errors);
+    printf("Total de erros sintáticos: %d\n", syntax_errors);
 
     fclose(compiled_arq);
     return 0;
