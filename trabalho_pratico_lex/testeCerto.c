@@ -1,7 +1,13 @@
 int a;
 float b;
 char c;
-void funcao(int x, char y[]) {
+float quadrado[2][2];
+
+void calcular(void){
+    
+}
+
+int funcao(int x, char y[]) {
     int vetor[10];
     c = 'z';
     a = 123;
@@ -15,5 +21,9 @@ void funcao(int x, char y[]) {
     while (a != 0) {
         a = a - 1;
     }
-    return;
+    return 0;
+}
+
+float elevarpordois(float valor){
+    return valor * valor;
 }

@@ -14,7 +14,7 @@
 
 
     void yyerror(const char *s);
-    void msg_erro(const char *msg, int line, int column);
+    void erro_sintatico_previsto(const char *msg);
 %}
 
 /*------------------------ Tokens ------------------------*/
@@ -41,7 +41,7 @@
 %right ASSIGN_OP
 %left EQUAL_OP NOT_EQUAL_OP LESS_EQUAL_OP
 %left  RIGHT_EQUAL_OP LEFT_OP RIGHT_OP
-%nonassoc "then"
+%nonassoc LOWER_THAN_ELSE
 %nonassoc ELSE
 
 %%
@@ -63,6 +63,8 @@ declaracao_lista
 declaracao
     : func_declaracao
     | var_declaracao
+    | error SEMICOLON
+    { erro_sintatico_previsto("Erro Sintático: Declaração sintaticamente invalida"); yyerrok; }
     ;
 
 /*----- 4° -----*/
@@ -70,18 +72,18 @@ var_declaracao
     : tipo_especificador IDENTIFIER SEMICOLON
     | tipo_especificador IDENTIFIER arrayDimensao SEMICOLON
     | tipo_especificador IDENTIFIER error SEMICOLON
-    { msg_erro("Erro Sintático: Declaracao de variavel invalida", line_number, column_number); yyerrok; }
+    { erro_sintatico_previsto("Erro Sintático: Declaracao de variavel invalida"); yyerrok; }
     | tipo_especificador error SEMICOLON
-    { msg_erro("Erro Sintático: Declaracao de variavel invalida", line_number, column_number); yyerrok; }
+    { erro_sintatico_previsto("Erro Sintático: Declaracao de variavel invalida"); yyerrok; }
     ;
 
 arrayDimensao
     : LEFT_BRACKET CONSTINT RIGHT_BRACKET arrayDimensao
     | LEFT_BRACKET CONSTINT RIGHT_BRACKET
     | LEFT_BRACKET error RIGHT_BRACKET
-    { msg_erro("Erro Sintático: Dimensao do array invalida", line_number, column_number); yyerrok; }
+    { erro_sintatico_previsto("Erro Sintático: Dimensao do array invalida"); yyerrok; }
     | LEFT_BRACKET error RIGHT_BRACKET arrayDimensao
-    { msg_erro("Erro Sintático: Dimensao do array invalida", line_number, column_number); yyerrok; }
+    { erro_sintatico_previsto("Erro Sintático: Dimensao do array invalida"); yyerrok; }
     ; 
 
 /*----- 5° -----*/
@@ -103,15 +105,17 @@ varDeclList
 func_declaracao
     : tipo_especificador IDENTIFIER LEFT_PAREN params RIGHT_PAREN composto_decl
     | tipo_especificador error LEFT_PAREN params RIGHT_PAREN composto_decl
-    { msg_erro("Erro Sintático: Função inexistente ou invalida apos o tipo de retorno", line_number, column_number); yyerrok; }
+    { erro_sintatico_previsto("Erro Sintático: Função inexistente ou invalida apos o tipo de retorno"); yyerrok; }
+    | tipo_especificador IDENTIFIER LEFT_PAREN error RIGHT_PAREN composto_decl
+    { erro_sintatico_previsto("Erro Sintático: Lista de parâmetros malformada na declaração de função"); yyerrok; }
+    | tipo_especificador error LEFT_PAREN error RIGHT_PAREN composto_decl
+    { erro_sintatico_previsto("Erro Sintático: Lista de parâmetros malformada e funcao inexistente apos o tipo de retorno"); yyerrok; }
     ;
 
 /*----- 8° -----*/
 params
     : params_lista
     | VOID
-    | error
-    { msg_erro("Erro Sintático: Lista de parâmetros malformada na declaração de função", line_number, column_number); yyerrok; }
     ;
 
 /*----- 9° -----*/
@@ -125,7 +129,7 @@ param
     : tipo_especificador IDENTIFIER
     | tipo_especificador IDENTIFIER LEFT_BRACKET RIGHT_BRACKET
     | tipo_especificador IDENTIFIER error RIGHT_BRACKET
-    { msg_erro("Erro Sintático: Falta de abrir colchetes", line_number, column_number); yyerrok; }
+    { erro_sintatico_previsto("Erro Sintático: Falta de abrir colchetes"); yyerrok; }
     ;
 
 /*----- 11° -----*/
@@ -153,7 +157,7 @@ comando
     | iteracao_decl
     | retorno_decl
     | error SEMICOLON
-    { msg_erro("Erro Sintático: Comando invalido sintaticamente ou incompleto", line_number, column_number); yyerrok; }
+    { erro_sintatico_previsto("Erro Sintático: Comando invalido sintaticamente ou incompleto"); yyerrok; }
     ;
 
 /*----- 15° -----*/
@@ -163,16 +167,16 @@ expressao_decl
     ;
 
 selecao_decl
-    : IF LEFT_PAREN expressao RIGHT_PAREN comando %prec "then"
+    : IF LEFT_PAREN expressao RIGHT_PAREN comando %prec LOWER_THAN_ELSE
     | IF LEFT_PAREN expressao RIGHT_PAREN comando ELSE comando
     | IF LEFT_PAREN error RIGHT_PAREN comando
-    { msg_erro("Erro Sintático: Condição errada no comando IF", line_number, column_number); yyerrok;}
+    { erro_sintatico_previsto("Erro Sintático: Condição errada no comando IF"); yyerrok;}
 
 /*----- 17° -----*/
 iteracao_decl
     : WHILE LEFT_PAREN expressao RIGHT_PAREN comando
     | WHILE LEFT_PAREN error RIGHT_PAREN comando
-    { msg_erro("Erro Sintático: Comando WHILE invalido", line_number, column_number); yyerrok; }
+    { erro_sintatico_previsto("Erro Sintático: Comando WHILE invalido"); yyerrok; }
     ;
 
 /*----- 18° -----*/
@@ -180,7 +184,7 @@ retorno_decl
     : RETURN SEMICOLON
     | RETURN expressao SEMICOLON
     | RETURN error SEMICOLON
-    { msg_erro("Erro Sintático: Retorno invalido", line_number, column_number); yyerrok;}
+    { erro_sintatico_previsto("Erro Sintático: Retorno invalido"); yyerrok;}
     ;
 
 /*----- 19° -----*/
@@ -217,9 +221,9 @@ termo
     | termo MULTIPLY fator
     | termo DIVISION fator
     | termo MULTIPLY fator error
-    { msg_erro("Erro Sintático: Operação de '*' sem o fator", line_number, column_number); yyerrok; }
+    { erro_sintatico_previsto("Erro Sintático: Operação de '*' sem o fator"); yyerrok; }
     | termo DIVISION fator error 
-    { msg_erro("Erro Sintático: Operação de '/' sem o fator", line_number, column_number); yyerrok; }
+    { erro_sintatico_previsto("Erro Sintático: Operação de '/' sem o fator"); yyerrok; }
     ;
 
 /*----- 24° -----*/
@@ -232,14 +236,14 @@ fator
     | CONSTCHAR
     | CONSTSTRING
     | LEFT_PAREN error RIGHT_PAREN
-    { msg_erro("Erro Sintático: Expressao Vazia", line_number, column_number); yyerrok; }
+    { erro_sintatico_previsto("Erro Sintático: Expressao Vazia"); yyerrok; }
     ;
 
 /*----- 25° -----*/
 ativacao
     : IDENTIFIER LEFT_PAREN args RIGHT_PAREN
     | IDENTIFIER LEFT_PAREN error RIGHT_PAREN
-    { msg_erro("Erro Sintático: Argumentos invalidos no retorno da funcao", line_number, column_number); yyerrok; }
+    { erro_sintatico_previsto("Erro Sintático: Argumentos invalidos no retorno da funcao"); yyerrok; }
     ;
 
 /*----- 26° -----*/
@@ -253,9 +257,9 @@ arg_lista
     : expressao 
     | arg_lista COMMA expressao
     | arg_lista COMMA COMMA error
-    { msg_erro("Erro Sintático: Falta de parametro", line_number, column_number); yyerrok; }
+    { erro_sintatico_previsto("Erro Sintático: Falta de parametro"); yyerrok; }
     | arg_lista COMMA error
-    { msg_erro("Erro Sintático: Virgula excedente ao final da lista de parametros.", line_number, column_number); yyerrok; }
+    { erro_sintatico_previsto("Erro Sintático: Virgula excedente ao final da lista de parametros"); yyerrok; }
     ;
 
 /*----- 28° -----*/
@@ -277,12 +281,12 @@ var_auxiliar
 /*------------------------ Funções auxiliares ------------------------*/
 
 void yyerror(const char *s) {
-    syntax_errors++;
-    fprintf(stderr, "%d) Erro na linha %d, coluna %d: %s\n", syntax_errors, line_number, column_number, s);
+    fprintf(stderr, "Erro na linha %d, coluna %d: %s\n", line_number, column_number, s);
 }
 
-void msg_erro(const char *msg, int line, int column) {
-    fprintf(stderr, "%s na linha %d, coluna %d\n\n", msg, line, column);
+void erro_sintatico_previsto(const char *msg) {
+    syntax_errors++;
+    fprintf(stderr, "%s na linha %d, coluna %d\n\n", msg, line_number, column_number);
 }
 
 int main(int argc, char **argv) {

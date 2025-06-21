@@ -29,8 +29,6 @@ fecha_colchete                  \]
 abre_parenteses                 \(
 fecha_parenteses                \)
 
-delim                           [ \t]
-ws                              {delim}+
 comment                         "/*"([^*]|\*+[^/])*\*+"/"
 char_literal                    \'([^\\\n]|\\.)\'
 other                           .
@@ -115,7 +113,7 @@ other                           .
                         }  
 
 {other}                 { 
-                            fprintf(yyout, "Erro Léxico: simbolo invalido na linha %d, coluna %d: %s\n", line_number, column_number, yytext); 
+                            fprintf(yyout, "Erro Léxico: simbolo lexico invalido na linha %d, coluna %d: %s\n", line_number, column_number, yytext); 
                             column_number += yyleng;
                             lexical_errors++;    
                         }

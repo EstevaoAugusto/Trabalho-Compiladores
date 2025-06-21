@@ -18,8 +18,8 @@ int main() {
     /* Atribuição de valores */
     x = 5;
     y = 10.5;
-    pidade = 25 + 2 * 9;
-    paltura = 1.75;
+    p.idade = 25 + 2 * 9;
+    p.altura = 1.75;
 
     /* Inicializando o arranjo */
     arr[0] = 1;
@@ -40,8 +40,8 @@ int main() {
     }
 
     /* Laço de repetição */
-    while (pidade < 30) {
-        pidade = pidade + 1;
+    while (p.idade < 30) {
+        p.idade = p.idade + 1;
     }
 
     /* Utilizando o arranjo no laço */

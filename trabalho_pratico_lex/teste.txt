@@ -1,9 +1,3 @@
-int 3nome;              /* erro: identificador começando com número*/
-float numero@;          /* erro: caractere inválido '@'*/
-char c = 'abc';         /* erro: char com mais de um caractere*/
-string s = "Olá;        /* erro: string não fechada*/
-print(“Mensagem”);      /* erro: aspas não padronizadas (aspas curvas)*/
-
 int i                 /* Declaracao Invalida */
 
 char a;                 /* Acesso de Array Invalido */
@@ -28,7 +22,7 @@ struct cachorro {            /* Falta de IDENTIFIER no fim da instrução */
     float peso;
 };
 
-int number = 4;         /* Declara e Atribui ao mesmo tempo */
+ int number = 4;         /* Declara e Atribui ao mesmo tempo */
 
- while (i < 5) {           /* Chavers Abertas */
+while (i < 5) {           /* Chavers Abertas */
     i = i + 1;
