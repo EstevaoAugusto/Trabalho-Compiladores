@@ -57,24 +57,26 @@ programa
 declaracao_lista
     : declaracao
     | declaracao_lista declaracao
+    | declaracao_lista error SEMICOLON
+    { erro_sintatico_previsto("Erro Sintático: Declaracao mal formada e não reconhecida"); yyerrok; }
     ;
 
 /*----- 3° -----*/
 declaracao
     : func_declaracao
     | var_declaracao
-    | error SEMICOLON
-    { erro_sintatico_previsto("Erro Sintático: Declaração sintaticamente invalida"); yyerrok; }
     ;
 
 /*----- 4° -----*/
 var_declaracao
     : tipo_especificador IDENTIFIER SEMICOLON
     | tipo_especificador IDENTIFIER arrayDimensao SEMICOLON
-    | tipo_especificador IDENTIFIER error SEMICOLON
-    { erro_sintatico_previsto("Erro Sintático: Declaracao de variavel invalida"); yyerrok; }
+    | tipo_especificador IDENTIFIER ASSIGN_OP error SEMICOLON
+    { erro_sintatico_previsto("Erro Sintático: Inicialização de variável não suportada nesta linguagem"); yyerrok; }
+    | tipo_especificador IDENTIFIER error SEMICOLON 
+    { erro_sintatico_previsto("Erro Sintático: Declaração de variável inválida"); yyerrok; }
     | tipo_especificador error SEMICOLON
-    { erro_sintatico_previsto("Erro Sintático: Declaracao de variavel invalida"); yyerrok; }
+    { erro_sintatico_previsto("Erro Sintático: Declaração de variável inválida"); yyerrok; }
     ;
 
 arrayDimensao
@@ -93,6 +95,8 @@ tipo_especificador
     | CHAR
     | VOID
     | STRUCT IDENTIFIER LEFT_BRACE varDeclList RIGHT_BRACE
+    | STRUCT error LEFT_BRACE varDeclList RIGHT_BRACE
+    { erro_sintatico_previsto("Erro Sintático: Nome de struct ausente"); yyerrok; }
     ;
 
 /*----- 6°: sequência de declarações de variáveis -----*/
@@ -108,8 +112,6 @@ func_declaracao
     { erro_sintatico_previsto("Erro Sintático: Função inexistente ou invalida apos o tipo de retorno"); yyerrok; }
     | tipo_especificador IDENTIFIER LEFT_PAREN error RIGHT_PAREN composto_decl
     { erro_sintatico_previsto("Erro Sintático: Lista de parâmetros malformada na declaração de função"); yyerrok; }
-    | tipo_especificador error LEFT_PAREN error RIGHT_PAREN composto_decl
-    { erro_sintatico_previsto("Erro Sintático: Lista de parâmetros malformada e funcao inexistente apos o tipo de retorno"); yyerrok; }
     ;
 
 /*----- 8° -----*/
@@ -171,6 +173,7 @@ selecao_decl
     | IF LEFT_PAREN expressao RIGHT_PAREN comando ELSE comando
     | IF LEFT_PAREN error RIGHT_PAREN comando
     { erro_sintatico_previsto("Erro Sintático: Condição errada no comando IF"); yyerrok;}
+    ;
 
 /*----- 17° -----*/
 iteracao_decl
@@ -190,6 +193,8 @@ retorno_decl
 /*----- 19° -----*/
 expressao
     : var ASSIGN_OP expressao
+    | var ASSIGN_OP error
+    { erro_sintatico_previsto("Erro Sintático: Atribuição sem expressão à direita"); yyerrok; }
     | expressao_simples
     ;
 
