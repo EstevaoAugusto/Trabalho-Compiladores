@@ -20,7 +20,7 @@ void function(int soma) {       /* Atribuição errada - C */
     
     soma( * 5);                 /* Retorno da função invalido - C */
 
-    if ( ) {                /* Comando IF errado */
+    if ( ) {                /* Comando IF errado - C */
         int x;
     }
 
