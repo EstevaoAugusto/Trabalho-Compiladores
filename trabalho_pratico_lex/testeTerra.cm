@@ -5,8 +5,7 @@ int arr[5];
 struct pessoa {
     int idade;
     float altura;
-}
-struct pessoa p;
+} p;
 
 /* Função soma */
 int soma(int a, int b) {
@@ -14,12 +13,13 @@ int soma(int a, int b) {
 }
 
 /* Função principal */
-int main() {
+int main(void) {
+    int resultado;
     /* Atribuição de valores */
     x = 5;
     y = 10.5;
-    p.idade = 25 + 2 * 9;
-    p.altura = 1.75;
+    idade = 25 + 2 * 9E2 * ;
+    altura = 1.75;
 
     /* Inicializando o arranjo */
     arr[0] = 1;
@@ -29,23 +29,26 @@ int main() {
     arr[4] = 5;
 
     /* Chamada de função */
-    int resultado;
+    
     resultado = soma(x, 10);
 
     /* Condicional */
     if (resultado > 10) {
+        x = resultado;
+    } else if (resultado > 10) {
         x = resultado;
     } else {
         y = resultado;
     }
 
     /* Laço de repetição */
-    while (p.idade < 30) {
-        p.idade = p.idade + 1;
-    }
+    while (idade < 30) {
+        idade = idade + 1;
+    };;;;;
 
     /* Utilizando o arranjo no laço */
-    int i = 0;
+
+    i = 0;
     while (i < 5) {
         arr[i] = arr[i] + 1;
         i = i + 1;

@@ -14,9 +14,9 @@ int soma(int x]) { }    /* Colchetes não abertos - C */
 
 int number = 4;         /* Declara e Atribui ao mesmo tempo - C */
 
-void function(int soma) {       /* Atribuição errada - C */
+void function(int soma) {       
     int a;
-    a = ;
+    a = ;                   /* Atribuição errada - C */
     
     soma( * 5);                 /* Retorno da função invalido - C */
 
