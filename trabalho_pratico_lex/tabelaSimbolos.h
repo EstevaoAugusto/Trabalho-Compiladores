@@ -98,13 +98,18 @@ extern Scope* current_scope;
 void init_scope_stack();
 void open_scope();
 void close_scope();
+void destroy_scope_stack();
 
 // Funções de Manipulação de Símbolos
-int insert_symbol(const char* name, DataType type);
 Symbol* lookup_symbol(const char* name);
+
+Symbol* insert_variable(const char* name, DataType type);
+
+Symbol* insert_array(const char* name, DataType type, Dimension* dims);
+
+Symbol* insert_function(const char* name, DataType return_type, Param* params);
+
 Symbol* cria_symbol_temporario(DataType tipo);
 
-// Funções de Limpeza
-void destroy_scope_stack();
 
 #endif // SYMBOL_TABLE_H_

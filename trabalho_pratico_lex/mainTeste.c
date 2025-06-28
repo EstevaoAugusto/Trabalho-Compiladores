@@ -1,80 +1,125 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "tabelaSimbolos.h" // Inclua o cabeçalho do seu módulo
+#include "tabelaSimbolos.h" // Inclui o cabeçalho do seu módulo
 
-// Função auxiliar para imprimir o resultado de um lookup
-void print_lookup_result(const char* name) {
+/**
+ * @brief Função auxiliar para imprimir os detalhes de um símbolo encontrado.
+ * Esta função agora usa um switch para tratar cada 'kind' de símbolo de forma diferente.
+ * @param name O nome do símbolo a ser procurado e impresso.
+ */
+void print_symbol_details(const char* name) {
     Symbol* symbol = lookup_symbol(name);
-    if (symbol) {
-        // Assume que o símbolo é uma variável para este teste simples
-        printf("Lookup para '%s': ENCONTRADO. Tipo: %d, Kind: %d\n",
-               symbol->name, symbol->data.var_info.type, symbol->kind);
-    } else {
+
+    if (!symbol) {
         printf("Lookup para '%s': NAO ENCONTRADO (NULL).\n", name);
+        return;
+    }
+
+    printf("Lookup para '%s': ENCONTRADO.\n", name);
+
+    switch (symbol->kind) {
+        case KIND_VARIABLE:
+            printf("  -> Categoria: Variavel\n");
+            printf("  -> Tipo: %d\n", symbol->data.var_info.type);
+            break;
+
+        case KIND_ARRAY:
+            printf("  -> Categoria: Array\n");
+            printf("  -> Tipo Base: %d\n", symbol->data.var_info.type);
+            printf("  -> Dimensoes: ");
+            Dimension* dim = symbol->data.var_info.dimensions;
+            while (dim) {
+                printf("[%d]", dim->size);
+                dim = dim->next;
+            }
+            printf("\n");
+            break;
+
+        case KIND_FUNCTION:
+            printf("  -> Categoria: Funcao\n");
+            printf("  -> Tipo de Retorno: %d\n", symbol->data.func_info.return_type);
+            printf("  -> Parametros:\n");
+            Param* param = symbol->data.func_info.params;
+            if (!param) {
+                printf("    (void)\n");
+            }
+            while (param) {
+                printf("    - Nome: %s, Tipo: %d, E' array? %s\n",
+                       param->name, param->type, param->is_array ? "Sim" : "Nao");
+                param = param->next;
+            }
+            break;
+
+        default:
+            printf("  -> Categoria: Desconhecida!\n");
+            break;
     }
 }
 
+
 int main() {
-    printf("--- INICIANDO TESTE DA TABELA DE SIMBOLOS ---\n\n");
+    printf("--- INICIANDO TESTE COMPLETO DA TABELA DE SIMBOLOS ---\n\n");
 
-    // 1. Inicializa a tabela
     init_scope_stack();
-    printf("[TESTE] Pilha de escopos inicializada (escopo global criado).\n\n");
 
-    // 2. Insere símbolos no escopo global
-    printf("--- Testando Escopo Global ---\n");
-    insert_symbol("global_var_1", TYPE_INT);
-    insert_symbol("global_var_2", TYPE_FLOAT);
-    printf("[TESTE] Inserido 'global_var_1' (INT) e 'global_var_2' (FLOAT).\n");
-    print_lookup_result("global_var_1");
-    print_lookup_result("global_var_2");
-    print_lookup_result("var_nao_existe");
+    // --- 1. Testando Insercao de Variavel Simples ---
+    printf("--- Testando Variavel ---\n");
+    insert_variable("contador", TYPE_INT);
+    print_symbol_details("contador");
     printf("\n");
 
-    // 3. Testa erro de re-declaração no mesmo escopo
-    printf("--- Testando Erro de Re-declaracao ---\n");
-    // Tenta inserir 'global_var_1' novamente no mesmo escopo
-    if (insert_symbol("global_var_1", TYPE_CHAR) == 0) {
-        printf("[OK] Erro de re-declaracao para 'global_var_1' detectado corretamente.\n\n");
-    } else {
-        printf("[FALHA] 'global_var_1' foi inserido duas vezes no mesmo escopo.\n\n");
-    }
+    // --- 2. Testando Insercao de Array ---
+    printf("--- Testando Array ---\n");
+    // Simulando a criação de dimensões para: float matrix[10][20];
+    Dimension* dim2 = (Dimension*)malloc(sizeof(Dimension));
+    dim2->size = 20;
+    dim2->next = NULL;
 
-    // 4. Abre um novo escopo local
-    printf("--- Testando Escopo Local ---\n");
-    open_scope();
-    printf("[TESTE] Novo escopo aberto.\n");
-
-    // 5. Insere símbolos no escopo local
-    // 'local_var' só existe aqui.
-    // 'global_var_2' vai "esconder" a variável global com o mesmo nome.
-    insert_symbol("local_var", TYPE_CHAR);
-    insert_symbol("global_var_2", TYPE_INT); // Shadowing
-    printf("[TESTE] Inserido 'local_var' (CHAR) e 'global_var_2' (INT) no escopo local.\n");
-
-    // 6. Faz buscas com o escopo local ativo
-    printf("... Realizando buscas com escopo local ativo ...\n");
-    print_lookup_result("local_var");      // Deve encontrar a local
-    print_lookup_result("global_var_1");   // Deve encontrar a global, pois não foi redeclarada localmente
-    print_lookup_result("global_var_2");   // Deve encontrar a local (INT), e não a global (FLOAT)
+    Dimension* dim1 = (Dimension*)malloc(sizeof(Dimension));
+    dim1->size = 10;
+    dim1->next = dim2;
+    
+    insert_array("matrix", TYPE_FLOAT, dim1);
+    print_symbol_details("matrix");
     printf("\n");
 
-    // 7. Fecha o escopo local
-    printf("--- Fechando Escopo Local ---\n");
-    close_scope();
-    printf("[TESTE] Escopo local fechado.\n");
+    // --- 3. Testando Insercao de Funcao ---
+    printf("--- Testando Funcao ---\n");
+    // Simulando a criação de parâmetros para: int soma(int a, char b_array[])
+    Param* param_b = (Param*)malloc(sizeof(Param));
+    param_b->name = "b_array";
+    param_b->type = TYPE_CHAR;
+    param_b->is_array = true;
+    param_b->next = NULL;
 
-    // 8. Faz buscas novamente para garantir que o estado anterior foi restaurado
-    printf("... Realizando buscas apos fechar o escopo ...\n");
-    print_lookup_result("local_var");      // NÃO deve encontrar mais
-    print_lookup_result("global_var_1");   // Deve encontrar a global
-    print_lookup_result("global_var_2");   // Deve encontrar a global (FLOAT) novamente
+    Param* param_a = (Param*)malloc(sizeof(Param));
+    param_a->name = "a";
+    param_a->type = TYPE_INT;
+    param_a->is_array = false;
+    param_a->next = param_b;
+
+    insert_function("soma", TYPE_INT, param_a);
+    print_symbol_details("soma");
     printf("\n");
 
-    printf("--- TESTE CONCLUIDO ---\n");
+    // --- 4. Verificando se tudo ainda está na tabela ---
+    printf("--- Verificacao Geral ---\n");
+    print_symbol_details("contador");
+    print_symbol_details("matrix");
+    print_symbol_details("soma");
+    print_symbol_details("nao_existe");
+    printf("\n");
 
-    // Opcional: Chamar a função de destruição se você a implementou
-    // destroy_scope_stack();
+    // --- 5. Limpando a memória ---
+    printf("--- Limpando Memoria ---\n");
+    destroy_scope_stack();
+    // Libera a memória alocada para o teste (as listas de dims e params)
+    // Em um compilador real, isso seria gerenciado pela árvore sintática.
+    free(dim1);
+    free(dim2);
+    free(param_a);
+    free(param_b);
+    printf("Teste finalizado.\n");
 
     return 0;
 }

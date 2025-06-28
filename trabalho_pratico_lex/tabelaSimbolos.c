@@ -17,6 +17,74 @@ static unsigned long hash_function(const char* str) {
 }
 
 
+static int internal_insert(Symbol* new_symbol) {
+    if (!current_scope) return 0; // Não deveria acontecer se init foi chamado
+
+    unsigned long index = hash_function(new_symbol->name);
+    HashTable* ht = current_scope->table;
+
+    // VERIFICAR SE O SÍMBOLO JÁ EXISTE NO ESCOPO ATUAL
+    Symbol* current = ht->table[index];
+    while (current) {
+        if (strcmp(current->name, new_symbol->name) == 0) {
+            // Erro: Redeclaração. Libera a memória do símbolo que não será usado.
+            free(new_symbol->name);
+            free(new_symbol);
+            return 0;
+        }
+        current = current->next;
+    }
+
+    // Insere o novo símbolo no início da lista ligada
+    new_symbol->next = ht->table[index];
+    ht->table[index] = new_symbol;
+
+    return 1; // Sucesso
+}
+
+Symbol* insert_variable(const char* name, DataType type) {
+    Symbol* new_symbol = (Symbol*)malloc(sizeof(Symbol));
+    new_symbol->name = strdup(name);
+    new_symbol->kind = KIND_VARIABLE;
+    new_symbol->data.var_info.type = type;
+    new_symbol->data.var_info.is_array = false;
+    new_symbol->data.var_info.dimensions = NULL;
+    new_symbol->data.var_info.relative_address = 0; // A ser definido na geração de código
+
+    if (internal_insert(new_symbol)) {
+        return new_symbol; // Sucesso na inserção
+    }
+    return NULL; // Falha (símbolo já existia)
+}
+
+Symbol* insert_array(const char* name, DataType type, Dimension* dims) {
+    Symbol* new_symbol = (Symbol*)malloc(sizeof(Symbol));
+    new_symbol->name = strdup(name);
+    new_symbol->kind = KIND_ARRAY;
+    new_symbol->data.var_info.type = type;
+    new_symbol->data.var_info.is_array = true;
+    new_symbol->data.var_info.dimensions = dims; // Guarda a lista de dimensões
+    new_symbol->data.var_info.relative_address = 0;
+
+    if (internal_insert(new_symbol)) {
+        return new_symbol; // Sucesso
+    }
+    return NULL; // Falha
+}
+
+Symbol* insert_function(const char* name, DataType return_type, Param* params) {
+    Symbol* new_symbol = (Symbol*)malloc(sizeof(Symbol));
+    new_symbol->name = strdup(name);
+    new_symbol->kind = KIND_FUNCTION;
+    new_symbol->data.func_info.return_type = return_type;
+    new_symbol->data.func_info.params = params; // Guarda a lista de parâmetros
+
+    if (internal_insert(new_symbol)) {
+        return new_symbol; // Sucesso
+    }
+    return NULL; // Falha
+}
+
 void init_scope_stack() {
     // A pilha começa vazia, open_scope() criará o primeiro (global) escopo.
     current_scope = NULL;
@@ -42,57 +110,6 @@ void open_scope() {
     current_scope = new_scope;
 }
 
-int insert_symbol(const char* name, DataType type, SymbolKind kind) {
-    if (!current_scope) return 0; // Não há escopo aberto
-
-    unsigned long index = hash_function(name);
-    HashTable* ht = current_scope->table;
-
-    // 1. VERIFICAR SE O SÍMBOLO JÁ EXISTE NO ESCOPO ATUAL
-    Symbol* current = ht->table[index];
-    while (current) {
-        if (strcmp(current->name, name) == 0) {
-            // Erro: Redeclaração no mesmo escopo
-            return 0;
-        }
-        current = current->next;
-    }
-
-    // 2. INSERIR O NOVO SÍMBOLO
-    Symbol* new_symbol = (Symbol*)malloc(sizeof(Symbol));
-    new_symbol->name = strdup(name); // Duplica a string para ter uma cópia local
-    
-    // --- CORREÇÃO APLICADA AQUI ---
-    // Define a categoria do símbolo. Essencial para usar a union corretamente.
-    new_symbol->kind = kind; 
-    
-    switch (kind)
-    {
-    case KIND_VARIABLE:
-        // Acessa os campos através da union 'data' e da struct 'var_info'
-        new_symbol->data.var_info.type = type;
-        new_symbol->data.var_info.relative_address = 0; // O endereço será gerenciado depois
-        break;
-    case KIND_ARRAY:
-        /* code */
-        break;
-    case KIND_FUNCTION:
-        /* code */
-        break;
-    case KIND_STRUCT_DEF:
-        /* code */
-        break;
-    default:
-        return 0;
-    }
-    
-    
-    // Insere no início da lista ligada (tratamento de colisão)
-    new_symbol->next = ht->table[index];
-    ht->table[index] = new_symbol;
-
-    return 1;
-}
 
 Symbol* lookup_symbol(const char* name) {
     Scope* scope_iterator = current_scope;
