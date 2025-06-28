@@ -1,6 +1,7 @@
 %{
     #include <stdio.h>
     #include <stdlib.h>
+    #include "tabelaSimbolos.h"
 
     extern FILE *yyin;
     extern int yylex();
@@ -11,11 +12,24 @@
 
     extern int lexical_errors;
     int syntax_errors = 0;
+    int semantic_errors = 0;
 
 
     void yyerror(const char *s);
     void erro_sintatico_previsto(const char *msg);
+
+    // Tipo atual usado em uma declaração
+    DataType current_type;
 %}
+
+    %union {
+        int intval;
+        float floatval;
+        char charval;
+        char* id;
+        DataType type;
+        Symbol* symbol;
+    }
 
 /*------------------------ Tokens ------------------------*/
 %token IF ELSE WHILE RETURN
@@ -32,7 +46,9 @@
 %token SEMICOLON COMMA
 
 %token CONSTINT CONSTFLOAT CONSTCHAR CONSTSTRING
-%token IDENTIFIER
+%token <id> IDENTIFIER
+%type <type> tipo_especificador
+%type <symbol> var
 
 /*------------------------ Precedências ------------------------*/
 
@@ -70,6 +86,11 @@ declaracao
 /*----- 4° -----*/
 var_declaracao
     : tipo_especificador IDENTIFIER SEMICOLON
+    {
+        if (!insert_symbol($2, $1)) {
+            printf("Erro Semântico: Variável '%s' já foi declarada (linha %d, coluna %d).\n", $2, line_number, column_number);
+        }
+    }
     | tipo_especificador IDENTIFIER arrayDimensao SEMICOLON
     | tipo_especificador IDENTIFIER ASSIGN_OP error SEMICOLON
     { erro_sintatico_previsto("Erro Sintático: Inicialização de variável não suportada nesta linguagem"); yyerrok; }
@@ -91,12 +112,17 @@ arrayDimensao
 /*----- 5° -----*/
 tipo_especificador
     : INT
+        {   $$ = TYPE_INT;      }
     | FLOAT
+        {   $$ = TYPE_FLOAT;    }
     | CHAR
+        {   $$ = TYPE_CHAR;     }
     | VOID
+        {   $$ = TYPE_VOID;     }
     | STRUCT IDENTIFIER LEFT_BRACE varDeclList RIGHT_BRACE
+        {   $$ = TYPE_STRUCT;   }
     | STRUCT error LEFT_BRACE varDeclList RIGHT_BRACE
-    { erro_sintatico_previsto("Erro Sintático: Nome de struct ausente"); yyerrok; }
+    { erro_sintatico_previsto("Erro Sintático: Nome de struct ausente"); $$ = TYPE_STRUCT; yyerrok; }
     ;
 
 /*----- 6°: sequência de declarações de variáveis -----*/
@@ -108,6 +134,14 @@ varDeclList
 /*----- 7° -----*/
 func_declaracao
     : tipo_especificador IDENTIFIER LEFT_PAREN params RIGHT_PAREN composto_decl
+    {
+        if (!insert_symbol($2, KIND_FUNCTION, $1)) {
+            printf("Erro Semântico: Função '%s' já declarada (linha %d).\n", $2, line_number);
+        } else {
+            // Aqui você pode armazenar os parâmetros na symbol->data.func_info.params
+            // Isso pode exigir adaptação da função de inserção
+        }
+    }
     | tipo_especificador error LEFT_PAREN params RIGHT_PAREN composto_decl
     { erro_sintatico_previsto("Erro Sintático: Função inexistente ou invalida apos o tipo de retorno"); yyerrok; }
     | tipo_especificador IDENTIFIER LEFT_PAREN error RIGHT_PAREN composto_decl
@@ -193,6 +227,16 @@ retorno_decl
 /*----- 19° -----*/
 expressao
     : var ASSIGN_OP expressao
+    {
+        if ($1 && $3) {
+            DataType tipo_var = $1->data.var_info.type;
+            DataType tipo_expr = $3->data.var_info.type;
+
+            if (tipo_var != tipo_expr) {
+                printf("Erro Semântico: Tipos incompatíveis na atribuição (linha %d).\n", line_number);
+            }
+        }
+    }
     | var ASSIGN_OP error
     { erro_sintatico_previsto("Erro Sintático: Atribuição sem expressão à direita"); yyerrok; }
     | expressao_simples
@@ -237,8 +281,11 @@ fator
     | var
     | ativacao
     | CONSTFLOAT
+    { $$ = cria_symbol_temporario(TYPE_FLOAT); }
     | CONSTINT
+    { $$ = cria_symbol_temporario(TYPE_INT); }
     | CONSTCHAR
+    { $$ = cria_symbol_temporario(TYPE_CHAR);}
     | CONSTSTRING
     | LEFT_PAREN error RIGHT_PAREN
     { erro_sintatico_previsto("Erro Sintático: Expressao Vazia"); yyerrok; }
@@ -247,6 +294,14 @@ fator
 /*----- 25° -----*/
 ativacao
     : IDENTIFIER LEFT_PAREN args RIGHT_PAREN
+    {
+        Symbol* s = lookup_symbol($1);
+        if (!s) {
+            printf("Erro Semântico: Função '%s' usada sem declaração (linha %d, coluna %d).\n", $1, line_number, column_number);
+        } else if (s->kind != KIND_FUNCTION) {
+            printf("Erro Semântico: '%s' não é uma função (linha %d, coluna %d).\n", $1, line_number, column_number);
+        }
+    }
     | IDENTIFIER LEFT_PAREN error RIGHT_PAREN
     { erro_sintatico_previsto("Erro Sintático: Argumentos invalidos no retorno da funcao"); yyerrok; }
     ;
@@ -259,7 +314,7 @@ args
 
 /*----- 27° -----*/
 arg_lista
-    : expressao 
+    : expressao
     | arg_lista COMMA expressao
     | arg_lista COMMA COMMA error
     { erro_sintatico_previsto("Erro Sintático: Falta de parametro"); yyerrok; }
@@ -270,6 +325,15 @@ arg_lista
 /*----- 28° -----*/
 var
     : IDENTIFIER
+    {
+        Symbol* s = lookup_symbol($1);
+        if (!s) {
+            printf("Erro Semântico: Variável '%s' usada sem declaração (linha %d, coluna %d).\n", $1, line_number, column_number);
+        } else if (s->kind != KIND_VARIABLE) {
+            printf("Erro Semântico: '%s' não é uma variável (linha %d, coluna %d).\n", $1, line_number, column_number);
+        }
+        $$ = s;
+    }
     | IDENTIFIER LEFT_BRACKET expressao RIGHT_BRACKET var_auxiliar
     ;
 
@@ -306,6 +370,7 @@ int main(int argc, char **argv) {
         return -2;
     }
 
+    init_scope_stack();
     yyin = compiled_arq;
     int result = yyparse();
 

@@ -42,7 +42,7 @@ void open_scope() {
     current_scope = new_scope;
 }
 
-int insert_symbol(const char* name, DataType type) {
+int insert_symbol(const char* name, DataType type, SymbolKind kind) {
     if (!current_scope) return 0; // Não há escopo aberto
 
     unsigned long index = hash_function(name);
@@ -64,11 +64,28 @@ int insert_symbol(const char* name, DataType type) {
     
     // --- CORREÇÃO APLICADA AQUI ---
     // Define a categoria do símbolo. Essencial para usar a union corretamente.
-    new_symbol->kind = KIND_VARIABLE; 
+    new_symbol->kind = kind; 
     
-    // Acessa os campos através da union 'data' e da struct 'var_info'
-    new_symbol->data.var_info.type = type;
-    new_symbol->data.var_info.relative_address = 0; // O endereço será gerenciado depois
+    switch (kind)
+    {
+    case KIND_VARIABLE:
+        // Acessa os campos através da union 'data' e da struct 'var_info'
+        new_symbol->data.var_info.type = type;
+        new_symbol->data.var_info.relative_address = 0; // O endereço será gerenciado depois
+        break;
+    case KIND_ARRAY:
+        /* code */
+        break;
+    case KIND_FUNCTION:
+        /* code */
+        break;
+    case KIND_STRUCT_DEF:
+        /* code */
+        break;
+    default:
+        return 0;
+    }
+    
     
     // Insere no início da lista ligada (tratamento de colisão)
     new_symbol->next = ht->table[index];
@@ -124,4 +141,18 @@ void close_scope() {
     
     // Libera a estrutura do escopo
     free(scope_to_delete);
+}
+
+void destroy_scope_stack(){
+    while(current_scope){
+        close_scope();
+    }
+}
+
+
+Symbol* cria_symbol_temporario(DataType tipo) {
+    Symbol* temp = malloc(sizeof(Symbol));
+    temp->kind = KIND_VARIABLE;
+    temp->data.var_info.type = tipo;
+    return temp;
 }

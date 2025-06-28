@@ -70,6 +70,8 @@ typedef struct Symbol {
         struct {
             DataType type;
             int relative_address;
+            bool is_array;
+            Dimension* dimensions;
         } var_info;
 
         struct {
@@ -100,6 +102,7 @@ void close_scope();
 // Funções de Manipulação de Símbolos
 int insert_symbol(const char* name, DataType type);
 Symbol* lookup_symbol(const char* name);
+Symbol* cria_symbol_temporario(DataType tipo);
 
 // Funções de Limpeza
 void destroy_scope_stack();
