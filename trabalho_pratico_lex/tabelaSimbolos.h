@@ -24,6 +24,7 @@ typedef enum {
 typedef struct Param {
     char* name;
     DataType type;
+    char* struct_name;
     bool is_array;
     struct Param* next;
 } Param;
@@ -72,10 +73,12 @@ typedef struct Symbol {
             int relative_address;
             bool is_array;
             Dimension* dimensions;
+            char* struct_name;
         } var_info;
 
         struct {
             DataType return_type;
+            char* struct_name;
             Param* params;
         } func_info;
 
@@ -103,11 +106,13 @@ void destroy_scope_stack();
 // Funções de Manipulação de Símbolos
 Symbol* lookup_symbol(const char* name);
 
-Symbol* insert_variable(const char* name, DataType type);
+Symbol* insert_variable(const char* name, DataType type, const char* struct_name);
 
-Symbol* insert_array(const char* name, DataType type, Dimension* dims);
+Symbol* insert_array(const char* name, DataType type, const char* struct_name, Dimension* dims);
 
-Symbol* insert_function(const char* name, DataType return_type, Param* params);
+Symbol* insert_function(const char* name, DataType return_type, const char* struct_name, Param* params);
+
+Symbol* insert_struct_def(const char* name, HashTable* members);
 
 Symbol* cria_symbol_temporario(DataType tipo);
 

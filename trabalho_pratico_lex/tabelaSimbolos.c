@@ -42,7 +42,7 @@ static int internal_insert(Symbol* new_symbol) {
     return 1; // Sucesso
 }
 
-Symbol* insert_variable(const char* name, DataType type) {
+Symbol* insert_variable(const char* name, DataType type, const char* struct_name) {
     Symbol* new_symbol = (Symbol*)malloc(sizeof(Symbol));
     new_symbol->name = strdup(name);
     new_symbol->kind = KIND_VARIABLE;
@@ -50,6 +50,7 @@ Symbol* insert_variable(const char* name, DataType type) {
     new_symbol->data.var_info.is_array = false;
     new_symbol->data.var_info.dimensions = NULL;
     new_symbol->data.var_info.relative_address = 0; // A ser definido na geração de código
+    new_symbol->data.var_info.struct_name = struct_name ? strdup(struct_name) : NULL;
 
     if (internal_insert(new_symbol)) {
         return new_symbol; // Sucesso na inserção
@@ -57,7 +58,7 @@ Symbol* insert_variable(const char* name, DataType type) {
     return NULL; // Falha (símbolo já existia)
 }
 
-Symbol* insert_array(const char* name, DataType type, Dimension* dims) {
+Symbol* insert_array(const char* name, DataType type, const char* struct_name, Dimension* dims) {
     Symbol* new_symbol = (Symbol*)malloc(sizeof(Symbol));
     new_symbol->name = strdup(name);
     new_symbol->kind = KIND_ARRAY;
@@ -65,6 +66,7 @@ Symbol* insert_array(const char* name, DataType type, Dimension* dims) {
     new_symbol->data.var_info.is_array = true;
     new_symbol->data.var_info.dimensions = dims; // Guarda a lista de dimensões
     new_symbol->data.var_info.relative_address = 0;
+    new_symbol->data.var_info.struct_name = struct_name ? strdup(struct_name) : NULL;
 
     if (internal_insert(new_symbol)) {
         return new_symbol; // Sucesso
@@ -72,17 +74,28 @@ Symbol* insert_array(const char* name, DataType type, Dimension* dims) {
     return NULL; // Falha
 }
 
-Symbol* insert_function(const char* name, DataType return_type, Param* params) {
+Symbol* insert_function(const char* name, DataType return_type, const char* struct_name, Param* params) {
     Symbol* new_symbol = (Symbol*)malloc(sizeof(Symbol));
     new_symbol->name = strdup(name);
     new_symbol->kind = KIND_FUNCTION;
     new_symbol->data.func_info.return_type = return_type;
     new_symbol->data.func_info.params = params; // Guarda a lista de parâmetros
+    new_symbol->data.func_info.struct_name = struct_name ? strdup(struct_name) : NULL;
 
     if (internal_insert(new_symbol)) {
         return new_symbol; // Sucesso
     }
     return NULL; // Falha
+}
+
+Symbol* insert_struct_def(const char* name, HashTable* members) {
+    Symbol* new_symbol = (Symbol*)malloc(sizeof(Symbol));
+    new_symbol->name = strdup(name);
+    new_symbol->kind = KIND_STRUCT_DEF;
+    new_symbol->data.struct_info.members = members;
+
+    if (internal_insert(new_symbol)) return new_symbol;
+    return NULL;
 }
 
 void init_scope_stack() {

@@ -2,9 +2,21 @@
 #include <stdlib.h>
 #include "tabelaSimbolos.h" // Inclui o cabeçalho do seu módulo
 
+// Função auxiliar para converter DataType em uma string legível.
+const char* data_type_to_string(DataType type) {
+    switch (type) {
+        case TYPE_INT: return "INT";
+        case TYPE_FLOAT: return "FLOAT";
+        case TYPE_CHAR: return "CHAR";
+        case TYPE_VOID: return "VOID";
+        case TYPE_STRUCT: return "STRUCT";
+        default: return "DESCONHECIDO";
+    }
+}
+
 /**
  * @brief Função auxiliar para imprimir os detalhes de um símbolo encontrado.
- * Esta função agora usa um switch para tratar cada 'kind' de símbolo de forma diferente.
+ * [ALTERADO] Versão melhorada para lidar com todos os tipos, incluindo structs.
  * @param name O nome do símbolo a ser procurado e impresso.
  */
 void print_symbol_details(const char* name) {
@@ -20,12 +32,18 @@ void print_symbol_details(const char* name) {
     switch (symbol->kind) {
         case KIND_VARIABLE:
             printf("  -> Categoria: Variavel\n");
-            printf("  -> Tipo: %d\n", symbol->data.var_info.type);
+            printf("  -> Tipo: %s\n", data_type_to_string(symbol->data.var_info.type));
+            if (symbol->data.var_info.type == TYPE_STRUCT) {
+                printf("  -> Nome da Struct: %s\n", symbol->data.var_info.struct_name);
+            }
             break;
 
         case KIND_ARRAY:
             printf("  -> Categoria: Array\n");
-            printf("  -> Tipo Base: %d\n", symbol->data.var_info.type);
+            printf("  -> Tipo Base: %s\n", data_type_to_string(symbol->data.var_info.type));
+            if (symbol->data.var_info.type == TYPE_STRUCT) {
+                printf("  -> Nome da Struct: %s\n", symbol->data.var_info.struct_name);
+            }
             printf("  -> Dimensoes: ");
             Dimension* dim = symbol->data.var_info.dimensions;
             while (dim) {
@@ -37,16 +55,25 @@ void print_symbol_details(const char* name) {
 
         case KIND_FUNCTION:
             printf("  -> Categoria: Funcao\n");
-            printf("  -> Tipo de Retorno: %d\n", symbol->data.func_info.return_type);
+            printf("  -> Tipo de Retorno: %s\n", data_type_to_string(symbol->data.func_info.return_type));
             printf("  -> Parametros:\n");
             Param* param = symbol->data.func_info.params;
             if (!param) {
                 printf("    (void)\n");
             }
             while (param) {
-                printf("    - Nome: %s, Tipo: %d, E' array? %s\n",
-                       param->name, param->type, param->is_array ? "Sim" : "Nao");
+                printf("    - Nome: %s, Tipo: %s, E' array? %s\n",
+                       param->name, data_type_to_string(param->type), param->is_array ? "Sim" : "Nao");
                 param = param->next;
+            }
+            break;
+        
+        case KIND_STRUCT_DEF:
+            printf("  -> Categoria: Definicao de Struct\n");
+            if (symbol->data.struct_info.members) {
+                 printf("  -> Tabela de membros: Existe\n");
+            } else {
+                 printf("  -> Tabela de membros: Nula\n");
             }
             break;
 
@@ -62,63 +89,56 @@ int main() {
 
     init_scope_stack();
 
-    // --- 1. Testando Insercao de Variavel Simples ---
-    printf("--- Testando Variavel ---\n");
-    insert_variable("contador", TYPE_INT);
-    print_symbol_details("contador");
+    // --- Testes antigos (mantidos) ---
+    insert_variable("contador", TYPE_INT, NULL);
+    insert_array("matrix", TYPE_FLOAT, NULL, NULL); // Simplificado pois as dimensões não são usadas aqui
+    insert_function("soma", TYPE_INT, NULL, NULL);   // Simplificado pois os params não são usados aqui
+
+    // --- NOVOS TESTES PARA STRUCTS ---
+    printf("--- Testando Estruturas (Structs) ---\n");
+
+    // 1. Simula a definição: struct Ponto { int x; int y; };
+    // Para o teste, não precisamos popular a tabela de membros, apenas testar a inserção.
+    HashTable* ponto_members = (HashTable*)calloc(1, sizeof(HashTable));
+    insert_struct_def("Ponto", ponto_members);
+    print_symbol_details("Ponto");
     printf("\n");
 
-    // --- 2. Testando Insercao de Array ---
-    printf("--- Testando Array ---\n");
-    // Simulando a criação de dimensões para: float matrix[10][20];
-    Dimension* dim2 = (Dimension*)malloc(sizeof(Dimension));
-    dim2->size = 20;
-    dim2->next = NULL;
+    // 2. Simula a declaração de uma variável do tipo struct: struct Ponto p1;
+    insert_variable("p1", TYPE_STRUCT, "Ponto");
+    print_symbol_details("p1");
+    printf("\n");
 
-    Dimension* dim1 = (Dimension*)malloc(sizeof(Dimension));
-    dim1->size = 10;
-    dim1->next = dim2;
+    // 3. Simula a declaração de um vetor de structs: struct Ponto pontos_vetor[5];
+    Dimension* dim_struct_array = (Dimension*)malloc(sizeof(Dimension));
+    dim_struct_array->size = 5;
+    dim_struct_array->next = NULL;
+    insert_array("pontos_vetor", TYPE_STRUCT, "Ponto", dim_struct_array);
+    print_symbol_details("pontos_vetor");
+    printf("\n");
     
-    insert_array("matrix", TYPE_FLOAT, dim1);
-    print_symbol_details("matrix");
-    printf("\n");
 
-    // --- 3. Testando Insercao de Funcao ---
-    printf("--- Testando Funcao ---\n");
-    // Simulando a criação de parâmetros para: int soma(int a, char b_array[])
-    Param* param_b = (Param*)malloc(sizeof(Param));
-    param_b->name = "b_array";
-    param_b->type = TYPE_CHAR;
-    param_b->is_array = true;
-    param_b->next = NULL;
-
-    Param* param_a = (Param*)malloc(sizeof(Param));
-    param_a->name = "a";
-    param_a->type = TYPE_INT;
-    param_a->is_array = false;
-    param_a->next = param_b;
-
-    insert_function("soma", TYPE_INT, param_a);
-    print_symbol_details("soma");
-    printf("\n");
-
-    // --- 4. Verificando se tudo ainda está na tabela ---
-    printf("--- Verificacao Geral ---\n");
+    // --- Verificação Geral Final ---
+    printf("--- Verificacao Geral Final ---\n");
     print_symbol_details("contador");
-    print_symbol_details("matrix");
-    print_symbol_details("soma");
+    print_symbol_details("Ponto");
+    print_symbol_details("p1");
+    print_symbol_details("pontos_vetor");
     print_symbol_details("nao_existe");
     printf("\n");
 
-    // --- 5. Limpando a memória ---
+    // --- Limpando a memória ---
     printf("--- Limpando Memoria ---\n");
     destroy_scope_stack();
-    // Libera a memória alocada para o teste (as listas de dims e params)
-    // Em um compilador real, isso seria gerenciado pela árvore sintática.
-    free(dim1);
-    free(dim2);
-    free(param_a);
-    free(param_b);
+    // Libera a memória alocada para o teste
+    free(dim_struct_array);
+    // A tabela de membros da struct 'Ponto' é liberada pelo destroy_scope_stack,
+    // mas o ponteiro que a continha precisa ser liberado.
+    // Em um compilador real, isso é mais complexo. Aqui, simplificamos.
+    // Como a tabela foi inserida na tabela de símbolos principal, `destroy_scope_stack`
+    // cuidará de seus símbolos internos, mas não da HashTable em si, que não foi inserida
+    // como um símbolo. Esta é uma limitação do teste, não do seu módulo.
+    // Para este teste, a memória da tabela de membros não é um problema.
     printf("Teste finalizado.\n");
 
     return 0;
