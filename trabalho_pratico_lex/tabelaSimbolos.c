@@ -51,6 +51,7 @@ Symbol* insert_variable(const char* name, DataType type, const char* struct_name
     new_symbol->data.var_info.dimensions = NULL;
     new_symbol->data.var_info.relative_address = 0; // A ser definido na geração de código
     new_symbol->data.var_info.struct_name = struct_name ? strdup(struct_name) : NULL;
+    new_symbol->data.var_info.members = struct_name ? lookup_symbol(struct_name)->data.struct_info.members : NULL;
 
     if (internal_insert(new_symbol)) {
         return new_symbol; // Sucesso na inserção
@@ -67,6 +68,7 @@ Symbol* insert_array(const char* name, DataType type, const char* struct_name, D
     new_symbol->data.var_info.dimensions = dims; // Guarda a lista de dimensões
     new_symbol->data.var_info.relative_address = 0;
     new_symbol->data.var_info.struct_name = struct_name ? strdup(struct_name) : NULL;
+    new_symbol->data.var_info.members = struct_name ? lookup_symbol(struct_name)->data.struct_info.members : NULL;
 
     if (internal_insert(new_symbol)) {
         return new_symbol; // Sucesso

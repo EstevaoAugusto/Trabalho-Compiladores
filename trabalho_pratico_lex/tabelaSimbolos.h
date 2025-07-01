@@ -74,6 +74,7 @@ typedef struct Symbol {
             bool is_array;
             Dimension* dimensions;
             char* struct_name;
+            HashTable* members;
         } var_info;
 
         struct {
@@ -117,4 +118,4 @@ Symbol* insert_struct_def(const char* name, HashTable* members);
 Symbol* cria_symbol_temporario(DataType tipo);
 
 
-#endif // SYMBOL_TABLE_H_
+#endif // SYMBOL_TABLE_H_;

@@ -1,9 +1,9 @@
 %{
 /*-------------------------- Definitions --------------------------*/
 #include <stdio.h>
-#include<string.h>
+#include <stdlib.h>
+#include <string.h>
 #include "parser.tab.h"
-
 
 int line_number = 1;
 int column_number = 1;
@@ -47,8 +47,7 @@ other                           .
                   }
               }
 
-{comment}       { column_number += yyleng; }
-
+{comment}           { column_number += yyleng; }
 "if"                { column_number += yyleng; return IF; }
 "else"              { column_number += yyleng; return ELSE; }
 "while"             { column_number += yyleng; return WHILE; }
@@ -59,17 +58,17 @@ other                           .
 "struct"            { column_number += yyleng; return STRUCT; }
 "void"              { column_number += yyleng; return VOID; }
 
-{num_int}           { column_number += yyleng; return CONSTINT; }
-{num}               { column_number += yyleng; return CONSTFLOAT; }
-{ident}             { column_number += yyleng; return IDENTIFIER; }
+{num_int}           { yylval.intval = atoi(yytext);       column_number += yyleng; return CONSTINT; }
+{num}               { yylval.floatval = atof(yytext);   column_number += yyleng; return CONSTFLOAT; }
+{ident}             { yylval.id = strdup(yytext);       column_number += yyleng; return IDENTIFIER; }
 
-"=="                { column_number += yyleng; return EQUAL_OP; }
-"!="                { column_number += yyleng; return NOT_EQUAL_OP; }
-"<="                { column_number += yyleng; return LESS_EQUAL_OP; }
-">="                { column_number += yyleng; return RIGHT_EQUAL_OP; }
-"<"                 { column_number += yyleng; return LEFT_OP; }
-">"                 { column_number += yyleng; return RIGHT_OP; }
-"="                 { column_number += yyleng; return ASSIGN_OP; }
+"=="                { yylval.sval = strdup(yytext);     column_number += yyleng; return EQUAL_OP;       }
+"!="                { yylval.sval = strdup(yytext);     column_number += yyleng; return NOT_EQUAL_OP;   }
+"<="                { yylval.sval = strdup(yytext);     column_number += yyleng; return LESS_EQUAL_OP;  }
+">="                { yylval.sval = strdup(yytext);     column_number += yyleng; return RIGHT_EQUAL_OP; }
+"<"                 { yylval.sval = strdup(yytext);     column_number += yyleng; return LEFT_OP;        }
+">"                 { yylval.sval = strdup(yytext);     column_number += yyleng; return RIGHT_OP;       }
+"="                 { yylval.sval = strdup(yytext);     column_number += yyleng; return ASSIGN_OP;      }
 
 {abre_chave}        { column_number += yyleng; return LEFT_BRACE; }
 {fecha_chave}       { column_number += yyleng; return RIGHT_BRACE; }

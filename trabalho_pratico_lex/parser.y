@@ -1,6 +1,11 @@
+%code requires {
+    #include "tabelaSimbolos.h"
+}
+ 
 %{
     #include <stdio.h>
     #include <stdlib.h>
+    #include <string.h>
     #include "tabelaSimbolos.h"
 
     extern FILE *yyin;
@@ -18,26 +23,34 @@
     void yyerror(const char *s);
     void erro_sintatico_previsto(const char *msg);
 
-    // Tipo atual usado em uma declaração
-    DataType current_type;
+    Dimension* nova_dimensao(int size, Dimension* next) {
+        Dimension* d = (Dimension*)malloc(sizeof(Dimension));
+        d->size = size;
+        d->next = next;
+        return d;
+    }
 %}
 
-    %union {
-        int intval;
-        float floatval;
-        char charval;
-        char* id;
-        DataType type;
-        Symbol* symbol;
-    }
+
+%union {
+    int intval;
+    float floatval;
+    char charval;
+    char* id;
+    char* sval;
+    DataType type;
+    Symbol* symbol;
+    Dimension dim;
+    Param* param;
+}
 
 /*------------------------ Tokens ------------------------*/
 %token IF ELSE WHILE RETURN
-%token INT FLOAT CHAR VOID STRUCT
+%token <type> INT FLOAT CHAR VOID STRUCT
 
-%token PLUS MINUS DIVISION MULTIPLY
-%token EQUAL_OP NOT_EQUAL_OP LESS_EQUAL_OP RIGHT_EQUAL_OP LEFT_OP RIGHT_OP
-%token ASSIGN_OP
+%token <charval>PLUS MINUS DIVISION MULTIPLY
+%token <sval> EQUAL_OP NOT_EQUAL_OP LESS_EQUAL_OP RIGHT_EQUAL_OP LEFT_OP RIGHT_OP
+%token <charval> ASSIGN_OP
 
 %token LEFT_BRACE RIGHT_BRACE
 %token LEFT_BRACKET RIGHT_BRACKET
@@ -45,10 +58,13 @@
 
 %token SEMICOLON COMMA
 
-%token CONSTINT CONSTFLOAT CONSTCHAR CONSTSTRING
+%token <intval>CONSTINT <floatval>CONSTFLOAT <charval>CONSTCHAR <id>CONSTSTRING
 %token <id> IDENTIFIER
-%type <type> tipo_especificador
-%type <symbol> var
+
+%type <sval> relacional
+%type <symbol> var var_declaracao tipo_especificador
+%type <dim> arrayDimensao
+%type <param> varDeclList params param
 
 /*------------------------ Precedências ------------------------*/
 
@@ -87,11 +103,40 @@ declaracao
 var_declaracao
     : tipo_especificador IDENTIFIER SEMICOLON
     {
-        if (!insert_symbol($2, $1)) {
-            printf("Erro Semântico: Variável '%s' já foi declarada (linha %d, coluna %d).\n", $2, line_number, column_number);
+        if($1.kind == KIND_STRUCT_DEF){
+            if(!insert_struct_def($1.name, $1.struct_info.members)){
+                printf("Erro Semântico: Struct '%s' já foi declarada (linha %d, coluna %d).\n", $1.name, line_number, column_number);
+                semantic_errors++;
+            } else if(strcmp($1.name, $2)  == 0){
+                printf("Erro Semântico: O identificador '%s' é o mesmo da struct declarada (linha %d, coluna %d).\n", $2, line_number, column_number);
+                semantic_errors++;
+            } else {
+                insert_variable($2, TYPE_STRUCT, $1.name);
+            }
+        } else if (!insert_variable($2, $1.type, NULL)) {
+                printf("Erro Semântico: Variável '%s' já foi declarada (linha %d, coluna %d).\n", $2, line_number, column_number);
+                semantic_errors++;
+            }
         }
     }
-    | tipo_especificador IDENTIFIER arrayDimensao SEMICOLON
+    | tipo_especificador IDENTIFIER arrayDimensao SEMICOLON     // Ainda há de implementar essa parte
+    {
+        if($1.kind == KIND_STRUCT_DEF){
+            if(!insert_struct_def($1.name, $1.struct_info.members)){
+                printf("Erro Semântico: Struct '%s' já foi declarada (linha %d, coluna %d).\n", $1.name, line_number, column_number);
+                semantic_errors++;
+            } else if(strcmp($1.name, $2) == 0){
+                printf("Erro Semântico: O identificador '%s' é o mesmo da struct declarada (linha %d, coluna %d).\n", $2, line_number, column_number);
+                semantic_errors++;
+            } else {
+                // funcao de inserir array de struct
+            }
+        } else if (!insert_array($2, $1.type, NULL, $3)) {
+            printf("Erro Semântico: Variável '%s' já foi declarada (linha %d, coluna %d).\n", $2, line_number, column_number);
+            semantic_errors++;
+        }
+        
+    }
     | tipo_especificador IDENTIFIER ASSIGN_OP error SEMICOLON
     { erro_sintatico_previsto("Erro Sintático: Inicialização de variável não suportada nesta linguagem"); yyerrok; }
     | tipo_especificador IDENTIFIER error SEMICOLON 
@@ -102,44 +147,67 @@ var_declaracao
 
 arrayDimensao
     : LEFT_BRACKET CONSTINT RIGHT_BRACKET arrayDimensao
+    {
+        if($2 > 0){
+            $$ = nova_dimensao($2, $4);
+        } else {
+            printf("Erro Semântico: Vetor com tamanho 0 é invalido (linha %d, coluna %d).\n", $2, line_number, column_number);
+            semantic_errors++;
+            $$ = NULL;
+        }
+    }
     | LEFT_BRACKET CONSTINT RIGHT_BRACKET
+    {
+        if($2 > 0){
+            $$ = nova_dimensao($2, NULL);
+        } else {
+            printf("Erro Semântico: Vetor com tamanho 0 é invalido (linha %d, coluna %d).\n", $2, line_number, column_number);
+            semantic_errors++;
+            $$ = NULL;
+        }
+    }
     | LEFT_BRACKET error RIGHT_BRACKET
-    { erro_sintatico_previsto("Erro Sintático: Dimensao do array invalida"); yyerrok; }
+    { erro_sintatico_previsto("Erro Sintático: Dimensao do array invalida"); yyerrok; $$ = NULL;}
     | LEFT_BRACKET error RIGHT_BRACKET arrayDimensao
-    { erro_sintatico_previsto("Erro Sintático: Dimensao do array invalida"); yyerrok; }
+    { erro_sintatico_previsto("Erro Sintático: Dimensao do array invalida"); yyerrok; $$ = NULL;}
     ; 
 
 /*----- 5° -----*/
 tipo_especificador
-    : INT
-        {   $$ = TYPE_INT;      }
-    | FLOAT
-        {   $$ = TYPE_FLOAT;    }
-    | CHAR
-        {   $$ = TYPE_CHAR;     }
-    | VOID
-        {   $$ = TYPE_VOID;     }
+    : INT       {   $$.var_info.type = TYPE_INT;     }
+    | FLOAT     {   $$.var_info.type = TYPE_FLOAT;   }
+    | CHAR      {   $$.var_info.type = TYPE_CHAR;    }
+    | VOID      {   $$.var_info.type = TYPE_VOID;    }
     | STRUCT IDENTIFIER LEFT_BRACE varDeclList RIGHT_BRACE
-        {   $$ = TYPE_STRUCT;   }
+    {   
+        $$.kind = KIND_STRUCT_DEF;
+        $$.name = $2;
+        $$.struct_info.members = $3;  
+    }
     | STRUCT error LEFT_BRACE varDeclList RIGHT_BRACE
-    { erro_sintatico_previsto("Erro Sintático: Nome de struct ausente"); $$ = TYPE_STRUCT; yyerrok; }
+    { erro_sintatico_previsto("Erro Sintático: Nome de struct ausente"); $$ = NULL; yyerrok; }
     ;
 
 /*----- 6°: sequência de declarações de variáveis -----*/
 varDeclList
     : var_declaracao
+    {
+
+    }
     | var_declaracao varDeclList
+    {
+        
+    }
     ;
 
 /*----- 7° -----*/
 func_declaracao
     : tipo_especificador IDENTIFIER LEFT_PAREN params RIGHT_PAREN composto_decl
     {
-        if (!insert_symbol($2, KIND_FUNCTION, $1)) {
-            printf("Erro Semântico: Função '%s' já declarada (linha %d).\n", $2, line_number);
-        } else {
-            // Aqui você pode armazenar os parâmetros na symbol->data.func_info.params
-            // Isso pode exigir adaptação da função de inserção
+        open_scope();
+        if(!insert_function($2, $1.type, NULL, $4)){
+            printf("Erro Semântico: Função '%s' já declarada (linha %d, coluna %d).\n", $2, line_number, column_number);
+            semantic_errors++;
         }
     }
     | tipo_especificador error LEFT_PAREN params RIGHT_PAREN composto_decl
@@ -152,6 +220,9 @@ func_declaracao
 params
     : params_lista
     | VOID
+    {
+        
+    }
     ;
 
 /*----- 9° -----*/
@@ -163,7 +234,16 @@ params_lista
 /*----- 10° -----*/
 param
     : tipo_especificador IDENTIFIER
+    {
+        if(!insert_variable($2, $1)){
+            printf("Erro Semântico: Função '%s' já declarada (linha %d, coluna %d).\n", $2, line_number, column_number);
+            semantic_errors++;
+        }   
+    }
     | tipo_especificador IDENTIFIER LEFT_BRACKET RIGHT_BRACKET
+    {
+        
+    }
     | tipo_especificador IDENTIFIER error RIGHT_BRACKET
     { erro_sintatico_previsto("Erro Sintático: Falta de abrir colchetes"); yyerrok; }
     ;
@@ -233,7 +313,8 @@ expressao
             DataType tipo_expr = $3->data.var_info.type;
 
             if (tipo_var != tipo_expr) {
-                printf("Erro Semântico: Tipos incompatíveis na atribuição (linha %d).\n", line_number);
+                printf("Erro Semântico: Tipos incompatíveis na atribuição (linha %d, coluna %d).\n", line_number, column_number);
+                semantic_erros++;
             }
         }
     }
@@ -245,17 +326,20 @@ expressao
 /*----- 20° -----*/
 expressao_simples
     : exp_soma relacional exp_soma
+    {
+
+    }
     | exp_soma
     ;
 
 /*----- 21° -----*/
 relacional
-    : LEFT_OP
-    | RIGHT_OP
-    | LESS_EQUAL_OP
-    | RIGHT_EQUAL_OP
-    | EQUAL_OP
-    | NOT_EQUAL_OP
+    : LEFT_OP           {   $$ = $1;    }
+    | RIGHT_OP          {   $$ = $1;    }
+    | LESS_EQUAL_OP     {   $$ = $1;    }
+    | RIGHT_EQUAL_OP    {   $$ = $1;    }
+    | EQUAL_OP          {   $$ = $1;    }
+    | NOT_EQUAL_OP      {   $$ = $1;    }
     ;
 
 /*----- 23°: Operação de Soma mesmo -----*/
@@ -281,11 +365,8 @@ fator
     | var
     | ativacao
     | CONSTFLOAT
-    { $$ = cria_symbol_temporario(TYPE_FLOAT); }
     | CONSTINT
-    { $$ = cria_symbol_temporario(TYPE_INT); }
     | CONSTCHAR
-    { $$ = cria_symbol_temporario(TYPE_CHAR);}
     | CONSTSTRING
     | LEFT_PAREN error RIGHT_PAREN
     { erro_sintatico_previsto("Erro Sintático: Expressao Vazia"); yyerrok; }
@@ -294,14 +375,6 @@ fator
 /*----- 25° -----*/
 ativacao
     : IDENTIFIER LEFT_PAREN args RIGHT_PAREN
-    {
-        Symbol* s = lookup_symbol($1);
-        if (!s) {
-            printf("Erro Semântico: Função '%s' usada sem declaração (linha %d, coluna %d).\n", $1, line_number, column_number);
-        } else if (s->kind != KIND_FUNCTION) {
-            printf("Erro Semântico: '%s' não é uma função (linha %d, coluna %d).\n", $1, line_number, column_number);
-        }
-    }
     | IDENTIFIER LEFT_PAREN error RIGHT_PAREN
     { erro_sintatico_previsto("Erro Sintático: Argumentos invalidos no retorno da funcao"); yyerrok; }
     ;
@@ -326,15 +399,18 @@ arg_lista
 var
     : IDENTIFIER
     {
-        Symbol* s = lookup_symbol($1);
-        if (!s) {
-            printf("Erro Semântico: Variável '%s' usada sem declaração (linha %d, coluna %d).\n", $1, line_number, column_number);
-        } else if (s->kind != KIND_VARIABLE) {
-            printf("Erro Semântico: '%s' não é uma variável (linha %d, coluna %d).\n", $1, line_number, column_number);
+        $$ = lookup_symbol($1);
+        if(!$$){
+            printf("Erro: símbolo não declarado: %s\n", $1);
         }
-        $$ = s;
     }
     | IDENTIFIER LEFT_BRACKET expressao RIGHT_BRACKET var_auxiliar
+    {
+        $$ = lookup_symbol($1);
+        if(!$$){
+            printf("Erro: símbolo não declarado: %s\n", $1);
+        }
+    }
     ;
 
 /*---- 29° ----*/
@@ -383,7 +459,9 @@ int main(int argc, char **argv) {
 
     printf("Total de erros léxicos: %d\n", lexical_errors);
     printf("Total de erros sintáticos: %d\n", syntax_errors);
+    printf("Total de erros semânticos: %d\n", semantic_errors);
 
     fclose(compiled_arq);
+    destroy_scope_stack();
     return 0;
 }
