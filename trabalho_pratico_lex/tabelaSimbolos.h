@@ -115,7 +115,21 @@ Symbol* insert_function(const char* name, DataType return_type, const char* stru
 
 Symbol* insert_struct_def(const char* name, HashTable* members);
 
-Symbol* cria_symbol_temporario(DataType tipo);
+// Funções auxiliares
 
+HashTable* create_hash_table();
+
+void initialize_hash_table(HashTable* table);
+
+int insert_struct_members(Symbol* symbol, HashTable* table);
+
+// Essa funcao serve para checar se existem identificadores iguais em structs
+bool lookup_struct_hash_table(const Symbol* symbol, const HashTable* table);
+
+Symbol* cria_symbol_temporario(DataType tipo, SymbolKind kind);
+
+Param* create_param(const char* name, const DataType type, bool is_array);
+
+Dimension* new_dimension(int size, Dimension* next);
 
 #endif // SYMBOL_TABLE_H_;

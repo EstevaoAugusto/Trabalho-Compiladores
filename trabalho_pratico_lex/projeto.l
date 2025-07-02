@@ -39,6 +39,14 @@ other                           .
 /*----------------------------- Regras -----------------------------*/
 %}
 
+{num_int}{ident}        { 
+                            fprintf(yyout, "Erro Léxico: identificador invalido iniciado com numero na linha %d, coluna %d: %s\n", line_number, column_number, yytext); 
+                            column_number += yyleng;
+                            lexical_errors++;    
+                        }
+
+
+
 \n              { line_number++; column_number = 1; }
 [ ]+            { column_number += yyleng; }
 \t+           {
@@ -68,7 +76,7 @@ other                           .
 ">="                { yylval.sval = strdup(yytext);     column_number += yyleng; return RIGHT_EQUAL_OP; }
 "<"                 { yylval.sval = strdup(yytext);     column_number += yyleng; return LEFT_OP;        }
 ">"                 { yylval.sval = strdup(yytext);     column_number += yyleng; return RIGHT_OP;       }
-"="                 { yylval.sval = strdup(yytext);     column_number += yyleng; return ASSIGN_OP;      }
+"="                 { yylval.charval = '=';     column_number += yyleng; return ASSIGN_OP;      }
 
 {abre_chave}        { column_number += yyleng; return LEFT_BRACE; }
 {fecha_chave}       { column_number += yyleng; return RIGHT_BRACE; }
@@ -82,16 +90,10 @@ other                           .
 {char_literal}          { column_number += yyleng; return CONSTCHAR; }
 \"([^\\\"\n]|\\.)*\"    { column_number += yyleng; return CONSTSTRING; }
 
-"+"                 { column_number += yyleng; return PLUS; }
-"-"                 { column_number += yyleng; return MINUS; }
-"/"                 { column_number += yyleng; return DIVISION; }
-"*"                 { column_number += yyleng; return MULTIPLY; }
-
-{num_int}{ident}        { 
-                            fprintf(yyout, "Erro Léxico: identificador invalido iniciado com numero na linha %d, coluna %d: %s\n", line_number, column_number, yytext); 
-                            column_number += yyleng;
-                            lexical_errors++;    
-                        }
+"+"                 { yylval.charval = '+'; column_number += yyleng; return PLUS; }
+"-"                 { yylval.charval = '-'; column_number += yyleng; return MINUS; }
+"/"                 { yylval.charval = '/'; column_number += yyleng; return DIVISION; }
+"*"                 { yylval.charval = '*'; column_number += yyleng; return MULTIPLY; }
 
 [\u201C\u201D]          {
                             fprintf(yyout, "Erro Léxico: uso de aspas invalidas (aspas curvas) na linha %d, coluna %d: %s\n", line_number, column_number, yytext); 

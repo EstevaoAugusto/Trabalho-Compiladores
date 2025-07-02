@@ -16,6 +16,18 @@ static unsigned long hash_function(const char* str) {
     return hash % HASH_TABLE_SIZE;
 }
 
+Param* create_param(const char* name, const DataType type, bool is_array){
+    Param* new_param = (Param*)malloc(sizeof(Param));
+
+    new_param->is_array = is_array;
+    new_param->name = strdup(name);
+    new_param->type = type;
+    new_param->struct_name = NULL;
+    new_param->next = NULL;
+
+    return new_param;
+}
+
 
 static int internal_insert(Symbol* new_symbol) {
     if (!current_scope) return 0; // Não deveria acontecer se init foi chamado
@@ -76,6 +88,19 @@ Symbol* insert_array(const char* name, DataType type, const char* struct_name, D
     return NULL; // Falha
 }
 
+HashTable* create_hash_table(){
+    HashTable* table = (HashTable*)malloc(sizeof(HashTable));
+    if (!table) {
+        perror("Erro de alocação de hash table");
+        exit(EXIT_FAILURE);
+    }
+
+    initialize_hash_table(table);
+
+    return table;
+}
+
+
 Symbol* insert_function(const char* name, DataType return_type, const char* struct_name, Param* params) {
     Symbol* new_symbol = (Symbol*)malloc(sizeof(Symbol));
     new_symbol->name = strdup(name);
@@ -116,13 +141,57 @@ void open_scope() {
     if (!new_scope->table) { /* erro de alocação */ free(new_scope); return; }
 
     // Inicializa a tabela com NULLs
-    for (int i = 0; i < HASH_TABLE_SIZE; i++) {
-        new_scope->table->table[i] = NULL;
-    }
+    initialize_hash_table(new_scope->table);
 
     // Empilha o novo escopo
     new_scope->next = current_scope;
     current_scope = new_scope;
+}
+
+int insert_struct_members(Symbol* symbol, HashTable* table){
+    if (!symbol || !table || !symbol->name) return 0;
+    if(lookup_struct_hash_table(symbol, table)){
+        return 0;
+    }
+
+    unsigned long index = hash_function(symbol->name);
+    // Encadeia o novo símbolo no início da lista
+    symbol->next = table->table[index];
+    table->table[index] = symbol;
+
+    return 1;
+}
+
+Dimension* new_dimension(int size, Dimension* next) {
+    Dimension* d = (Dimension*)malloc(sizeof(Dimension));
+    d->size = size;
+    d->next = next;
+    return d;
+}
+
+// Essa funcao serve para checar se existem identificadores iguais em structs
+bool lookup_struct_hash_table(const Symbol* symbol, const HashTable* table){
+    if (!symbol || !table || !symbol->name) return false;
+
+    unsigned long index = hash_function(symbol->name);
+    Symbol* current = table->table[index];
+
+    while (current) {
+        if (strcmp(current->name, symbol->name) == 0) {
+            return true;
+        }
+        current = current->next;
+    }
+
+    return false;
+}
+
+
+void initialize_hash_table(HashTable* table){
+    // Inicializa a tabela com NULLs
+    for (int i = 0; i < HASH_TABLE_SIZE; i++) {
+        table->table[i] = NULL;
+    }
 }
 
 
@@ -182,9 +251,44 @@ void destroy_scope_stack(){
 }
 
 
-Symbol* cria_symbol_temporario(DataType tipo) {
-    Symbol* temp = malloc(sizeof(Symbol));
-    temp->kind = KIND_VARIABLE;
-    temp->data.var_info.type = tipo;
-    return temp;
+Symbol* cria_symbol_temporario(DataType tipo, SymbolKind kind) {
+    Symbol* sym = (Symbol*) malloc(sizeof(Symbol));
+    if (!sym) {
+        printf(stderr, "Erro: falha na alocação de Symbol.\n");
+        exit(EXIT_FAILURE);
+    }
+    
+    sym->name = NULL;
+    sym->kind = kind;
+
+    // Inicializa dados conforme kind
+    switch (kind) {
+        case KIND_VARIABLE:
+        case KIND_ARRAY:
+            sym->data.var_info.type = tipo;
+            sym->data.var_info.relative_address = 0; // Exemplo de valor padrão
+            sym->data.var_info.is_array = (kind == KIND_ARRAY);
+            sym->data.var_info.dimensions = NULL;
+            sym->data.var_info.struct_name = NULL;
+            sym->data.var_info.members = NULL;
+            break;
+
+        case KIND_FUNCTION:
+            sym->data.func_info.return_type = tipo;
+            sym->data.func_info.struct_name = NULL;
+            sym->data.func_info.params = NULL;
+            break;
+
+        case KIND_STRUCT_DEF:
+            sym->data.struct_info.members = NULL; // Deve ser setado depois
+            break;
+
+        default:
+            printf(stderr, "Aviso: Kind desconhecido em cria_symbol_temporario.\n");
+            break;
+    }
+
+    sym->next = NULL;
+
+    return sym;
 }
