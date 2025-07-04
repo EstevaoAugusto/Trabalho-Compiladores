@@ -6,16 +6,23 @@
 // ... (as seções 1 e 2 com Enums e structs Param/Dimension continuam iguais) ...
 
 //---------------------------------------------------------------------
-// 1. ENUMS PARA REPRESENTAR TIPOS E CATEGORIAS
+// 1. ENUMS PARA REPRESENTAR TIPOS, CATEGORIAS E OPERADORES
 //---------------------------------------------------------------------
 
 typedef enum {
-    TYPE_INT, TYPE_FLOAT, TYPE_CHAR, TYPE_VOID, TYPE_STRUCT
+    TYPE_INT, TYPE_FLOAT, TYPE_CHAR, TYPE_VOID, TYPE_STRUCT, TYPE_INVALID
 } DataType;
 
 typedef enum {
     KIND_VARIABLE, KIND_ARRAY, KIND_FUNCTION, KIND_STRUCT_DEF
 } SymbolKind;
+
+// Enum para operadores comuns (opcional)
+typedef enum {
+   EQUAL_OP, NOT_EQUAL_OP, LESS_EQUAL_OP, RIGHT_EQUAL_OP, LEFT_OP, RIGHT_OP,
+   ASSIGN_OP, PLUS, MINUS, DIVISION, MULTIPLY, NONE_OP
+} Operator;
+
 
 //---------------------------------------------------------------------
 // 2. ESTRUTURAS AUXILIARES PARA FUNÇÕES E ARRANJOS
@@ -28,6 +35,30 @@ typedef struct Param {
     bool is_array;
     struct Param* next;
 } Param;
+
+struct Symbol;
+
+typedef struct Node {
+    DataType type;          // Usar valor direto, não ponteiro
+    struct Symbol* symbol;  // Ponteiro para símbolo, NULL se não aplicável
+    SymbolKind kind;        // Usar valor direto
+    bool is_array;
+    Dimension* dim;
+    char *struct_name;
+
+    union {
+        int int_val;
+        float float_val;
+        char char_val;
+        char *string_val;
+    } value;
+
+    Operator op;
+    struct Node *left;
+    struct Node *next;
+    struct Node *right;
+} Node;
+
 
 typedef struct Dimension {
     int size;
@@ -66,10 +97,10 @@ typedef struct Scope {
 typedef struct Symbol {
     char* name;
     SymbolKind kind;
+    DataType type;
 
     union {
         struct {
-            DataType type;
             int relative_address;
             bool is_array;
             Dimension* dimensions;
@@ -78,7 +109,6 @@ typedef struct Symbol {
         } var_info;
 
         struct {
-            DataType return_type;
             char* struct_name;
             Param* params;
         } func_info;
@@ -117,19 +147,35 @@ Symbol* insert_struct_def(const char* name, HashTable* members);
 
 // Funções auxiliares
 
+int verifica_argumentos(Symbol *func, Node *args);
+
 HashTable* create_hash_table();
 
 void initialize_hash_table(HashTable* table);
 
 int insert_struct_members(Symbol* symbol, HashTable* table);
 
+HashTable* clone_struct_members(const HashTable* members);
+
 // Essa funcao serve para checar se existem identificadores iguais em structs
 bool lookup_struct_hash_table(const Symbol* symbol, const HashTable* table);
+
+Node* create_node();
+
+Operator operador_para_enum(const char* op_str);
 
 Symbol* cria_symbol_temporario(DataType tipo, SymbolKind kind);
 
 Param* create_param(const char* name, const DataType type, bool is_array);
 
 Dimension* new_dimension(int size, Dimension* next);
+
+bool symbols_compatible(const Symbol* s1, const Symbol* s2);
+
+bool types_compatible(const DataType* a, const DataType* b);
+
+Param* clone_param_list(const Param* params);
+
+HashTable* clone_struct_members(const HashTable* members);
 
 #endif // SYMBOL_TABLE_H_;
