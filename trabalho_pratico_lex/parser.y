@@ -717,7 +717,7 @@ var
     {
         Symbol *sym = lookup_symbol($1);
         if(!sym){
-            printf("Erro: Identificador '%s' não foi declarado (linha %d, coluna %d).\n", $1, line_number, column_number);
+            printf("Erro Semântico: Identificador '%s' não foi declarado (linha %d, coluna %d).\n", $1, line_number, column_number);
             semantic_errors++;
             $$ = NULL;
         } else {
@@ -735,7 +735,7 @@ var
     {
         Symbol *sym = lookup_symbol($1);
         if (!sym) {
-            printf("Erro: Identificador '%s' não foi declarado (linha %d, coluna %d).\n", $1, line_number, column_number);
+            printf("Erro Semântico: Identificador '%s' não foi declarado (linha %d, coluna %d).\n", $1, line_number, column_number);
             semantic_errors++;
             $$ = NULL;
         } else if (!sym->data.var_info.is_array) {
