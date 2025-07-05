@@ -365,18 +365,18 @@ struct yy_trans_info
 	};
 static const flex_int16_t yy_accept[104] =
     {   0,
-        0,    0,   44,   42,    3,    1,    2,   42,   41,   42,
-       28,   29,   37,   34,   31,   35,   36,   14,   14,   30,
-       21,   23,   22,   39,   26,   27,   16,   16,   16,   16,
-       16,   16,   16,   16,   16,   16,   24,   25,    3,    2,
-       18,   41,   33,    0,    0,    0,   15,    0,    0,   14,
-        0,   38,   19,   17,   20,   16,   16,   16,   16,    5,
-       16,   16,   16,   16,   16,    0,   32,    0,    0,    0,
-       15,    0,   15,   38,   16,   16,   16,    9,   16,   16,
-       16,   16,    0,   40,    0,    0,    4,   11,    6,   16,
-       16,   16,   13,   16,    0,    4,   10,   16,   16,    7,
+        0,    0,   44,   42,    4,    2,    3,   42,   41,   42,
+       29,   30,   38,   35,   32,   36,   37,   15,   15,   31,
+       22,   24,   23,   39,   27,   28,   17,   17,   17,   17,
+       17,   17,   17,   17,   17,   17,   25,   26,    4,    3,
+       19,   41,   34,    0,    0,    0,   16,    0,    0,   15,
+        0,    1,   20,   18,   21,   17,   17,   17,   17,    6,
+       17,   17,   17,   17,   17,    0,   33,    0,    0,    0,
+       16,    0,   16,    1,   17,   17,   17,   10,   17,   17,
+       17,   17,    0,   40,    0,    0,    5,   12,    7,   17,
+       17,   17,   14,   17,    0,    5,   11,   17,   17,    8,
 
-        8,   12,    0
+        9,   13,    0
     } ;
 
 static const YY_CHAR yy_ec[256] =
@@ -528,9 +528,9 @@ char *yytext;
 #line 2 "projeto.l"
 /*-------------------------- Definitions --------------------------*/
 #include <stdio.h>
-#include<string.h>
+#include <stdlib.h>
+#include <string.h>
 #include "parser.tab.h"
-
 
 int line_number = 1;
 int column_number = 1;
@@ -821,208 +821,208 @@ do_action:	/* This label is used only to access EOF actions. */
 			goto yy_find_action;
 
 case 1:
-/* rule 1 can match eol */
 YY_RULE_SETUP
 #line 43 "projeto.l"
-{ line_number++; column_number = 1; }
-	YY_BREAK
-case 2:
-YY_RULE_SETUP
-#line 44 "projeto.l"
-{ column_number += yyleng; }
-	YY_BREAK
-case 3:
-YY_RULE_SETUP
-#line 45 "projeto.l"
-{
-                  for (int i = 0; i < yyleng; i++) {
-                      column_number += TAB_SIZE - ((column_number - 1) % TAB_SIZE); 
-                  }
-              }
-	YY_BREAK
-case 4:
-/* rule 4 can match eol */
-YY_RULE_SETUP
-#line 51 "projeto.l"
-{ column_number += yyleng; }
-	YY_BREAK
-case 5:
-YY_RULE_SETUP
-#line 53 "projeto.l"
-{ column_number += yyleng; return IF; }
-	YY_BREAK
-case 6:
-YY_RULE_SETUP
-#line 54 "projeto.l"
-{ column_number += yyleng; return ELSE; }
-	YY_BREAK
-case 7:
-YY_RULE_SETUP
-#line 55 "projeto.l"
-{ column_number += yyleng; return WHILE; }
-	YY_BREAK
-case 8:
-YY_RULE_SETUP
-#line 56 "projeto.l"
-{ column_number += yyleng; return RETURN; }
-	YY_BREAK
-case 9:
-YY_RULE_SETUP
-#line 57 "projeto.l"
-{ column_number += yyleng; return INT; }
-	YY_BREAK
-case 10:
-YY_RULE_SETUP
-#line 58 "projeto.l"
-{ column_number += yyleng; return FLOAT; }
-	YY_BREAK
-case 11:
-YY_RULE_SETUP
-#line 59 "projeto.l"
-{ column_number += yyleng; return CHAR; }
-	YY_BREAK
-case 12:
-YY_RULE_SETUP
-#line 60 "projeto.l"
-{ column_number += yyleng; return STRUCT; }
-	YY_BREAK
-case 13:
-YY_RULE_SETUP
-#line 61 "projeto.l"
-{ column_number += yyleng; return VOID; }
-	YY_BREAK
-case 14:
-YY_RULE_SETUP
-#line 63 "projeto.l"
-{ column_number += yyleng; return CONSTINT; }
-	YY_BREAK
-case 15:
-YY_RULE_SETUP
-#line 64 "projeto.l"
-{ column_number += yyleng; return CONSTFLOAT; }
-	YY_BREAK
-case 16:
-YY_RULE_SETUP
-#line 65 "projeto.l"
-{ column_number += yyleng; return IDENTIFIER; }
-	YY_BREAK
-case 17:
-YY_RULE_SETUP
-#line 67 "projeto.l"
-{ column_number += yyleng; return EQUAL_OP; }
-	YY_BREAK
-case 18:
-YY_RULE_SETUP
-#line 68 "projeto.l"
-{ column_number += yyleng; return NOT_EQUAL_OP; }
-	YY_BREAK
-case 19:
-YY_RULE_SETUP
-#line 69 "projeto.l"
-{ column_number += yyleng; return LESS_EQUAL_OP; }
-	YY_BREAK
-case 20:
-YY_RULE_SETUP
-#line 70 "projeto.l"
-{ column_number += yyleng; return RIGHT_EQUAL_OP; }
-	YY_BREAK
-case 21:
-YY_RULE_SETUP
-#line 71 "projeto.l"
-{ column_number += yyleng; return LEFT_OP; }
-	YY_BREAK
-case 22:
-YY_RULE_SETUP
-#line 72 "projeto.l"
-{ column_number += yyleng; return RIGHT_OP; }
-	YY_BREAK
-case 23:
-YY_RULE_SETUP
-#line 73 "projeto.l"
-{ column_number += yyleng; return ASSIGN_OP; }
-	YY_BREAK
-case 24:
-YY_RULE_SETUP
-#line 75 "projeto.l"
-{ column_number += yyleng; return LEFT_BRACE; }
-	YY_BREAK
-case 25:
-YY_RULE_SETUP
-#line 76 "projeto.l"
-{ column_number += yyleng; return RIGHT_BRACE; }
-	YY_BREAK
-case 26:
-YY_RULE_SETUP
-#line 77 "projeto.l"
-{ column_number += yyleng; return LEFT_BRACKET; }
-	YY_BREAK
-case 27:
-YY_RULE_SETUP
-#line 78 "projeto.l"
-{ column_number += yyleng; return RIGHT_BRACKET; }
-	YY_BREAK
-case 28:
-YY_RULE_SETUP
-#line 79 "projeto.l"
-{ column_number += yyleng; return LEFT_PAREN; }
-	YY_BREAK
-case 29:
-YY_RULE_SETUP
-#line 80 "projeto.l"
-{ column_number += yyleng; return RIGHT_PAREN; }
-	YY_BREAK
-case 30:
-YY_RULE_SETUP
-#line 81 "projeto.l"
-{ column_number += yyleng; return SEMICOLON; }
-	YY_BREAK
-case 31:
-YY_RULE_SETUP
-#line 82 "projeto.l"
-{ column_number += yyleng; return COMMA; }
-	YY_BREAK
-case 32:
-YY_RULE_SETUP
-#line 84 "projeto.l"
-{ column_number += yyleng; return CONSTCHAR; }
-	YY_BREAK
-case 33:
-YY_RULE_SETUP
-#line 85 "projeto.l"
-{ column_number += yyleng; return CONSTSTRING; }
-	YY_BREAK
-case 34:
-YY_RULE_SETUP
-#line 87 "projeto.l"
-{ column_number += yyleng; return PLUS; }
-	YY_BREAK
-case 35:
-YY_RULE_SETUP
-#line 88 "projeto.l"
-{ column_number += yyleng; return MINUS; }
-	YY_BREAK
-case 36:
-YY_RULE_SETUP
-#line 89 "projeto.l"
-{ column_number += yyleng; return DIVISION; }
-	YY_BREAK
-case 37:
-YY_RULE_SETUP
-#line 90 "projeto.l"
-{ column_number += yyleng; return MULTIPLY; }
-	YY_BREAK
-case 38:
-YY_RULE_SETUP
-#line 92 "projeto.l"
 { 
                             fprintf(yyout, "Erro Léxico: identificador invalido iniciado com numero na linha %d, coluna %d: %s\n", line_number, column_number, yytext); 
                             column_number += yyleng;
                             lexical_errors++;    
                         }
 	YY_BREAK
+case 2:
+/* rule 2 can match eol */
+YY_RULE_SETUP
+#line 51 "projeto.l"
+{ line_number++; column_number = 1; }
+	YY_BREAK
+case 3:
+YY_RULE_SETUP
+#line 52 "projeto.l"
+{ column_number += yyleng; }
+	YY_BREAK
+case 4:
+YY_RULE_SETUP
+#line 53 "projeto.l"
+{
+                  for (int i = 0; i < yyleng; i++) {
+                      column_number += TAB_SIZE - ((column_number - 1) % TAB_SIZE); 
+                  }
+              }
+	YY_BREAK
+case 5:
+/* rule 5 can match eol */
+YY_RULE_SETUP
+#line 59 "projeto.l"
+{ column_number += yyleng; }
+	YY_BREAK
+case 6:
+YY_RULE_SETUP
+#line 60 "projeto.l"
+{ column_number += yyleng; return IF; }
+	YY_BREAK
+case 7:
+YY_RULE_SETUP
+#line 61 "projeto.l"
+{ column_number += yyleng; return ELSE; }
+	YY_BREAK
+case 8:
+YY_RULE_SETUP
+#line 62 "projeto.l"
+{ column_number += yyleng; return WHILE; }
+	YY_BREAK
+case 9:
+YY_RULE_SETUP
+#line 63 "projeto.l"
+{ column_number += yyleng; return RETURN; }
+	YY_BREAK
+case 10:
+YY_RULE_SETUP
+#line 64 "projeto.l"
+{ column_number += yyleng; return INT; }
+	YY_BREAK
+case 11:
+YY_RULE_SETUP
+#line 65 "projeto.l"
+{ column_number += yyleng; return FLOAT; }
+	YY_BREAK
+case 12:
+YY_RULE_SETUP
+#line 66 "projeto.l"
+{ column_number += yyleng; return CHAR; }
+	YY_BREAK
+case 13:
+YY_RULE_SETUP
+#line 67 "projeto.l"
+{ column_number += yyleng; return STRUCT; }
+	YY_BREAK
+case 14:
+YY_RULE_SETUP
+#line 68 "projeto.l"
+{ column_number += yyleng; return VOID; }
+	YY_BREAK
+case 15:
+YY_RULE_SETUP
+#line 70 "projeto.l"
+{ yylval.intval = atoi(yytext);       column_number += yyleng; return CONSTINT; }
+	YY_BREAK
+case 16:
+YY_RULE_SETUP
+#line 71 "projeto.l"
+{ yylval.floatval = atof(yytext);   column_number += yyleng; return CONSTFLOAT; }
+	YY_BREAK
+case 17:
+YY_RULE_SETUP
+#line 72 "projeto.l"
+{ yylval.id = strdup(yytext);       column_number += yyleng; return IDENTIFIER; }
+	YY_BREAK
+case 18:
+YY_RULE_SETUP
+#line 74 "projeto.l"
+{ yylval.sval = strdup(yytext);     column_number += yyleng; return EQUAL_OP;       }
+	YY_BREAK
+case 19:
+YY_RULE_SETUP
+#line 75 "projeto.l"
+{ yylval.sval = strdup(yytext);     column_number += yyleng; return NOT_EQUAL_OP;   }
+	YY_BREAK
+case 20:
+YY_RULE_SETUP
+#line 76 "projeto.l"
+{ yylval.sval = strdup(yytext);     column_number += yyleng; return LESS_EQUAL_OP;  }
+	YY_BREAK
+case 21:
+YY_RULE_SETUP
+#line 77 "projeto.l"
+{ yylval.sval = strdup(yytext);     column_number += yyleng; return RIGHT_EQUAL_OP; }
+	YY_BREAK
+case 22:
+YY_RULE_SETUP
+#line 78 "projeto.l"
+{ yylval.sval = strdup(yytext);     column_number += yyleng; return LEFT_OP;        }
+	YY_BREAK
+case 23:
+YY_RULE_SETUP
+#line 79 "projeto.l"
+{ yylval.sval = strdup(yytext);     column_number += yyleng; return RIGHT_OP;       }
+	YY_BREAK
+case 24:
+YY_RULE_SETUP
+#line 80 "projeto.l"
+{ yylval.charval = '=';     column_number += yyleng; return ASSIGN_OP;      }
+	YY_BREAK
+case 25:
+YY_RULE_SETUP
+#line 82 "projeto.l"
+{ column_number += yyleng; return LEFT_BRACE; }
+	YY_BREAK
+case 26:
+YY_RULE_SETUP
+#line 83 "projeto.l"
+{ column_number += yyleng; return RIGHT_BRACE; }
+	YY_BREAK
+case 27:
+YY_RULE_SETUP
+#line 84 "projeto.l"
+{ column_number += yyleng; return LEFT_BRACKET; }
+	YY_BREAK
+case 28:
+YY_RULE_SETUP
+#line 85 "projeto.l"
+{ column_number += yyleng; return RIGHT_BRACKET; }
+	YY_BREAK
+case 29:
+YY_RULE_SETUP
+#line 86 "projeto.l"
+{ column_number += yyleng; return LEFT_PAREN; }
+	YY_BREAK
+case 30:
+YY_RULE_SETUP
+#line 87 "projeto.l"
+{ column_number += yyleng; return RIGHT_PAREN; }
+	YY_BREAK
+case 31:
+YY_RULE_SETUP
+#line 88 "projeto.l"
+{ column_number += yyleng; return SEMICOLON; }
+	YY_BREAK
+case 32:
+YY_RULE_SETUP
+#line 89 "projeto.l"
+{ column_number += yyleng; return COMMA; }
+	YY_BREAK
+case 33:
+YY_RULE_SETUP
+#line 91 "projeto.l"
+{ column_number += yyleng; return CONSTCHAR; }
+	YY_BREAK
+case 34:
+YY_RULE_SETUP
+#line 92 "projeto.l"
+{ column_number += yyleng; return CONSTSTRING; }
+	YY_BREAK
+case 35:
+YY_RULE_SETUP
+#line 94 "projeto.l"
+{ yylval.charval = '+'; column_number += yyleng; return PLUS; }
+	YY_BREAK
+case 36:
+YY_RULE_SETUP
+#line 95 "projeto.l"
+{ yylval.charval = '-'; column_number += yyleng; return MINUS; }
+	YY_BREAK
+case 37:
+YY_RULE_SETUP
+#line 96 "projeto.l"
+{ yylval.charval = '/'; column_number += yyleng; return DIVISION; }
+	YY_BREAK
+case 38:
+YY_RULE_SETUP
+#line 97 "projeto.l"
+{ yylval.charval = '*'; column_number += yyleng; return MULTIPLY; }
+	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 98 "projeto.l"
+#line 99 "projeto.l"
 {
                             fprintf(yyout, "Erro Léxico: uso de aspas invalidas (aspas curvas) na linha %d, coluna %d: %s\n", line_number, column_number, yytext); 
                             column_number += yyleng;
@@ -1031,7 +1031,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 104 "projeto.l"
+#line 105 "projeto.l"
 { 
                             fprintf(yyout, "Erro Léxico: constante char com mais de um caractere na linha %d, coluna %d: %s\n", line_number, column_number, yytext); 
                             column_number += yyleng;
@@ -1040,7 +1040,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 110 "projeto.l"
+#line 111 "projeto.l"
 { 
                             fprintf(yyout, "Erro Léxico: string nao fechada na linha %d, coluna %d: %s\n", line_number, column_number, yytext); 
                             column_number += yyleng;
@@ -1049,7 +1049,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 116 "projeto.l"
+#line 117 "projeto.l"
 { 
                             fprintf(yyout, "Erro Léxico: simbolo lexico invalido na linha %d, coluna %d: %s\n", line_number, column_number, yytext); 
                             column_number += yyleng;
@@ -1058,7 +1058,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 122 "projeto.l"
+#line 123 "projeto.l"
 ECHO;
 	YY_BREAK
 #line 1065 "lex.yy.c"
@@ -2066,6 +2066,6 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 122 "projeto.l"
+#line 123 "projeto.l"
 
 

@@ -10,7 +10,7 @@
 //---------------------------------------------------------------------
 
 typedef enum {
-    TYPE_INT, TYPE_FLOAT, TYPE_CHAR, TYPE_VOID, TYPE_STRUCT, TYPE_INVALID
+    TYPE_INT, TYPE_FLOAT, TYPE_CHAR, TYPE_VOID, TYPE_STRUCT, TYPE_STRING, TYPE_INVALID
 } DataType;
 
 typedef enum {
@@ -19,9 +19,23 @@ typedef enum {
 
 // Enum para operadores comuns (opcional)
 typedef enum {
-   EQUAL_OP, NOT_EQUAL_OP, LESS_EQUAL_OP, RIGHT_EQUAL_OP, LEFT_OP, RIGHT_OP,
-   ASSIGN_OP, PLUS, MINUS, DIVISION, MULTIPLY, NONE_OP
+    OP_EQUAL,         // ==
+    OP_NOT_EQUAL,     // !=
+    OP_LESS_EQUAL,    // <=
+    OP_GREATER_EQUAL, // >= (antes RIGHT_EQUAL_OP)
+    OP_LESS,          // <  (antes LEFT_OP)
+    OP_GREATER,       // >  (antes RIGHT_OP)
+    OP_ASSIGN,        // =
+    OP_PLUS,          // +
+    OP_MINUS,         // -
+    OP_DIVIDE,        // /
+    OP_MULTIPLY,      // *
+    OP_NONE,           // nenhum operador / default
+    OP_VAR,
+    OP_CALL,
+    OP_INDEX
 } Operator;
+
 
 
 //---------------------------------------------------------------------
@@ -37,6 +51,11 @@ typedef struct Param {
 } Param;
 
 struct Symbol;
+
+typedef struct Dimension {
+    int size;
+    struct Dimension* next;
+} Dimension;
 
 typedef struct Node {
     DataType type;          // Usar valor direto, não ponteiro
@@ -58,12 +77,6 @@ typedef struct Node {
     struct Node *next;
     struct Node *right;
 } Node;
-
-
-typedef struct Dimension {
-    int size;
-    struct Dimension* next;
-} Dimension;
 
 
 //---------------------------------------------------------------------
@@ -90,6 +103,7 @@ typedef struct Scope {
     struct Scope* next; // Ponteiro para o escopo anterior (formando uma pilha)
 } Scope;
 
+struct Symbol;
 
 /**
  * @brief Estrutura principal que representa um identificador na Tabela de Símbolos.

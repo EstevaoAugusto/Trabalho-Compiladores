@@ -178,10 +178,6 @@ int insert_struct_members(Symbol* symbol, HashTable* table){
 }
 
 Dimension* new_dimension(int size, Dimension* next) {
-    if(size < 1){
-        return NULL;
-    }
-
     Dimension* d = (Dimension*)malloc(sizeof(Dimension));
     d->size = size;
     d->next = next;
@@ -273,7 +269,7 @@ void destroy_scope_stack(){
 Symbol* cria_symbol_temporario(DataType tipo, SymbolKind kind) {
     Symbol* sym = (Symbol*) malloc(sizeof(Symbol));
     if (!sym) {
-        printf(stderr, "Erro: falha na alocação de Symbol.\n");
+        fprintf(stderr, "Erro: falha na alocação de Symbol.\n");
         exit(EXIT_FAILURE);
     }
     
@@ -302,7 +298,7 @@ Symbol* cria_symbol_temporario(DataType tipo, SymbolKind kind) {
             break;
 
         default:
-            printf(stderr, "Aviso: Kind desconhecido em cria_symbol_temporario.\n");
+            printf("Aviso: Kind desconhecido em cria_symbol_temporario.\n");
             break;
     }
 
@@ -316,7 +312,7 @@ bool symbols_compatible(const Symbol* s1, const Symbol* s2){
     DataType t1 = s1->type;
     DataType t2 = s2->type;
     if (t1 != TYPE_STRUCT || t2 != TYPE_STRUCT)
-        return tipos_sao_compatíveis(t1, t2);
+        return types_compatible(&t1, &t2);
 
     // Se forem structs, compara os nomes
     return s1->data.var_info.struct_name &&
@@ -327,21 +323,22 @@ bool symbols_compatible(const Symbol* s1, const Symbol* s2){
 
 Operator operador_para_enum(const char* op_str) {
     if (strcmp(op_str, "<") == 0) {
-        return LEFT_OP;
+        return OP_LESS;
     } else if (strcmp(op_str, ">") == 0) {
-        return RIGHT_OP;
+        return OP_GREATER;
     } else if (strcmp(op_str, "<=") == 0) {
-        return LESS_EQUAL_OP;
+        return OP_LESS_EQUAL;
     } else if (strcmp(op_str, ">=") == 0) {
-        return RIGHT_EQUAL_OP;
+        return OP_GREATER_EQUAL;
     } else if (strcmp(op_str, "==") == 0) {
-        return EQUAL_OP;
+        return OP_EQUAL;
     } else if (strcmp(op_str, "!=") == 0) {
-        return NOT_EQUAL_OP;
+        return OP_NOT_EQUAL;
     } else {
-        return NONE_OP;  // operador desconhecido ou inválido
+        return OP_NONE;  // operador desconhecido ou inválido
     }
 }
+
 
 Node* create_node() {
     Node* node = (Node*) malloc(sizeof(Node));
@@ -361,7 +358,7 @@ Node* create_node() {
     // Zera o union de valores
     memset(&node->value, 0, sizeof(node->value));
 
-    node->op = NONE_OP;
+    node->op = OP_NONE;
     node->left = NULL;
     node->right = NULL;
 
@@ -369,27 +366,18 @@ Node* create_node() {
 }
 
 bool types_compatible(const DataType* a, const DataType* b){
-    if (a == b) {
+    if (*a == *b) {
         return true;
     }
 
     // Permitir conversão enteiro → float
-    if ((a == TYPE_FLOAT && b == TYPE_INT) || (a == TYPE_INT && b == TYPE_FLOAT)) return true;
+    if ((*a == TYPE_FLOAT && *b == TYPE_INT) || (*a == TYPE_INT && *b == TYPE_FLOAT)) return true;
 
     // Suporta compatibilidade entre char e int (promovido em expressões)
-    if ((a == TYPE_INT && b == TYPE_CHAR) || (a == TYPE_CHAR && b == TYPE_INT)) return true;
+    if ((*a == TYPE_INT && *b == TYPE_CHAR) || (*a == TYPE_CHAR && *b == TYPE_INT)) return true;
 
     // Compatibilidade para void em contextos onde não há valor (e.g., retorno de função)
-    if (a == TYPE_VOID && b == TYPE_VOID) return true;
-
-    // Para structs: só se o nome do struct for o mesmo
-    if (a == TYPE_STRUCT && b == TYPE_STRUCT) {
-        // Aqui você deve comparar os struct_names, armazenados em Symbol
-        // Exemplo:
-        // if (strcmp(symA->data.var_info.struct_name, symB->data.var_info.struct_name) == 0) return true;
-        // Mas como essa função não tem os Symbols, você pode delegar essa verificação externamente.
-        return false;
-    }
+    if (*a == TYPE_VOID && *b == TYPE_VOID) return true;
 
     return false;
 }
@@ -412,7 +400,7 @@ int verifica_argumentos(Symbol *func, Node *args) {
     while (param && arg) {
         // Verifica se os tipos batem
         if (param->type != arg->type) {
-            printf("Erro Semântico: Tipos oferecidos nao batem ");
+            printf("Erro Semântico: Tipos oferecidos nao batem\n");
             return 0;
         }
 
@@ -432,13 +420,11 @@ int verifica_argumentos(Symbol *func, Node *args) {
 
     // Se sobrou parâmetro ou argumento, quantidade diferente
     if (param != NULL) {
-        printf("Erro Semântico: Função '%s' espera %d parâmetros, mas recebeu menos ",
-            func->name, index - 1 + 1);
+        printf("Erro Semântico: Função '%s' espera %d parâmetros, mas recebeu menos ",func->name, index);
         return 0;
     }
     if (arg != NULL) {
-        printf("Erro Semântico: Função '%s' espera %d parâmetros, mas recebeu mais %d ",
-            func->name, index - 1);
+        printf("Erro Semântico: Função '%s' espera %d parâmetros, mas recebeu mais do que esperado", func->name, index);
         return 0;
     }
 
@@ -452,26 +438,6 @@ static Dimension* clone_dimensions(const Dimension* dims) {
     new_dim->size = dims->size;
     new_dim->next = clone_dimensions(dims->next);
     return new_dim;
-}
-
-// Clona os membros da tabela hash de structs
-HashTable* clone_struct_members(const HashTable* members) {
-    if (!members) return NULL;
-
-    HashTable* cloned_table = create_hash_table(); // usa sua função
-    for (int i = 0; i < HASH_TABLE_SIZE; ++i) {
-        Symbol* current = members->table[i];
-        while (current) {
-            Symbol* cloned_sym = clone_symbol(current);
-            // Inserção no início da lista do bucket
-            unsigned long index = hash_function(cloned_sym->name);
-            cloned_sym->next = cloned_table->table[index];
-            cloned_table->table[index] = cloned_sym;
-
-            current = current->next;
-        }
-    }
-    return cloned_table;
 }
 
 static Symbol* clone_symbol(const Symbol* sym) {
@@ -505,3 +471,24 @@ static Symbol* clone_symbol(const Symbol* sym) {
 
     return new_sym;
 }
+
+// Clona os membros da tabela hash de structs
+HashTable* clone_struct_members(const HashTable* members) {
+    if (!members) return NULL;
+
+    HashTable* cloned_table = create_hash_table(); // usa sua função
+    for (int i = 0; i < HASH_TABLE_SIZE; ++i) {
+        Symbol* current = members->table[i];
+        while (current) {
+            Symbol* cloned_sym = clone_symbol(current);
+            // Inserção no início da lista do bucket
+            unsigned long index = hash_function(cloned_sym->name);
+            cloned_sym->next = cloned_table->table[index];
+            cloned_table->table[index] = cloned_sym;
+
+            current = current->next;
+        }
+    }
+    return cloned_table;
+}
+
