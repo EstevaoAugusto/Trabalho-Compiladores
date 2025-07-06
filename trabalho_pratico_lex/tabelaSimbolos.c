@@ -492,3 +492,87 @@ HashTable* clone_struct_members(const HashTable* members) {
     return cloned_table;
 }
 
+// Código para gerar 3 endereços
+static int temp_count = 0;
+
+char* new_temp() {
+    char* temp = (char*)malloc(16);
+    sprintf(temp, "t%d", temp_count++);
+    return temp;
+}
+
+const char* op_to_str(Operator op) {
+    switch (op) {
+        case OP_PLUS: return "+";
+        case OP_MINUS: return "-";
+        case OP_MULTIPLY: return "*";
+        case OP_DIVIDE: return "/";
+        case OP_ASSIGN: return "=";
+        case OP_LESS: return "<";
+        case OP_GREATER: return ">";
+        case OP_LESS_EQUAL: return "<=";
+        case OP_GREATER_EQUAL: return ">=";
+        case OP_EQUAL: return "==";
+        case OP_NOT_EQUAL: return "!=";
+        default: return "?";
+    }
+}
+
+char* generate_code(Node* node) {
+    if (!node) return NULL;
+
+    // ⚠️ Evita gerar código mais de uma vez
+    if (node->place) return node->place;
+
+    char *left, *right, *temp;
+
+    switch (node->op) {
+        case OP_PLUS:
+        case OP_MINUS:
+        case OP_MULTIPLY:
+        case OP_DIVIDE:
+        case OP_LESS:
+        case OP_GREATER:
+        case OP_LESS_EQUAL:
+        case OP_GREATER_EQUAL:
+        case OP_EQUAL:
+        case OP_NOT_EQUAL:
+            left = generate_code(node->left);
+            right = generate_code(node->right);
+            temp = new_temp();
+            printf("%s = %s %s %s\n", temp, left, op_to_str(node->op), right);
+            node->place = temp;
+            return temp;
+
+        case OP_ASSIGN:
+            left = generate_code(node->left);
+            right = generate_code(node->right);
+            printf("%s = %s\n", left, right);
+            node->place = strdup(left);
+            return node->place;
+
+        case OP_VAR:
+            node->place = node->symbol->name;
+            return node->place;
+
+        case OP_NONE:
+            temp = new_temp();
+            switch (node->type) {
+                case TYPE_INT:
+                    printf("%s = %d\n", temp, node->value.int_val); break;
+                case TYPE_FLOAT:
+                    printf("%s = %f\n", temp, node->value.float_val); break;
+                case TYPE_CHAR:
+                    printf("%s = '%c'\n", temp, node->value.char_val); break;
+                case TYPE_STRING:
+                    printf("%s = \"%s\"\n", temp, node->value.string_val); break;
+                default:
+                    printf("%s = <valor inválido>\n", temp);
+            }
+            node->place = temp;
+            return temp;
+
+        default:
+            return NULL;
+    }
+}

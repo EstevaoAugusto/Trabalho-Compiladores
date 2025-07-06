@@ -76,6 +76,7 @@ typedef struct Node {
     struct Node *left;
     struct Node *next;
     struct Node *right;
+    char *place; // Local onde o resultado será armazenado
 } Node;
 
 
@@ -170,6 +171,10 @@ void initialize_hash_table(HashTable* table);
 int insert_struct_members(Symbol* symbol, HashTable* table);
 
 HashTable* clone_struct_members(const HashTable* members);
+
+char* generate_code(Node* node);
+const char* op_to_str(Operator op);
+char* new_temp();
 
 // Essa funcao serve para checar se existem identificadores iguais em structs
 bool lookup_struct_hash_table(const Symbol* symbol, const HashTable* table);

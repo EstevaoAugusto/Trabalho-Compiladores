@@ -1,5 +1,5 @@
 bison -d parser.y
 flex projeto.l
-gcc -o Compiler.o lex.yy.c parser.tab.c tabelaSimbolos.c -lfl #Linux: "-lfl" ao invés de "-ly -ll" 
-./Compiler.o testeTerra.cm
+gcc -o Compiler.o lex.yy.c parser.tab.c tabelaSimbolos.c #Linux: "-lfl" ao invés de "-ly -ll" 
+./Compiler.o testeSemantico.cm
 #./Compiler TP_tipo1_teste_etapa2.cm

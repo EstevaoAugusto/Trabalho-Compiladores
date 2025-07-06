@@ -429,6 +429,14 @@ expressao
             DataType tipo_var = $1->type;
             DataType tipo_expr = $3->type;
 
+            Node* node = create_node();
+            node->op = OP_ASSIGN;
+            node->type = $1->type;
+            node->left = $1;
+            node->right = $3;
+            node->place = generate_code(node);
+            $$ = node;
+
             if (tipo_var != tipo_expr) {
                 printf("Erro Semântico: Tipos incompatíveis na atribuição (linha %d, coluna %d).\n", line_number, column_number);
                 semantic_errors++;
@@ -506,6 +514,7 @@ exp_soma
                 node->type = $1->type;   // ou aplicar promoção de tipo, se quiser
                 node->left = $1;
                 node->right = $3;
+                node->place = generate_code(node);
                 $$ = node;
             }
         } else {

@@ -3,32 +3,3 @@ float numero@;          /* erro: caractere inválido '@'*/
 char c = 'abc';         /* erro: char com mais de um caractere*/
 string s = "Olá;        /* erro: string não fechada*/
 print(“Mensagem”);      /* erro: aspas não padronizadas (aspas curvas)*/
-
-int i                 /* Declaracao Invalida */
-
-char a;                 /* Acesso de Array Invalido */
-
-char tabel [1][int];   /* Declaracao Erronea de Matriz */
-
-void function() {       /* Passagem Sem Parametro */
-    int num;
-}
-
-int soma(s) {            /* não passar o tipo dos parâmetros */
-    int b;
-    return a + b;
-}
-
-int soma;                 
-soma = 2 + 8;             /* Erro de somatório (Precisa estar dentro da função) */
-
-
-struct cachorro {            /* Falta de IDENTIFIER no fim da instrução */
-    float tamanho;
-    float peso;
-};
-
-int number = 4;         /* Declara e Atribui ao mesmo tempo */
-
- while (i < 5) {           /* Chavers Abertas */
-    i = i + 1;

@@ -45,8 +45,6 @@ other                           .
                             lexical_errors++;    
                         }
 
-
-
 \n              { line_number++; column_number = 1; }
 [ ]+            { column_number += yyleng; }
 \t+           {
