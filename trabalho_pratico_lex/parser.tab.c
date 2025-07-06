@@ -537,10 +537,10 @@ static const yytype_uint16 yyrline[] =
      292,   294,   300,   302,   308,   318,   328,   334,   339,   340,
      345,   346,   351,   352,   353,   354,   355,   356,   362,   369,
      373,   380,   387,   393,   400,   406,   413,   420,   426,   451,
-     453,   459,   484,   490,   491,   492,   493,   494,   495,   500,
-     504,   524,   546,   550,   569,   588,   594,   604,   608,   613,
-     618,   626,   634,   642,   650,   662,   690,   696,   699,   704,
-     709,   717,   719,   725,   743,   775,   789
+     453,   459,   481,   486,   487,   488,   489,   490,   491,   496,
+     497,   514,   533,   534,   550,   566,   571,   580,   584,   589,
+     594,   602,   610,   618,   626,   638,   666,   672,   675,   680,
+     685,   693,   695,   701,   719,   751,   765
 };
 #endif
 
@@ -2065,7 +2065,7 @@ yyreduce:
   case 61:
 
 /* Line 1455 of yacc.c  */
-#line 460 "parser.y"
+#line 459 "parser.y"
     {
         if ((yyvsp[(1) - (3)].node) && (yyvsp[(3) - (3)].node)) {
             if ((yyvsp[(1) - (3)].node)->type != (yyvsp[(3) - (3)].node)->type) {
@@ -2086,74 +2086,70 @@ yyreduce:
 
                 (yyval.node) = node;
             }
-        } else {
-            (yyval.node) = NULL;
-        }
+        } else { (yyval.node) = NULL; }
     ;}
     break;
 
   case 62:
 
 /* Line 1455 of yacc.c  */
-#line 485 "parser.y"
+#line 481 "parser.y"
     { (yyval.node) = (yyvsp[(1) - (1)].node); ;}
     break;
 
   case 63:
 
 /* Line 1455 of yacc.c  */
-#line 490 "parser.y"
+#line 486 "parser.y"
     {   (yyval.sval) = (yyvsp[(1) - (1)].sval);    ;}
     break;
 
   case 64:
 
 /* Line 1455 of yacc.c  */
-#line 491 "parser.y"
+#line 487 "parser.y"
     {   (yyval.sval) = (yyvsp[(1) - (1)].sval);    ;}
     break;
 
   case 65:
 
 /* Line 1455 of yacc.c  */
-#line 492 "parser.y"
+#line 488 "parser.y"
     {   (yyval.sval) = (yyvsp[(1) - (1)].sval);    ;}
     break;
 
   case 66:
 
 /* Line 1455 of yacc.c  */
-#line 493 "parser.y"
+#line 489 "parser.y"
     {   (yyval.sval) = (yyvsp[(1) - (1)].sval);    ;}
     break;
 
   case 67:
 
 /* Line 1455 of yacc.c  */
-#line 494 "parser.y"
+#line 490 "parser.y"
     {   (yyval.sval) = (yyvsp[(1) - (1)].sval);    ;}
     break;
 
   case 68:
 
 /* Line 1455 of yacc.c  */
-#line 495 "parser.y"
+#line 491 "parser.y"
     {   (yyval.sval) = (yyvsp[(1) - (1)].sval);    ;}
     break;
 
   case 69:
 
 /* Line 1455 of yacc.c  */
-#line 501 "parser.y"
-    {
-        (yyval.node) = (yyvsp[(1) - (1)].node);  // Apenas passa o node do termo para cima
-    ;}
+#line 496 "parser.y"
+    { (yyval.node) = (yyvsp[(1) - (1)].node); ;}
     break;
 
   case 70:
 
 /* Line 1455 of yacc.c  */
-#line 505 "parser.y"
+#line 497 "parser.y"
     {
         if ((yyvsp[(1) - (3)].node) && (yyvsp[(3) - (3)].node)) {
             if ((yyvsp[(1) - (3)].node)->type != (yyvsp[(3) - (3)].node)->type) {
@@ -2169,16 +2165,14 @@ yyreduce:
                 node->place = generate_code(node);
                 (yyval.node) = node;
             }
-        } else {
-            (yyval.node) = NULL;
-        }
+        } else { (yyval.node) = NULL; }
     ;}
     break;
 
   case 71:
 
 /* Line 1455 of yacc.c  */
-#line 525 "parser.y"
+#line 514 "parser.y"
     {
         if ((yyvsp[(1) - (3)].node) && (yyvsp[(3) - (3)].node)) {
             if ((yyvsp[(1) - (3)].node)->type != (yyvsp[(3) - (3)].node)->type) {
@@ -2193,25 +2187,21 @@ yyreduce:
                 node->right = (yyvsp[(3) - (3)].node);
                 (yyval.node) = node;
             }
-        } else {
-            (yyval.node) = NULL;
-        }
+        } else { (yyval.node) = NULL; }
     ;}
     break;
 
   case 72:
 
 /* Line 1455 of yacc.c  */
-#line 547 "parser.y"
-    {
-        (yyval.node) = (yyvsp[(1) - (1)].node);  // Só propaga o node do fator
-    ;}
+#line 533 "parser.y"
+    { (yyval.node) = (yyvsp[(1) - (1)].node); ;}
     break;
 
   case 73:
 
 /* Line 1455 of yacc.c  */
-#line 551 "parser.y"
+#line 534 "parser.y"
     {
         if ((yyvsp[(1) - (3)].node) && (yyvsp[(3) - (3)].node)) {
             if ((yyvsp[(1) - (3)].node)->type != (yyvsp[(3) - (3)].node)->type) {
@@ -2226,16 +2216,14 @@ yyreduce:
                 node->right = (yyvsp[(3) - (3)].node);
                 (yyval.node) = node;
             }
-        } else {
-            (yyval.node) = NULL;
-        }
+        } else { (yyval.node) = NULL; }
     ;}
     break;
 
   case 74:
 
 /* Line 1455 of yacc.c  */
-#line 570 "parser.y"
+#line 550 "parser.y"
     {
         if ((yyvsp[(1) - (3)].node) && (yyvsp[(3) - (3)].node)) {
             if ((yyvsp[(1) - (3)].node)->type != (yyvsp[(3) - (3)].node)->type) {
@@ -2250,16 +2238,14 @@ yyreduce:
                 node->right = (yyvsp[(3) - (3)].node);
                 (yyval.node) = node;
             }
-        } else {
-            (yyval.node) = NULL;
-        }
+        } else { (yyval.node) = NULL; }
     ;}
     break;
 
   case 75:
 
 /* Line 1455 of yacc.c  */
-#line 589 "parser.y"
+#line 566 "parser.y"
     {
         erro_sintatico_previsto("Erro Sintático: Operação de '*' sem o fator");
         yyerrok;
@@ -2270,7 +2256,7 @@ yyreduce:
   case 76:
 
 /* Line 1455 of yacc.c  */
-#line 595 "parser.y"
+#line 571 "parser.y"
     {
         erro_sintatico_previsto("Erro Sintático: Operação de '/' sem o fator");
         yyerrok;
@@ -2281,7 +2267,7 @@ yyreduce:
   case 77:
 
 /* Line 1455 of yacc.c  */
-#line 605 "parser.y"
+#line 581 "parser.y"
     {
         (yyval.node) = (yyvsp[(2) - (3)].node);  // Apenas propaga o Node da expressão
     ;}
@@ -2290,7 +2276,7 @@ yyreduce:
   case 78:
 
 /* Line 1455 of yacc.c  */
-#line 609 "parser.y"
+#line 585 "parser.y"
     {
         // var retorna Node*, já preenchido com o símbolo e tipo
         (yyval.node) = (yyvsp[(1) - (1)].node);
@@ -2300,7 +2286,7 @@ yyreduce:
   case 79:
 
 /* Line 1455 of yacc.c  */
-#line 614 "parser.y"
+#line 590 "parser.y"
     {
         // ativacao retorna Node* com símbolo da função e tipo de retorno
         (yyval.node) = (yyvsp[(1) - (1)].node);
@@ -2310,7 +2296,7 @@ yyreduce:
   case 80:
 
 /* Line 1455 of yacc.c  */
-#line 619 "parser.y"
+#line 595 "parser.y"
     {
         Node *n = create_node();
         n->type = TYPE_FLOAT;
@@ -2323,7 +2309,7 @@ yyreduce:
   case 81:
 
 /* Line 1455 of yacc.c  */
-#line 627 "parser.y"
+#line 603 "parser.y"
     {
         Node *n = create_node();
         n->type = TYPE_INT;
@@ -2336,7 +2322,7 @@ yyreduce:
   case 82:
 
 /* Line 1455 of yacc.c  */
-#line 635 "parser.y"
+#line 611 "parser.y"
     {
         Node *n = create_node();
         n->type = TYPE_CHAR;
@@ -2349,7 +2335,7 @@ yyreduce:
   case 83:
 
 /* Line 1455 of yacc.c  */
-#line 643 "parser.y"
+#line 619 "parser.y"
     {
         Node *n = create_node();
         n->type = TYPE_STRING; // defina esse tipo se ainda não existir
@@ -2362,7 +2348,7 @@ yyreduce:
   case 84:
 
 /* Line 1455 of yacc.c  */
-#line 651 "parser.y"
+#line 627 "parser.y"
     {
         erro_sintatico_previsto("Erro Sintático: Expressão vazia entre parênteses");
         yyerrok;
@@ -2373,7 +2359,7 @@ yyreduce:
   case 85:
 
 /* Line 1455 of yacc.c  */
-#line 663 "parser.y"
+#line 639 "parser.y"
     {
         Symbol *sym = lookup_symbol((yyvsp[(1) - (4)].id));
         if (!sym) {
@@ -2406,28 +2392,28 @@ yyreduce:
   case 86:
 
 /* Line 1455 of yacc.c  */
-#line 691 "parser.y"
+#line 667 "parser.y"
     { erro_sintatico_previsto("Erro Sintático: Argumentos invalidos no retorno da funcao"); (yyval.node) = NULL; yyerrok; ;}
     break;
 
   case 87:
 
 /* Line 1455 of yacc.c  */
-#line 697 "parser.y"
+#line 673 "parser.y"
     { (yyval.node) = (yyvsp[(1) - (1)].node); ;}
     break;
 
   case 88:
 
 /* Line 1455 of yacc.c  */
-#line 699 "parser.y"
+#line 675 "parser.y"
     { (yyval.node) = NULL; ;}
     break;
 
   case 89:
 
 /* Line 1455 of yacc.c  */
-#line 705 "parser.y"
+#line 681 "parser.y"
     {
           (yyval.node) = (yyvsp[(1) - (1)].node);
           (yyvsp[(1) - (1)].node)->next = NULL;
@@ -2437,7 +2423,7 @@ yyreduce:
   case 90:
 
 /* Line 1455 of yacc.c  */
-#line 710 "parser.y"
+#line 686 "parser.y"
     {
         Node *last = (yyvsp[(1) - (3)].node);
         while (last->next) last = last->next;
@@ -2450,21 +2436,21 @@ yyreduce:
   case 91:
 
 /* Line 1455 of yacc.c  */
-#line 718 "parser.y"
+#line 694 "parser.y"
     { erro_sintatico_previsto("Erro Sintático: Falta de parametro"); yyerrok; (yyval.node) = NULL; ;}
     break;
 
   case 92:
 
 /* Line 1455 of yacc.c  */
-#line 720 "parser.y"
+#line 696 "parser.y"
     { erro_sintatico_previsto("Erro Sintático: Virgula excedente ao final da lista de parametros"); yyerrok; (yyval.node) = NULL; ;}
     break;
 
   case 93:
 
 /* Line 1455 of yacc.c  */
-#line 726 "parser.y"
+#line 702 "parser.y"
     {
         Symbol *sym = lookup_symbol((yyvsp[(1) - (1)].id));
         if(!sym){
@@ -2487,7 +2473,7 @@ yyreduce:
   case 94:
 
 /* Line 1455 of yacc.c  */
-#line 744 "parser.y"
+#line 720 "parser.y"
     {
         Symbol *sym = lookup_symbol((yyvsp[(1) - (5)].id));
         if (!sym) {
@@ -2519,7 +2505,7 @@ yyreduce:
   case 95:
 
 /* Line 1455 of yacc.c  */
-#line 776 "parser.y"
+#line 752 "parser.y"
     {
         if ((yyvsp[(1) - (4)].node) && (yyvsp[(1) - (4)].node)->type != TYPE_INT) {
             printf("Erro Semântico: Índice de vetor deve ser inteiro (linha %d, coluna %d).\n", line_number, column_number);
@@ -2537,7 +2523,7 @@ yyreduce:
   case 96:
 
 /* Line 1455 of yacc.c  */
-#line 789 "parser.y"
+#line 765 "parser.y"
     {
         (yyval.node) = NULL;
     ;}
@@ -2546,7 +2532,7 @@ yyreduce:
 
 
 /* Line 1455 of yacc.c  */
-#line 2550 "parser.tab.c"
+#line 2536 "parser.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2758,7 +2744,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 794 "parser.y"
+#line 770 "parser.y"
 
 
 

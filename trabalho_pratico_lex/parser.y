@@ -403,15 +403,13 @@ iteracao_decl
 
 /*----- 18° -----*/
 retorno_decl
-    : RETURN SEMICOLON
-    {
+    : RETURN SEMICOLON    {
         if (current_function_type != TYPE_VOID) {
             printf("Erro Semântico: Retorno sem valor em função que exige retorno (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
         }
     }
-    | RETURN expressao SEMICOLON
-    {
+    | RETURN expressao SEMICOLON    {
         if ($2 && $2->type != current_function_type) {
             printf("Erro Semântico: Tipo do valor de retorno incompatível com a função (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
@@ -450,14 +448,12 @@ expressao
     }
     | var ASSIGN_OP error
     { erro_sintatico_previsto("Erro Sintático: Atribuição sem expressão à direita"); $$ = NULL; yyerrok; }
-    | expressao_simples
-    { $$ = $1; }
+    | expressao_simples    { $$ = $1; }
     ;
 
 /*----- 20° -----*/
 expressao_simples
-    : exp_soma relacional exp_soma
-    {
+    : exp_soma relacional exp_soma    {
         if ($1 && $3) {
             if ($1->type != $3->type) {
                 printf("Erro Semântico: Tipos incompatíveis na comparação (linha %d, coluna %d).\n", line_number, column_number);
@@ -477,12 +473,9 @@ expressao_simples
 
                 $$ = node;
             }
-        } else {
-            $$ = NULL;
-        }
+        } else { $$ = NULL; }
     }
-    | exp_soma
-    { $$ = $1; }
+    | exp_soma    { $$ = $1; }
     ;
 
 /*----- 21° -----*/
@@ -497,12 +490,8 @@ relacional
 
 /*----- 23°: Operação de Soma mesmo -----*/
 exp_soma
-    : termo
-    {
-        $$ = $1;  // Apenas passa o node do termo para cima
-    }
-    | exp_soma PLUS termo
-    {
+    : termo    { $$ = $1; }
+    | exp_soma PLUS termo    {
         if ($1 && $3) {
             if ($1->type != $3->type) {
                 printf("Erro Semântico: tipos incompatíveis na soma (linha %d, coluna %d).\n", line_number, column_number);
@@ -517,12 +506,9 @@ exp_soma
                 node->place = generate_code(node);
                 $$ = node;
             }
-        } else {
-            $$ = NULL;
-        }
+        } else { $$ = NULL; }
     }
-    | exp_soma MINUS termo
-    {
+    | exp_soma MINUS termo    {
         if ($1 && $3) {
             if ($1->type != $3->type) {
                 printf("Erro Semântico: tipos incompatíveis na subtração (linha %d, coluna %d).\n", line_number, column_number);
@@ -536,19 +522,13 @@ exp_soma
                 node->right = $3;
                 $$ = node;
             }
-        } else {
-            $$ = NULL;
-        }
+        } else { $$ = NULL; }
     }
-    ;
+;
 
 termo
-    : fator
-    {
-        $$ = $1;  // Só propaga o node do fator
-    }
-    | termo MULTIPLY fator
-    {
+    : fator    { $$ = $1; }
+    | termo MULTIPLY fator    {
         if ($1 && $3) {
             if ($1->type != $3->type) {
                 printf("Erro Semântico: tipos incompatíveis na multiplicação (linha %d, coluna %d).\n", line_number, column_number);
@@ -562,12 +542,9 @@ termo
                 node->right = $3;
                 $$ = node;
             }
-        } else {
-            $$ = NULL;
-        }
+        } else { $$ = NULL; }
     }
-    | termo DIVISION fator
-    {
+    | termo DIVISION fator    {
         if ($1 && $3) {
             if ($1->type != $3->type) {
                 printf("Erro Semântico: tipos incompatíveis na divisão (linha %d, coluna %d).\n", line_number, column_number);
@@ -581,18 +558,14 @@ termo
                 node->right = $3;
                 $$ = node;
             }
-        } else {
-            $$ = NULL;
-        }
+        } else { $$ = NULL; }
     }
-    | termo MULTIPLY fator error
-    {
+    | termo MULTIPLY fator error    {
         erro_sintatico_previsto("Erro Sintático: Operação de '*' sem o fator");
         yyerrok;
         $$ = NULL;
     }
-    | termo DIVISION fator error
-    {
+    | termo DIVISION fator error    {
         erro_sintatico_previsto("Erro Sintático: Operação de '/' sem o fator");
         yyerrok;
         $$ = NULL;
