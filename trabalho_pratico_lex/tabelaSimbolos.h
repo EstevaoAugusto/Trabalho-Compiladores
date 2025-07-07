@@ -75,9 +75,11 @@ typedef struct Node {
     } value;
 
     Operator op;
+    // filhos da árvore de expressão (como a + b, a vai em left, b em right).
     struct Node *left;
-    struct Node *next;
     struct Node *right;
+    // usado quando os nós estão encadeados como lista (ex: argumentos de função).
+    struct Node *next;
     char *place; // Local onde o resultado será armazenado
 } Node;
 
@@ -103,6 +105,7 @@ typedef struct HashTable {
  */
 typedef struct Scope {
     HashTable* table;
+    DataType function_return_type;
     struct Scope* next; // Ponteiro para o escopo anterior (formando uma pilha)
 } Scope;
 
@@ -119,6 +122,7 @@ typedef struct Symbol {
     union {
         struct {
             int relative_address;
+            bool is_from_struct;
             bool is_array;
             Dimension* dimensions;
             char* struct_name;
@@ -147,9 +151,10 @@ extern Scope* current_scope;
 
 // Funções de Gerenciamento de Escopo
 void init_scope_stack();
-void open_scope();
+void open_scope(DataType function_return_type);
 void close_scope();
 void destroy_scope_stack();
+DataType find_current_function_type();
 
 // Funções de Manipulação de Símbolos
 Symbol* lookup_symbol(const char* name);
@@ -163,6 +168,16 @@ Symbol* insert_function(const char* name, DataType return_type, const char* stru
 Symbol* insert_struct_def(const char* name, HashTable* members);
 
 // Funções auxiliares
+
+Param* clone_param_list(const Param* original);
+
+void free_param_list(Param* p);
+
+void free_symbol(Symbol* sym);
+
+void free_hash_table(HashTable* table);
+
+void free_dimension_list(Dimension* d);
 
 int verifica_argumentos(Symbol *func, Node *args);
 
@@ -197,7 +212,9 @@ Dimension* new_dimension(int size, Dimension* next);
 
 bool symbols_compatible(const Symbol* s1, const Symbol* s2);
 
-bool types_compatible(const DataType* a, const DataType* b);
+bool types_compatible(const DataType a, const DataType b);
+
+Node* find_node_by_name(Node* list, const char* name);
 
 Param* clone_param_list(const Param* params);
 

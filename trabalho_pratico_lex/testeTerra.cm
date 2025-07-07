@@ -16,6 +16,7 @@ int soma(int a, int b) {
 int main(void) {
     int resultado;
     /* Atribuição de valores */
+    a = 10;
     x = 5;
     y = 10.5;
     idade = 25 + 2 * 9E2;
@@ -27,6 +28,7 @@ int main(void) {
     arr[2] = 3;
     arr[3] = 4;
     arr[4] = 5;
+    arr = soma(x,1);
 
     /* Chamada de função */
     

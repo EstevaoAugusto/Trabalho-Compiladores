@@ -22,7 +22,7 @@
 
     void yyerror(const char *s);
     void erro_sintatico_previsto(const char *msg);
-    DataType current_function_type = TYPE_INVALID; 
+    DataType last_type_declared = TYPE_INVALID;  
 
 %}
 
@@ -121,10 +121,14 @@ var_declaracao
                 $$ = NULL;
             } else {
                 insert_variable($2, $1->type, $1->name);
+                $$ = lookup_symbol($2);
             }
         } else if (!insert_variable($2, $1->type, NULL)) {
             printf("Erro Semântico: Variável '%s' já foi declarada (linha %d, coluna %d).\n", $2, line_number, column_number);
             semantic_errors++;
+            $$ = NULL;
+        } else {
+            $$ = lookup_symbol($2);
         }
     }
     | tipo_especificador IDENTIFIER arrayDimensao SEMICOLON
@@ -192,22 +196,22 @@ arrayDimensao
 tipo_especificador
     : INT       
     {   
-        current_function_type = TYPE_INT;
+        last_type_declared = TYPE_INT;
         $$ = cria_symbol_temporario(TYPE_INT, KIND_VARIABLE);
     }
     | FLOAT     
     {   
-        current_function_type = TYPE_FLOAT;
+        last_type_declared = TYPE_FLOAT;
         $$ = cria_symbol_temporario(TYPE_FLOAT, KIND_VARIABLE);
     }
     | CHAR      
     {   
-        current_function_type = TYPE_CHAR;
+        last_type_declared = TYPE_CHAR;
         $$ = cria_symbol_temporario(TYPE_CHAR, KIND_VARIABLE);
     }
     | VOID      
     {   
-        current_function_type = TYPE_VOID;
+        last_type_declared = TYPE_VOID;
         $$ = cria_symbol_temporario(TYPE_VOID, KIND_VARIABLE);
     }
     | STRUCT IDENTIFIER LEFT_BRACE varDeclList RIGHT_BRACE
@@ -259,32 +263,32 @@ func_declaracao
             if(!insert_function($2, $1->type, NULL, $4)){
                 printf("Erro Semântico: Função '%s' já declarada (linha %d, coluna %d).\n", $2, line_number, column_number);
                 semantic_errors++;
-                current_function_type = TYPE_INVALID;
+                last_type_declared = TYPE_INVALID;
             }
         } 
     }
     | tipo_especificador error LEFT_PAREN params RIGHT_PAREN composto_decl 
     { 
         erro_sintatico_previsto("Erro Sintático: Função inexistente ou invalida apos o tipo de retorno"); 
-        current_function_type = TYPE_INVALID; 
+        last_type_declared = TYPE_INVALID; 
         $$ = NULL; 
         yyerrok; 
     }
     | tipo_especificador IDENTIFIER LEFT_PAREN error RIGHT_PAREN composto_decl 
     { 
         erro_sintatico_previsto("Erro Sintático: Lista de parâmetros malformada na declaração de função"); 
-        current_function_type = TYPE_INVALID;
+        last_type_declared = TYPE_INVALID;
         $$ = NULL; 
         yyerrok; 
     }
     ;
 
 abre_escopo_funcao 
-    :       { open_scope(); }
+    :       { open_scope(last_type_declared); }
     ;
 
 fecha_escopo_funcao
-    :       { close_scope(); current_function_type = TYPE_INVALID; }
+    :       { close_scope(); last_type_declared = TYPE_INVALID; }
     ;
 
 /*----- 8° -----*/
@@ -313,6 +317,7 @@ param
             $$ = NULL;
         } else {
             $$ = create_param($2, $1->type, $1->data.var_info.is_array);
+            insert_variable($2, $1->type, NULL);
         }
     }
     | tipo_especificador IDENTIFIER LEFT_BRACKET RIGHT_BRACKET
@@ -323,6 +328,7 @@ param
             $$ = NULL;
         } else {
             $$ = create_param($2, $1->type, $1->data.var_info.is_array);
+            insert_array($2, $1->type, NULL, NULL);
         }
     }
     | tipo_especificador IDENTIFIER error RIGHT_BRACKET
@@ -438,13 +444,15 @@ iteracao_decl
 /*----- 18° -----*/
 retorno_decl
     : RETURN SEMICOLON    {
-        if (current_function_type != TYPE_VOID) {
+        DataType type = find_current_function_type();
+        if (type != TYPE_VOID) {
             printf("Erro Semântico: Retorno sem valor em função que exige retorno (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
         }
     }
     | RETURN expressao SEMICOLON    {
-        if ($2 && $2->type != current_function_type) {
+        DataType type = find_current_function_type();
+        if ($2 && $2->type != type) {
             printf("Erro Semântico: Tipo do valor de retorno incompatível com a função (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
         } else if ($2) {
@@ -461,9 +469,6 @@ expressao
     : var ASSIGN_OP expressao
     {
         if ($1 && $3) {
-            DataType tipo_var = $1->type;
-            DataType tipo_expr = $3->type;
-
             Node* node = create_node();
             node->op = OP_ASSIGN;
             node->type = $1->type;
@@ -472,19 +477,45 @@ expressao
             node->place = generate_code(node);
             $$ = node;
 
-            if (tipo_var != tipo_expr) {
-                printf("Erro Semântico: Tipos incompatíveis na atribuição (linha %d, coluna %d).\n", line_number, column_number);
+            if($1->symbol->data.var_info.is_from_struct){
+                printf("Erro Semântico: Acesso a membros de struct não suportado pela gramática (linha %d, coluna %d).\n", line_number, column_number);
                 semantic_errors++;
                 $$ = NULL;
             } else {
-                $$ = $1;
+                DataType tipo_var = $1->type;
+                DataType tipo_expr = $3->type;
+
+                bool tipos_compativeis = false;
+
+                if (tipo_var == tipo_expr) {
+                    tipos_compativeis = true;
+                } else if ((tipo_var == TYPE_FLOAT && tipo_expr == TYPE_INT) ||  (tipo_var == TYPE_INT && tipo_expr == TYPE_FLOAT)) {
+                    tipos_compativeis = true;
+                } else {
+                    tipos_compativeis = false;
+                }
+
+                if (!tipos_compativeis) {
+                    printf("Erro Semântico: Tipos incompatíveis na atribuição (linha %d, coluna %d).\n", line_number, column_number);
+                    semantic_errors++;
+                    $$ = NULL;
+                } else {
+                    $$ = $1;
+                }
             }
         } else {
             $$ = NULL;
         }
     }
     | var ASSIGN_OP error
-    { erro_sintatico_previsto("Erro Sintático: Atribuição sem expressão à direita"); $$ = NULL; yyerrok; }
+    { 
+        erro_sintatico_previsto("Erro Sintático: Atribuição sem expressão à direita"); 
+        if($1 && $1->symbol->data.var_info.is_from_struct){
+            printf("Erro Semântico: Acesso a membros de struct não suportado pela gramática (linha %d, coluna %d).\n", line_number, column_number);
+            semantic_errors++;
+        }
+        $$ = NULL; 
+        yyerrok; }
     | expressao_simples    { $$ = $1; }
     ;
 
@@ -657,7 +688,7 @@ fator
         Node *n = create_node();
         n->type = TYPE_STRING; // defina esse tipo se ainda não existir
         n->op = OP_NONE;
-        n->value.string_val = $1; // copia a string
+        n->value.string_val = strdup($1); // copia a string
         $$ = n;
     }
     | LEFT_PAREN error RIGHT_PAREN
@@ -716,8 +747,11 @@ args
 arg_lista
     : expressao
     {
-          $$ = $1;
-          $1->next = NULL;
+        if($1->kind == KIND_VARIABLE){
+            insert_variable($1->symbol->name, $1->type, NULL);
+        }
+        $$ = $1;
+        $1->next = NULL;
     }
     | arg_lista COMMA expressao
     {
@@ -739,7 +773,11 @@ var
     {
         Symbol *sym = lookup_symbol($1);
         if(!sym){
-            printf("Erro Semântico: Identificador '%s' não foi declarado (linha %d, coluna %d).\n", $1, line_number, column_number);
+            printf("Erro Semântico: Identificador não foi declarado (linha %d, coluna %d).\n", line_number, column_number);
+            semantic_errors++;
+            $$ = NULL;
+        } else if(sym->data.var_info.is_array){
+            printf("Erro Semântico: Problema de Atribuição, uma das variaveis é um arranjo, mas nenhum indice foi colocado (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
             $$ = NULL;
         } else {
@@ -757,7 +795,7 @@ var
     {
         Symbol *sym = lookup_symbol($1);
         if (!sym) {
-            printf("Erro Semântico: Identificador '%s' não foi declarado (linha %d, coluna %d).\n", $1, line_number, column_number);
+            printf("Erro Semântico: Identificador não foi declarado (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
             $$ = NULL;
         } else if (!sym->data.var_info.is_array) {
@@ -769,33 +807,108 @@ var
             semantic_errors++;
             $$ = NULL;
         } else {
-            Node *n = create_node();
-            n->type = sym->type;
-            n->symbol = sym;
-            n->op = OP_INDEX;
-            n->left = $3;  // expressão de índice
-            n->right = $5; // profundidade adicional
-            n->is_array = true; // se ainda tiver dimensões restantes
-            n->dim = sym->data.var_info.dimensions != NULL ? sym->data.var_info.dimensions->next : NULL;
-            $$ = n;
+            // Verificar se todos os índices são inteiros
+            Node *temp = $5;
+            bool all_int = ($3 && $3->type == TYPE_INT);
+            while (temp && all_int) {
+                if (temp->type != TYPE_INT) {
+                    all_int = false;
+                    break;
+                }
+                temp = temp->next;
+            }
+
+            if (!all_int) {
+                printf("Erro Semântico: Índices de vetor devem ser inteiros (linha %d, coluna %d).\n", line_number, column_number);
+                semantic_errors++;
+                $$ = NULL;
+            } else {
+                // Contar número de índices fornecidos
+                int num_indices = 1;
+                Node *current = $5;
+                while (current) {
+                    num_indices++;
+                    current = current->next;
+                }
+
+                // Contar número de dimensões esperadas
+                int num_dims = 0;
+                Dimension *d = sym->data.var_info.dimensions;
+                while (d) {
+                    num_dims++;
+                    d = d->next;
+                }
+
+                if (num_indices > num_dims) {
+                    printf("Erro Semântico: Vetor '%s' possui dimensões demais (fornecido %d, esperado %d) (linha %d, coluna %d).\n",
+                        $1, num_indices, num_dims, line_number, column_number);
+                    semantic_errors++;
+                    $$ = NULL;
+                } else {
+
+                    Node *idx_node = $3;                     // Primeiro índice
+                    Dimension *dim_node = sym->data.var_info.dimensions;  // Lista de dimensões do símbolo
+                    int checked_dims = 0;
+
+                    while (idx_node != NULL && dim_node != NULL) {
+                    // Verifica se índice é valor inteiro constante
+                        int val = idx_node->value.int_val;
+                        if (val < 0 || val >= dim_node->size) {
+                            printf("Erro Semântico: Índice [%d] fora dos limites da dimensão %d (tamanho = %d) do vetor '%s' (linha %d, coluna %d).\n",
+                            val, checked_dims + 1, dim_node->size, $1, line_number, column_number);
+                            semantic_errors++;
+                            $$ = NULL;
+                            break;
+                        }
+
+
+                    // Avança para próximo índice e próxima dimensão
+                    if (checked_dims == 0)
+                        idx_node = $5;     // var_auxiliar está no $5 (próximos índices)
+                    else
+                        idx_node = idx_node->next;
+
+                    dim_node = dim_node->next;
+                    checked_dims++;
+                    }
+
+                    Node *n = create_node();
+                    n->type = sym->type;
+                    n->symbol = sym;
+                    n->op = OP_INDEX;
+                    n->left = $3;     // primeiro índice
+                    n->right = $5;    // índices seguintes
+                    n->dim = sym->data.var_info.dimensions;
+
+                    // Se ainda restam dimensões após os índices, é um array
+                    n->is_array = (num_indices < num_dims);
+                    $$ = n;
+                }
+            }
         }
     }
-    ;
+;
 
 /*---- 29° ----*/
 
 var_auxiliar
     : var_auxiliar LEFT_BRACKET expressao RIGHT_BRACKET
     {
-        if ($1 && $1->type != TYPE_INT) {
+        if ($3 && $3->type != TYPE_INT) {
             printf("Erro Semântico: Índice de vetor deve ser inteiro (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
-            $$ = NULL;
-        } else if ($3) {
-            $1->next = $3;
             $$ = $1;
         } else {
-            $$ = $1;
+            if ($1 == NULL) {
+                // Começando uma nova lista de dimensões
+                $$ = $3;
+            } else {
+                // Encadeia $3 no final da lista $1
+                Node *temp = $1;
+                while (temp->next != NULL) temp = temp->next;
+                temp->next = $3;
+                $$ = $1;
+            }
         }
     }
     | // vazio
@@ -836,9 +949,9 @@ int main(int argc, char **argv) {
 
     printf("\n=== Resultado da Análise ===\n");
     if (result == 0) {
-        printf("ANALISE SINTATICA CONCLUIDA COM SUCESSO!\n");
+        printf("ANALISE CONCLUIDA COM SUCESSO!\n");
     } else {
-        printf("ANALISE SINTATICA FALHOU DEVIDO A ERROS!\n");
+        printf("ANALISE FALHOU DEVIDO A ERROS!\n");
     }
 
     printf("Total de erros léxicos: %d\n", lexical_errors);
@@ -846,6 +959,6 @@ int main(int argc, char **argv) {
     printf("Total de erros semânticos: %d\n", semantic_errors);
 
     fclose(compiled_arq);
-    destroy_scope_stack();
+    // destroy_scope_stack();
     return 0;
 }

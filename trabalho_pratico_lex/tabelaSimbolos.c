@@ -63,11 +63,14 @@ Symbol* insert_variable(const char* name, DataType type, const char* struct_name
     new_symbol->type = type;
     new_symbol->data.var_info.is_array = false;
     new_symbol->data.var_info.dimensions = NULL;
+    new_symbol->data.var_info.is_from_struct = false;
     new_symbol->data.var_info.relative_address = 0; // A ser definido na geração de código
     
     new_symbol->data.var_info.struct_name = struct_name ? strdup(struct_name) : NULL;
     Symbol* struct_sym = struct_name ? lookup_symbol(struct_name) : NULL;
     if (type == TYPE_STRUCT && (!struct_sym || struct_sym->kind != KIND_STRUCT_DEF)) {
+        free(new_symbol);
+        free(struct_sym);
         return NULL; // struct inválida ou não declarada
     }
     new_symbol->data.var_info.members = struct_sym ? clone_struct_members(struct_sym->data.struct_info.members) : NULL;
@@ -143,10 +146,93 @@ Symbol* insert_struct_def(const char* name, HashTable* members) {
 void init_scope_stack() {
     // A pilha começa vazia, open_scope() criará o primeiro (global) escopo.
     current_scope = NULL;
-    open_scope(); // Cria o escopo global
+
+    open_scope(TYPE_INVALID); // Cria o escopo global
 }
 
-void open_scope() {
+// Libera lista encadeada de Param
+void free_param_list(Param* p) {
+    while (p) {
+        Param* next = p->next;
+        free(p->name);
+        free(p->struct_name);
+        free(p);
+        p = next;
+    }
+    p = NULL;
+}
+
+// Libera lista encadeada de Dimension
+void free_dimension_list(Dimension* d) {
+    while (d) {
+        Dimension* next = d->next;
+        free(d);
+        d = next;
+    }
+    d = NULL;
+}
+
+// Libera um Symbol, dependendo do tipo (variável, função, struct)
+void free_symbol(Symbol* sym) {
+    // printf\("..."\);
+    if (!sym) return;
+
+    // printf\("..."\);
+    free(sym->name);
+    // printf("10\n");
+    sym->name = NULL;
+
+    switch (sym->kind) {
+        case KIND_FUNCTION:
+            free(sym->data.func_info.struct_name);
+            free_param_list(sym->data.func_info.params);
+            break;
+
+        case KIND_VARIABLE:
+        case KIND_ARRAY:
+            free(sym->data.var_info.struct_name);
+            free_dimension_list(sym->data.var_info.dimensions);
+            if (sym->data.var_info.members ) {
+                free_hash_table(sym->data.var_info.members);
+            }
+            break;
+
+        case KIND_STRUCT_DEF:
+            if (sym->data.struct_info.members ) {
+                free_hash_table(sym->data.struct_info.members);
+            }
+            break;
+
+        default:
+            break;
+    }
+
+    free(sym);
+    sym = NULL;
+}
+
+void free_hash_table(HashTable* table) {
+    // printf\("..."\);
+    if (!table) return;
+
+    // printf\("..."\);
+    for (int i = 0; i < HASH_TABLE_SIZE; i++) {
+        // printf\("..."\);
+        Symbol* current = table->table[i];
+        while (current) {
+            // printf\("..."\);
+            Symbol* next = current->next;
+            free_symbol(current);
+            current = next;
+        }
+    }
+
+    free(table);
+    table = NULL;
+}
+
+void open_scope(DataType function_return_type) {
+    //// printf\("..."\);
     // Aloca memória para um novo escopo
     Scope* new_scope = (Scope*)malloc(sizeof(Scope));
     if (!new_scope) { /* erro de alocação */ return; }
@@ -161,10 +247,16 @@ void open_scope() {
     // Empilha o novo escopo
     new_scope->next = current_scope;
     current_scope = new_scope;
+
+    // Define o tipo da funcoa
+    new_scope->function_return_type = function_return_type;
 }
 
 int insert_struct_members(Symbol* symbol, HashTable* table){
     if (!symbol || !table || !symbol->name) return 0;
+
+    symbol->data.var_info.is_from_struct = true;
+
     if(lookup_struct_hash_table(symbol, table)){
         return 0;
     }
@@ -239,28 +331,29 @@ void close_scope() {
     Scope* scope_to_delete = current_scope;
     
     // Libera todos os símbolos dentro da tabela do escopo que está sendo fechado
-    for (int i = 0; i < HASH_TABLE_SIZE; i++) {
-        Symbol* current = scope_to_delete->table->table[i];
-        while (current) {
-            Symbol* temp = current;
-            current = current->next;
-            free(temp->name); // Libera a string duplicada
-            free(temp);       // Libera o nó do símbolo
-        }
-    }
     
-    // Libera a tabela de hash
-    free(scope_to_delete->table);
+    free_hash_table(scope_to_delete->table);
 
     // Avança o topo da pilha para o escopo anterior
     current_scope = scope_to_delete->next;
     
     // Libera a estrutura do escopo
     free(scope_to_delete);
+    scope_to_delete = NULL;
+}
+
+DataType find_current_function_type() {
+    Scope* scope = current_scope;
+    while (scope) {
+        if (scope->function_return_type != TYPE_INVALID)
+            return scope->function_return_type;
+        scope = scope->next;
+    }
+    return TYPE_INVALID; // não está dentro de função
 }
 
 void destroy_scope_stack(){
-    while(current_scope){
+    while(current_scope != NULL){
         close_scope();
     }
 }
@@ -312,7 +405,7 @@ bool symbols_compatible(const Symbol* s1, const Symbol* s2){
     DataType t1 = s1->type;
     DataType t2 = s2->type;
     if (t1 != TYPE_STRUCT || t2 != TYPE_STRUCT)
-        return types_compatible(&t1, &t2);
+        return types_compatible(t1, t2);
 
     // Se forem structs, compara os nomes
     return s1->data.var_info.struct_name &&
@@ -374,21 +467,34 @@ int count_args(Node* args) {
     return count;
 }
 
-bool types_compatible(const DataType* a, const DataType* b){
-    if (*a == *b) {
+bool types_compatible(const DataType a, const DataType b){
+    if (a == b) {
         return true;
     }
 
     // Permitir conversão enteiro → float
-    if ((*a == TYPE_FLOAT && *b == TYPE_INT) || (*a == TYPE_INT && *b == TYPE_FLOAT)) return true;
+    if ((a == TYPE_FLOAT && b == TYPE_INT) || (a == TYPE_INT && b == TYPE_FLOAT)) return true;
 
     // Suporta compatibilidade entre char e int (promovido em expressões)
-    if ((*a == TYPE_INT && *b == TYPE_CHAR) || (*a == TYPE_CHAR && *b == TYPE_INT)) return true;
+    if ((a == TYPE_INT && b == TYPE_CHAR) || (a == TYPE_CHAR && b == TYPE_INT)) return true;
 
     // Compatibilidade para void em contextos onde não há valor (e.g., retorno de função)
-    if (*a == TYPE_VOID && *b == TYPE_VOID) return true;
+    if (a == TYPE_VOID && b == TYPE_VOID) return true;
 
     return false;
+}
+
+Node* find_node_by_name(Node* list, const char* name) {
+    Node* current = list;
+
+    while (current != NULL) {
+        if (current->symbol != NULL && strcmp(current->symbol->name, name) == 0) {
+            return current; // Encontrado
+        }
+        current = current->right; // Avança para o próximo nó da lista
+    }
+
+    return NULL; // Não encontrado
 }
 
 int verifica_argumentos(Symbol *func, Node *args) {
@@ -407,34 +513,46 @@ int verifica_argumentos(Symbol *func, Node *args) {
     int index = 1;  // Para indicar qual argumento está sendo verificado
 
     while (param && arg) {
-        // Verifica se os tipos batem
-        if (param->type != arg->type) {
-            printf("Erro Semântico: Tipos oferecidos nao batem\n");
-            return 0;
-        }
+        // Se o argumento for OP_NONE, é um valor isolado (como literal), então só verifica o tipo
+        if (arg->op != OP_NONE) {
+            // Verifica se o tipo é compatível
+            if (!types_compatible(param->type, arg->type)) {
+                printf("Erro Semântico: Tipos incompatíveis no argumento %d da função '%s'.\n", index, func->name);
+                return 0;
+            }
+        
 
         // Verifica se ambos são arrays ou não
-        if (param->is_array != arg->is_array) {
-            printf("Erro Semântico: Argumento %d da função '%s' deve %sarray, mas recebeu %sarray ",
-                index, func->name,
-                param->is_array ? "" : "não ",
-                arg->is_array ? "" : "não ");
-            return 0;
+            if (param->is_array != arg->is_array) {
+                printf("Erro Semântico: Argumento %d da função '%s' deve %sarray, mas recebeu %sarray.\n",
+                    index, func->name,
+                    param->is_array ? "" : "não ",
+                    arg->is_array ? "" : "não ");
+                return 0;
+            }
+        } else {
+            // Caso OP_NONE, apenas verifica se o tipo do valor combina
+            if (!types_compatible(param->type, arg->type)) {
+                printf("Erro Semântico: Tipo do argumento literal %d incompatível com o esperado pela função '%s'.\n", index, func->name);
+                return 0;
+            }
+            // Nenhuma verificação de array é necessária
         }
 
         param = param->next;
-        arg = arg->right;  // Avança para o próximo argumento
+        arg = arg->right;
         index++;
     }
 
-    // Se sobrou parâmetro ou argumento, quantidade diferente
-    if (param != NULL) {
-        printf("Erro Semântico: Função '%s' espera %d parâmetros, mas recebeu menos ",func->name, index);
-        return 0;
-    }
-    if (arg != NULL) {
-        printf("Erro Semântico: Função '%s' espera %d parâmetros, mas recebeu mais do que esperado", func->name, index);
-        return 0;
+    if (param != NULL || arg != NULL) {
+        int expected = 0, received = 0;
+        for (Param *p = func->data.func_info.params; p; p = p->next) expected++;
+        for (Node *a = args; a; a = a->next) received++;
+
+        if(expected != received){
+            printf("Erro Semântico: Função '%s' espera %d parâmetro(s), mas recebeu %d.\n", func->name, expected, received);
+            return 0;
+        }
     }
 
     return 1;  // Tudo certo
@@ -449,6 +567,19 @@ static Dimension* clone_dimensions(const Dimension* dims) {
     return new_dim;
 }
 
+Param* clone_param_list(const Param* original) {
+    if (!original) return NULL;
+
+    Param* clone = malloc(sizeof(Param));
+    clone->name = strdup(original->name);
+    clone->type = original->type;
+    clone->is_array = original->is_array;
+    clone->struct_name = original->struct_name ? strdup(original->struct_name) : NULL;
+    clone->next = clone_param_list(original->next);
+
+    return clone;
+}
+
 static Symbol* clone_symbol(const Symbol* sym) {
     if (!sym) return NULL;
 
@@ -461,6 +592,7 @@ static Symbol* clone_symbol(const Symbol* sym) {
     switch (sym->kind) {
         case KIND_VARIABLE:
         case KIND_ARRAY:
+            new_sym->data.var_info.is_from_struct = sym->data.var_info.is_from_struct;
             new_sym->data.var_info.relative_address = sym->data.var_info.relative_address;
             new_sym->data.var_info.is_array = sym->data.var_info.is_array;
             new_sym->data.var_info.dimensions = clone_dimensions(sym->data.var_info.dimensions);
@@ -470,7 +602,7 @@ static Symbol* clone_symbol(const Symbol* sym) {
 
         case KIND_FUNCTION:
             new_sym->data.func_info.struct_name = sym->data.func_info.struct_name ? strdup(sym->data.func_info.struct_name) : NULL;
-            new_sym->data.func_info.params = NULL; // você pode implementar clone de Param se quiser
+            new_sym->data.func_info.params = clone_param_list(sym->data.func_info.params);
             break;
 
         case KIND_STRUCT_DEF:

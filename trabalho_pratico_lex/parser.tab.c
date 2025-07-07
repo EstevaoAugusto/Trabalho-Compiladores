@@ -89,7 +89,7 @@
 
     void yyerror(const char *s);
     void erro_sintatico_previsto(const char *msg);
-    DataType current_function_type = TYPE_INVALID; 
+    DataType last_type_declared = TYPE_INVALID;  
 
 
 
@@ -531,16 +531,16 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    85,    85,    90,    91,    92,    98,    99,   104,   130,
-     156,   158,   160,   165,   175,   185,   187,   193,   198,   203,
-     208,   213,   219,   225,   237,   253,   266,   273,   283,   287,
-     292,   294,   300,   302,   308,   318,   328,   334,   339,   340,
-     345,   346,   351,   352,   353,   354,   355,   356,   362,   369,
-     373,   389,   409,   415,   434,   440,   446,   455,   461,   486,
-     488,   493,   516,   521,   522,   523,   524,   525,   526,   531,
-     532,   549,   569,   570,   587,   603,   608,   617,   621,   626,
-     631,   639,   647,   655,   663,   675,   703,   709,   712,   717,
-     722,   730,   732,   738,   756,   788,   802
+       0,    85,    85,    90,    91,    92,    98,    99,   104,   134,
+     160,   162,   164,   169,   179,   189,   191,   197,   202,   207,
+     212,   217,   223,   229,   241,   257,   270,   277,   287,   291,
+     296,   298,   304,   306,   312,   323,   334,   340,   345,   346,
+     351,   352,   357,   358,   359,   360,   361,   362,   368,   375,
+     379,   395,   415,   421,   440,   446,   453,   463,   469,   510,
+     519,   524,   547,   552,   553,   554,   555,   556,   557,   562,
+     563,   580,   600,   601,   618,   634,   639,   648,   652,   657,
+     662,   670,   678,   686,   694,   706,   734,   740,   743,   748,
+     756,   764,   766,   772,   794,   895,   915
 };
 #endif
 
@@ -1601,10 +1601,14 @@ yyreduce:
                 (yyval.symbol) = NULL;
             } else {
                 insert_variable((yyvsp[(2) - (3)].id), (yyvsp[(1) - (3)].symbol)->type, (yyvsp[(1) - (3)].symbol)->name);
+                (yyval.symbol) = lookup_symbol((yyvsp[(2) - (3)].id));
             }
         } else if (!insert_variable((yyvsp[(2) - (3)].id), (yyvsp[(1) - (3)].symbol)->type, NULL)) {
             printf("Erro Semântico: Variável '%s' já foi declarada (linha %d, coluna %d).\n", (yyvsp[(2) - (3)].id), line_number, column_number);
             semantic_errors++;
+            (yyval.symbol) = NULL;
+        } else {
+            (yyval.symbol) = lookup_symbol((yyvsp[(2) - (3)].id));
         }
     ;}
     break;
@@ -1612,7 +1616,7 @@ yyreduce:
   case 9:
 
 /* Line 1455 of yacc.c  */
-#line 131 "parser.y"
+#line 135 "parser.y"
     {
         if((yyvsp[(1) - (4)].symbol) == NULL){
             printf("Erro Semântico: Declaração de struct possui erro sintático (linha %d, coluna %d).\n", line_number, column_number);
@@ -1643,28 +1647,28 @@ yyreduce:
   case 10:
 
 /* Line 1455 of yacc.c  */
-#line 157 "parser.y"
+#line 161 "parser.y"
     { erro_sintatico_previsto("Erro Sintático: Inicialização de variável não suportada nesta linguagem"); (yyval.symbol) = NULL; yyerrok; ;}
     break;
 
   case 11:
 
 /* Line 1455 of yacc.c  */
-#line 159 "parser.y"
+#line 163 "parser.y"
     { erro_sintatico_previsto("Erro Sintático: Declaração de variável inválida"); (yyval.symbol) = NULL; yyerrok; ;}
     break;
 
   case 12:
 
 /* Line 1455 of yacc.c  */
-#line 161 "parser.y"
+#line 165 "parser.y"
     { erro_sintatico_previsto("Erro Sintático: Declaração de variável inválida"); (yyval.symbol) = NULL; yyerrok;  ;}
     break;
 
   case 13:
 
 /* Line 1455 of yacc.c  */
-#line 166 "parser.y"
+#line 170 "parser.y"
     {
         if((yyvsp[(2) - (4)].intval) > 0){
             (yyval.dim) = new_dimension((yyvsp[(2) - (4)].intval), (yyvsp[(4) - (4)].dim));
@@ -1679,7 +1683,7 @@ yyreduce:
   case 14:
 
 /* Line 1455 of yacc.c  */
-#line 176 "parser.y"
+#line 180 "parser.y"
     {
         if((yyvsp[(2) - (3)].intval) > 0){
             (yyval.dim) = new_dimension((yyvsp[(2) - (3)].intval), NULL);
@@ -1694,23 +1698,23 @@ yyreduce:
   case 15:
 
 /* Line 1455 of yacc.c  */
-#line 186 "parser.y"
+#line 190 "parser.y"
     { erro_sintatico_previsto("Erro Sintático: Dimensao do array invalida"); (yyval.dim) = NULL; yyerrok; ;}
     break;
 
   case 16:
 
 /* Line 1455 of yacc.c  */
-#line 188 "parser.y"
+#line 192 "parser.y"
     { erro_sintatico_previsto("Erro Sintático: Dimensao do array invalida"); (yyval.dim) = NULL; yyerrok; ;}
     break;
 
   case 17:
 
 /* Line 1455 of yacc.c  */
-#line 194 "parser.y"
+#line 198 "parser.y"
     {   
-        current_function_type = TYPE_INT;
+        last_type_declared = TYPE_INT;
         (yyval.symbol) = cria_symbol_temporario(TYPE_INT, KIND_VARIABLE);
     ;}
     break;
@@ -1718,9 +1722,9 @@ yyreduce:
   case 18:
 
 /* Line 1455 of yacc.c  */
-#line 199 "parser.y"
+#line 203 "parser.y"
     {   
-        current_function_type = TYPE_FLOAT;
+        last_type_declared = TYPE_FLOAT;
         (yyval.symbol) = cria_symbol_temporario(TYPE_FLOAT, KIND_VARIABLE);
     ;}
     break;
@@ -1728,9 +1732,9 @@ yyreduce:
   case 19:
 
 /* Line 1455 of yacc.c  */
-#line 204 "parser.y"
+#line 208 "parser.y"
     {   
-        current_function_type = TYPE_CHAR;
+        last_type_declared = TYPE_CHAR;
         (yyval.symbol) = cria_symbol_temporario(TYPE_CHAR, KIND_VARIABLE);
     ;}
     break;
@@ -1738,9 +1742,9 @@ yyreduce:
   case 20:
 
 /* Line 1455 of yacc.c  */
-#line 209 "parser.y"
+#line 213 "parser.y"
     {   
-        current_function_type = TYPE_VOID;
+        last_type_declared = TYPE_VOID;
         (yyval.symbol) = cria_symbol_temporario(TYPE_VOID, KIND_VARIABLE);
     ;}
     break;
@@ -1748,7 +1752,7 @@ yyreduce:
   case 21:
 
 /* Line 1455 of yacc.c  */
-#line 214 "parser.y"
+#line 218 "parser.y"
     {   
         (yyval.symbol) = cria_symbol_temporario(TYPE_STRUCT, KIND_STRUCT_DEF);
         (yyval.symbol)->name = strdup((yyvsp[(2) - (5)].id));
@@ -1759,14 +1763,14 @@ yyreduce:
   case 22:
 
 /* Line 1455 of yacc.c  */
-#line 220 "parser.y"
+#line 224 "parser.y"
     { erro_sintatico_previsto("Erro Sintático: Nome de struct ausente"); (yyval.symbol) = NULL;  yyerrok; ;}
     break;
 
   case 23:
 
 /* Line 1455 of yacc.c  */
-#line 226 "parser.y"
+#line 230 "parser.y"
     {
         HashTable* members = create_hash_table();
         if(((yyvsp[(1) - (1)].symbol) != NULL) && !insert_struct_members((yyvsp[(1) - (1)].symbol), members)){
@@ -1783,7 +1787,7 @@ yyreduce:
   case 24:
 
 /* Line 1455 of yacc.c  */
-#line 238 "parser.y"
+#line 242 "parser.y"
     {
         HashTable* members = (yyvsp[(2) - (2)].members);
         if(((yyvsp[(1) - (2)].symbol) != NULL) && !insert_struct_members((yyvsp[(1) - (2)].symbol), (yyval.members))){
@@ -1800,7 +1804,7 @@ yyreduce:
   case 25:
 
 /* Line 1455 of yacc.c  */
-#line 254 "parser.y"
+#line 258 "parser.y"
     {
         if((yyvsp[(1) - (6)].symbol) == NULL || (yyvsp[(1) - (6)].symbol)->kind == KIND_STRUCT_DEF){
             printf("Erro Semântico: Struct nao é aceito como tipo de retorno (linha %d, coluna %d).\n", line_number, column_number);
@@ -1809,7 +1813,7 @@ yyreduce:
             if(!insert_function((yyvsp[(2) - (6)].id), (yyvsp[(1) - (6)].symbol)->type, NULL, (yyvsp[(4) - (6)].param))){
                 printf("Erro Semântico: Função '%s' já declarada (linha %d, coluna %d).\n", (yyvsp[(2) - (6)].id), line_number, column_number);
                 semantic_errors++;
-                current_function_type = TYPE_INVALID;
+                last_type_declared = TYPE_INVALID;
             }
         } 
     ;}
@@ -1818,10 +1822,10 @@ yyreduce:
   case 26:
 
 /* Line 1455 of yacc.c  */
-#line 267 "parser.y"
+#line 271 "parser.y"
     { 
         erro_sintatico_previsto("Erro Sintático: Função inexistente ou invalida apos o tipo de retorno"); 
-        current_function_type = TYPE_INVALID; 
+        last_type_declared = TYPE_INVALID; 
         (yyval.symbol) = NULL; 
         yyerrok; 
     ;}
@@ -1830,10 +1834,10 @@ yyreduce:
   case 27:
 
 /* Line 1455 of yacc.c  */
-#line 274 "parser.y"
+#line 278 "parser.y"
     { 
         erro_sintatico_previsto("Erro Sintático: Lista de parâmetros malformada na declaração de função"); 
-        current_function_type = TYPE_INVALID;
+        last_type_declared = TYPE_INVALID;
         (yyval.symbol) = NULL; 
         yyerrok; 
     ;}
@@ -1842,49 +1846,49 @@ yyreduce:
   case 28:
 
 /* Line 1455 of yacc.c  */
-#line 283 "parser.y"
-    { open_scope(); ;}
+#line 287 "parser.y"
+    { open_scope(last_type_declared); ;}
     break;
 
   case 29:
 
 /* Line 1455 of yacc.c  */
-#line 287 "parser.y"
-    { close_scope(); current_function_type = TYPE_INVALID; ;}
+#line 291 "parser.y"
+    { close_scope(); last_type_declared = TYPE_INVALID; ;}
     break;
 
   case 30:
 
 /* Line 1455 of yacc.c  */
-#line 293 "parser.y"
+#line 297 "parser.y"
     { (yyval.param) = (yyvsp[(1) - (1)].param); ;}
     break;
 
   case 31:
 
 /* Line 1455 of yacc.c  */
-#line 295 "parser.y"
+#line 299 "parser.y"
     { (yyval.param) = NULL; ;}
     break;
 
   case 32:
 
 /* Line 1455 of yacc.c  */
-#line 301 "parser.y"
+#line 305 "parser.y"
     { (yyval.param) = (yyvsp[(1) - (1)].param); ;}
     break;
 
   case 33:
 
 /* Line 1455 of yacc.c  */
-#line 303 "parser.y"
+#line 307 "parser.y"
     { (yyvsp[(1) - (3)].param)->next = (yyvsp[(3) - (3)].param); (yyval.param) = (yyvsp[(1) - (3)].param); ;}
     break;
 
   case 34:
 
 /* Line 1455 of yacc.c  */
-#line 309 "parser.y"
+#line 313 "parser.y"
     {
         if((yyvsp[(1) - (2)].symbol) == NULL || (yyvsp[(1) - (2)].symbol)->kind == KIND_STRUCT_DEF){
             printf("Erro Semântico: Struct não pode ser utilizado como parametro (linha %d, coluna %d).", line_number, column_number);
@@ -1892,6 +1896,7 @@ yyreduce:
             (yyval.param) = NULL;
         } else {
             (yyval.param) = create_param((yyvsp[(2) - (2)].id), (yyvsp[(1) - (2)].symbol)->type, (yyvsp[(1) - (2)].symbol)->data.var_info.is_array);
+            insert_variable((yyvsp[(2) - (2)].id), (yyvsp[(1) - (2)].symbol)->type, NULL);
         }
     ;}
     break;
@@ -1899,7 +1904,7 @@ yyreduce:
   case 35:
 
 /* Line 1455 of yacc.c  */
-#line 319 "parser.y"
+#line 324 "parser.y"
     {
         if((yyvsp[(1) - (4)].symbol) == NULL || (yyvsp[(1) - (4)].symbol)->kind == KIND_STRUCT_DEF){
             printf("Erro Semântico: Struct não pode ser utilizado como parametro (linha %d, coluna %d).", line_number, column_number);
@@ -1907,6 +1912,7 @@ yyreduce:
             (yyval.param) = NULL;
         } else {
             (yyval.param) = create_param((yyvsp[(2) - (4)].id), (yyvsp[(1) - (4)].symbol)->type, (yyvsp[(1) - (4)].symbol)->data.var_info.is_array);
+            insert_array((yyvsp[(2) - (4)].id), (yyvsp[(1) - (4)].symbol)->type, NULL, NULL);
         }
     ;}
     break;
@@ -1914,21 +1920,21 @@ yyreduce:
   case 36:
 
 /* Line 1455 of yacc.c  */
-#line 329 "parser.y"
+#line 335 "parser.y"
     { erro_sintatico_previsto("Erro Sintático: Falta de abrir colchetes"); (yyval.param) = NULL; yyerrok; ;}
     break;
 
   case 47:
 
 /* Line 1455 of yacc.c  */
-#line 357 "parser.y"
+#line 363 "parser.y"
     { erro_sintatico_previsto("Erro Sintático: Comando invalido sintaticamente ou incompleto"); yyerrok; ;}
     break;
 
   case 48:
 
 /* Line 1455 of yacc.c  */
-#line 363 "parser.y"
+#line 369 "parser.y"
     {
         if (!(yyvsp[(1) - (2)].node)) {
             printf("Erro Semântico: Expressão inválida na linha %d, coluna %d.\n", line_number, column_number);
@@ -1940,7 +1946,7 @@ yyreduce:
   case 50:
 
 /* Line 1455 of yacc.c  */
-#line 374 "parser.y"
+#line 380 "parser.y"
     {
         if ((yyvsp[(3) - (5)].node) && (yyvsp[(3) - (5)].node)->type != TYPE_INT) {
             printf("Erro Semântico: Expressão condicional do 'if' deve ser do tipo int (linha %d, coluna %d).\n", line_number, column_number);
@@ -1961,7 +1967,7 @@ yyreduce:
   case 51:
 
 /* Line 1455 of yacc.c  */
-#line 390 "parser.y"
+#line 396 "parser.y"
     {
         if ((yyvsp[(3) - (7)].node) && (yyvsp[(3) - (7)].node)->type != TYPE_INT) {
             printf("Erro Semântico: Expressão condicional do 'if' deve ser do tipo int (linha %d, coluna %d).\n", line_number, column_number);
@@ -1986,14 +1992,14 @@ yyreduce:
   case 52:
 
 /* Line 1455 of yacc.c  */
-#line 410 "parser.y"
+#line 416 "parser.y"
     { erro_sintatico_previsto("Erro Sintático: Condição errada no comando IF"); yyerrok;;}
     break;
 
   case 53:
 
 /* Line 1455 of yacc.c  */
-#line 416 "parser.y"
+#line 422 "parser.y"
     {
         if ((yyvsp[(3) - (5)].node) && (yyvsp[(3) - (5)].node)->type != TYPE_INT) {
             printf("Erro Semântico: Expressão condicional do 'while' deve ser do tipo int (linha %d, coluna %d).\n", line_number, column_number);
@@ -2017,16 +2023,17 @@ yyreduce:
   case 54:
 
 /* Line 1455 of yacc.c  */
-#line 435 "parser.y"
+#line 441 "parser.y"
     { erro_sintatico_previsto("Erro Sintático: Comando WHILE invalido"); yyerrok; ;}
     break;
 
   case 55:
 
 /* Line 1455 of yacc.c  */
-#line 440 "parser.y"
+#line 446 "parser.y"
     {
-        if (current_function_type != TYPE_VOID) {
+        DataType type = find_current_function_type();
+        if (type != TYPE_VOID) {
             printf("Erro Semântico: Retorno sem valor em função que exige retorno (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
         }
@@ -2036,9 +2043,10 @@ yyreduce:
   case 56:
 
 /* Line 1455 of yacc.c  */
-#line 446 "parser.y"
+#line 453 "parser.y"
     {
-        if ((yyvsp[(2) - (3)].node) && (yyvsp[(2) - (3)].node)->type != current_function_type) {
+        DataType type = find_current_function_type();
+        if ((yyvsp[(2) - (3)].node) && (yyvsp[(2) - (3)].node)->type != type) {
             printf("Erro Semântico: Tipo do valor de retorno incompatível com a função (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
         } else if ((yyvsp[(2) - (3)].node)) {
@@ -2051,19 +2059,16 @@ yyreduce:
   case 57:
 
 /* Line 1455 of yacc.c  */
-#line 456 "parser.y"
+#line 464 "parser.y"
     { erro_sintatico_previsto("Erro Sintático: Retorno invalido"); yyerrok;;}
     break;
 
   case 58:
 
 /* Line 1455 of yacc.c  */
-#line 462 "parser.y"
+#line 470 "parser.y"
     {
         if ((yyvsp[(1) - (3)].node) && (yyvsp[(3) - (3)].node)) {
-            DataType tipo_var = (yyvsp[(1) - (3)].node)->type;
-            DataType tipo_expr = (yyvsp[(3) - (3)].node)->type;
-
             Node* node = create_node();
             node->op = OP_ASSIGN;
             node->type = (yyvsp[(1) - (3)].node)->type;
@@ -2072,12 +2077,31 @@ yyreduce:
             node->place = generate_code(node);
             (yyval.node) = node;
 
-            if (tipo_var != tipo_expr) {
-                printf("Erro Semântico: Tipos incompatíveis na atribuição (linha %d, coluna %d).\n", line_number, column_number);
+            if((yyvsp[(1) - (3)].node)->symbol->data.var_info.is_from_struct){
+                printf("Erro Semântico: Acesso a membros de struct não suportado pela gramática (linha %d, coluna %d).\n", line_number, column_number);
                 semantic_errors++;
                 (yyval.node) = NULL;
             } else {
-                (yyval.node) = (yyvsp[(1) - (3)].node);
+                DataType tipo_var = (yyvsp[(1) - (3)].node)->type;
+                DataType tipo_expr = (yyvsp[(3) - (3)].node)->type;
+
+                bool tipos_compativeis = false;
+
+                if (tipo_var == tipo_expr) {
+                    tipos_compativeis = true;
+                } else if ((tipo_var == TYPE_FLOAT && tipo_expr == TYPE_INT) ||  (tipo_var == TYPE_INT && tipo_expr == TYPE_FLOAT)) {
+                    tipos_compativeis = true;
+                } else {
+                    tipos_compativeis = false;
+                }
+
+                if (!tipos_compativeis) {
+                    printf("Erro Semântico: Tipos incompatíveis na atribuição (linha %d, coluna %d).\n", line_number, column_number);
+                    semantic_errors++;
+                    (yyval.node) = NULL;
+                } else {
+                    (yyval.node) = (yyvsp[(1) - (3)].node);
+                }
             }
         } else {
             (yyval.node) = NULL;
@@ -2088,21 +2112,28 @@ yyreduce:
   case 59:
 
 /* Line 1455 of yacc.c  */
-#line 487 "parser.y"
-    { erro_sintatico_previsto("Erro Sintático: Atribuição sem expressão à direita"); (yyval.node) = NULL; yyerrok; ;}
+#line 511 "parser.y"
+    { 
+        erro_sintatico_previsto("Erro Sintático: Atribuição sem expressão à direita"); 
+        if((yyvsp[(1) - (3)].node) && (yyvsp[(1) - (3)].node)->symbol->data.var_info.is_from_struct){
+            printf("Erro Semântico: Acesso a membros de struct não suportado pela gramática (linha %d, coluna %d).\n", line_number, column_number);
+            semantic_errors++;
+        }
+        (yyval.node) = NULL; 
+        yyerrok; ;}
     break;
 
   case 60:
 
 /* Line 1455 of yacc.c  */
-#line 488 "parser.y"
+#line 519 "parser.y"
     { (yyval.node) = (yyvsp[(1) - (1)].node); ;}
     break;
 
   case 61:
 
 /* Line 1455 of yacc.c  */
-#line 493 "parser.y"
+#line 524 "parser.y"
     {
         if ((yyvsp[(1) - (3)].node) && (yyvsp[(3) - (3)].node)) {
             if ((yyvsp[(1) - (3)].node)->type != (yyvsp[(3) - (3)].node)->type) {
@@ -2131,63 +2162,63 @@ yyreduce:
   case 62:
 
 /* Line 1455 of yacc.c  */
-#line 516 "parser.y"
+#line 547 "parser.y"
     { (yyval.node) = (yyvsp[(1) - (1)].node); ;}
     break;
 
   case 63:
 
 /* Line 1455 of yacc.c  */
-#line 521 "parser.y"
+#line 552 "parser.y"
     {   (yyval.sval) = (yyvsp[(1) - (1)].sval);    ;}
     break;
 
   case 64:
 
 /* Line 1455 of yacc.c  */
-#line 522 "parser.y"
+#line 553 "parser.y"
     {   (yyval.sval) = (yyvsp[(1) - (1)].sval);    ;}
     break;
 
   case 65:
 
 /* Line 1455 of yacc.c  */
-#line 523 "parser.y"
+#line 554 "parser.y"
     {   (yyval.sval) = (yyvsp[(1) - (1)].sval);    ;}
     break;
 
   case 66:
 
 /* Line 1455 of yacc.c  */
-#line 524 "parser.y"
+#line 555 "parser.y"
     {   (yyval.sval) = (yyvsp[(1) - (1)].sval);    ;}
     break;
 
   case 67:
 
 /* Line 1455 of yacc.c  */
-#line 525 "parser.y"
+#line 556 "parser.y"
     {   (yyval.sval) = (yyvsp[(1) - (1)].sval);    ;}
     break;
 
   case 68:
 
 /* Line 1455 of yacc.c  */
-#line 526 "parser.y"
+#line 557 "parser.y"
     {   (yyval.sval) = (yyvsp[(1) - (1)].sval);    ;}
     break;
 
   case 69:
 
 /* Line 1455 of yacc.c  */
-#line 531 "parser.y"
+#line 562 "parser.y"
     { (yyval.node) = (yyvsp[(1) - (1)].node); ;}
     break;
 
   case 70:
 
 /* Line 1455 of yacc.c  */
-#line 532 "parser.y"
+#line 563 "parser.y"
     {
         if ((yyvsp[(1) - (3)].node) && (yyvsp[(3) - (3)].node)) {
             if ((yyvsp[(1) - (3)].node)->type != (yyvsp[(3) - (3)].node)->type) {
@@ -2210,7 +2241,7 @@ yyreduce:
   case 71:
 
 /* Line 1455 of yacc.c  */
-#line 549 "parser.y"
+#line 580 "parser.y"
     {
         if ((yyvsp[(1) - (3)].node) && (yyvsp[(3) - (3)].node)) {
             if ((yyvsp[(1) - (3)].node)->type != (yyvsp[(3) - (3)].node)->type) {
@@ -2233,14 +2264,14 @@ yyreduce:
   case 72:
 
 /* Line 1455 of yacc.c  */
-#line 569 "parser.y"
+#line 600 "parser.y"
     { (yyval.node) = (yyvsp[(1) - (1)].node); ;}
     break;
 
   case 73:
 
 /* Line 1455 of yacc.c  */
-#line 570 "parser.y"
+#line 601 "parser.y"
     {
         if ((yyvsp[(1) - (3)].node) && (yyvsp[(3) - (3)].node)) {
             if ((yyvsp[(1) - (3)].node)->type != (yyvsp[(3) - (3)].node)->type) {
@@ -2263,7 +2294,7 @@ yyreduce:
   case 74:
 
 /* Line 1455 of yacc.c  */
-#line 587 "parser.y"
+#line 618 "parser.y"
     {
         if ((yyvsp[(1) - (3)].node) && (yyvsp[(3) - (3)].node)) {
             if ((yyvsp[(1) - (3)].node)->type != (yyvsp[(3) - (3)].node)->type) {
@@ -2285,7 +2316,7 @@ yyreduce:
   case 75:
 
 /* Line 1455 of yacc.c  */
-#line 603 "parser.y"
+#line 634 "parser.y"
     {
         erro_sintatico_previsto("Erro Sintático: Operação de '*' sem o fator");
         yyerrok;
@@ -2296,7 +2327,7 @@ yyreduce:
   case 76:
 
 /* Line 1455 of yacc.c  */
-#line 608 "parser.y"
+#line 639 "parser.y"
     {
         erro_sintatico_previsto("Erro Sintático: Operação de '/' sem o fator");
         yyerrok;
@@ -2307,7 +2338,7 @@ yyreduce:
   case 77:
 
 /* Line 1455 of yacc.c  */
-#line 618 "parser.y"
+#line 649 "parser.y"
     {
         (yyval.node) = (yyvsp[(2) - (3)].node);  // Apenas propaga o Node da expressão
     ;}
@@ -2316,7 +2347,7 @@ yyreduce:
   case 78:
 
 /* Line 1455 of yacc.c  */
-#line 622 "parser.y"
+#line 653 "parser.y"
     {
         // var retorna Node*, já preenchido com o símbolo e tipo
         (yyval.node) = (yyvsp[(1) - (1)].node);
@@ -2326,7 +2357,7 @@ yyreduce:
   case 79:
 
 /* Line 1455 of yacc.c  */
-#line 627 "parser.y"
+#line 658 "parser.y"
     {
         // ativacao retorna Node* com símbolo da função e tipo de retorno
         (yyval.node) = (yyvsp[(1) - (1)].node);
@@ -2336,7 +2367,7 @@ yyreduce:
   case 80:
 
 /* Line 1455 of yacc.c  */
-#line 632 "parser.y"
+#line 663 "parser.y"
     {
         Node *n = create_node();
         n->type = TYPE_FLOAT;
@@ -2349,7 +2380,7 @@ yyreduce:
   case 81:
 
 /* Line 1455 of yacc.c  */
-#line 640 "parser.y"
+#line 671 "parser.y"
     {
         Node *n = create_node();
         n->type = TYPE_INT;
@@ -2362,7 +2393,7 @@ yyreduce:
   case 82:
 
 /* Line 1455 of yacc.c  */
-#line 648 "parser.y"
+#line 679 "parser.y"
     {
         Node *n = create_node();
         n->type = TYPE_CHAR;
@@ -2375,12 +2406,12 @@ yyreduce:
   case 83:
 
 /* Line 1455 of yacc.c  */
-#line 656 "parser.y"
+#line 687 "parser.y"
     {
         Node *n = create_node();
         n->type = TYPE_STRING; // defina esse tipo se ainda não existir
         n->op = OP_NONE;
-        n->value.string_val = (yyvsp[(1) - (1)].sval); // copia a string
+        n->value.string_val = strdup((yyvsp[(1) - (1)].sval)); // copia a string
         (yyval.node) = n;
     ;}
     break;
@@ -2388,7 +2419,7 @@ yyreduce:
   case 84:
 
 /* Line 1455 of yacc.c  */
-#line 664 "parser.y"
+#line 695 "parser.y"
     {
         erro_sintatico_previsto("Erro Sintático: Expressão vazia entre parênteses");
         yyerrok;
@@ -2399,7 +2430,7 @@ yyreduce:
   case 85:
 
 /* Line 1455 of yacc.c  */
-#line 676 "parser.y"
+#line 707 "parser.y"
     {
         Symbol *sym = lookup_symbol((yyvsp[(1) - (4)].id));
         if (!sym) {
@@ -2432,38 +2463,41 @@ yyreduce:
   case 86:
 
 /* Line 1455 of yacc.c  */
-#line 704 "parser.y"
+#line 735 "parser.y"
     { erro_sintatico_previsto("Erro Sintático: Argumentos invalidos no retorno da funcao"); (yyval.node) = NULL; yyerrok; ;}
     break;
 
   case 87:
 
 /* Line 1455 of yacc.c  */
-#line 710 "parser.y"
+#line 741 "parser.y"
     { (yyval.node) = (yyvsp[(1) - (1)].node); ;}
     break;
 
   case 88:
 
 /* Line 1455 of yacc.c  */
-#line 712 "parser.y"
+#line 743 "parser.y"
     { (yyval.node) = NULL; ;}
     break;
 
   case 89:
 
 /* Line 1455 of yacc.c  */
-#line 718 "parser.y"
+#line 749 "parser.y"
     {
-          (yyval.node) = (yyvsp[(1) - (1)].node);
-          (yyvsp[(1) - (1)].node)->next = NULL;
+        if((yyvsp[(1) - (1)].node)->kind == KIND_VARIABLE){
+            insert_variable((yyvsp[(1) - (1)].node)->symbol->name, (yyvsp[(1) - (1)].node)->type, NULL);
+        }
+        (yyval.node) = (yyvsp[(1) - (1)].node);
+        (yyvsp[(1) - (1)].node)->next = NULL;
     ;}
     break;
 
   case 90:
 
 /* Line 1455 of yacc.c  */
-#line 723 "parser.y"
+#line 757 "parser.y"
     {
         Node *last = (yyvsp[(1) - (3)].node);
         while (last->next) last = last->next;
@@ -2476,25 +2510,29 @@ yyreduce:
   case 91:
 
 /* Line 1455 of yacc.c  */
-#line 731 "parser.y"
+#line 765 "parser.y"
     { erro_sintatico_previsto("Erro Sintático: Falta de parametro"); yyerrok; (yyval.node) = NULL; ;}
     break;
 
   case 92:
 
 /* Line 1455 of yacc.c  */
-#line 733 "parser.y"
+#line 767 "parser.y"
     { erro_sintatico_previsto("Erro Sintático: Virgula excedente ao final da lista de parametros"); yyerrok; (yyval.node) = NULL; ;}
     break;
 
   case 93:
 
 /* Line 1455 of yacc.c  */
-#line 739 "parser.y"
+#line 773 "parser.y"
     {
         Symbol *sym = lookup_symbol((yyvsp[(1) - (1)].id));
         if(!sym){
-            printf("Erro Semântico: Identificador '%s' não foi declarado (linha %d, coluna %d).\n", (yyvsp[(1) - (1)].id), line_number, column_number);
+            printf("Erro Semântico: Identificador não foi declarado (linha %d, coluna %d).\n", line_number, column_number);
+            semantic_errors++;
+            (yyval.node) = NULL;
+        } else if(sym->data.var_info.is_array){
+            printf("Erro Semântico: Problema de Atribuição, uma das variaveis é um arranjo, mas nenhum indice foi colocado (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
             (yyval.node) = NULL;
         } else {
@@ -2513,11 +2551,11 @@ yyreduce:
   case 94:
 
 /* Line 1455 of yacc.c  */
-#line 757 "parser.y"
+#line 795 "parser.y"
     {
         Symbol *sym = lookup_symbol((yyvsp[(1) - (5)].id));
         if (!sym) {
-            printf("Erro Semântico: Identificador '%s' não foi declarado (linha %d, coluna %d).\n", (yyvsp[(1) - (5)].id), line_number, column_number);
+            printf("Erro Semântico: Identificador não foi declarado (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
             (yyval.node) = NULL;
         } else if (!sym->data.var_info.is_array) {
@@ -2529,15 +2567,84 @@ yyreduce:
             semantic_errors++;
             (yyval.node) = NULL;
         } else {
-            Node *n = create_node();
-            n->type = sym->type;
-            n->symbol = sym;
-            n->op = OP_INDEX;
-            n->left = (yyvsp[(3) - (5)].node);  // expressão de índice
-            n->right = (yyvsp[(5) - (5)].node); // profundidade adicional
-            n->is_array = true; // se ainda tiver dimensões restantes
-            n->dim = sym->data.var_info.dimensions != NULL ? sym->data.var_info.dimensions->next : NULL;
-            (yyval.node) = n;
+            // Verificar se todos os índices são inteiros
+            Node *temp = (yyvsp[(5) - (5)].node);
+            bool all_int = ((yyvsp[(3) - (5)].node) && (yyvsp[(3) - (5)].node)->type == TYPE_INT);
+            while (temp && all_int) {
+                if (temp->type != TYPE_INT) {
+                    all_int = false;
+                    break;
+                }
+                temp = temp->next;
+            }
+
+            if (!all_int) {
+                printf("Erro Semântico: Índices de vetor devem ser inteiros (linha %d, coluna %d).\n", line_number, column_number);
+                semantic_errors++;
+                (yyval.node) = NULL;
+            } else {
+                // Contar número de índices fornecidos
+                int num_indices = 1;
+                Node *current = (yyvsp[(5) - (5)].node);
+                while (current) {
+                    num_indices++;
+                    current = current->next;
+                }
+
+                // Contar número de dimensões esperadas
+                int num_dims = 0;
+                Dimension *d = sym->data.var_info.dimensions;
+                while (d) {
+                    num_dims++;
+                    d = d->next;
+                }
+
+                if (num_indices > num_dims) {
+                    printf("Erro Semântico: Vetor '%s' possui dimensões demais (fornecido %d, esperado %d) (linha %d, coluna %d).\n",
+                        (yyvsp[(1) - (5)].id), num_indices, num_dims, line_number, column_number);
+                    semantic_errors++;
+                    (yyval.node) = NULL;
+                } else {
+
+                    Node *idx_node = (yyvsp[(3) - (5)].node);                     // Primeiro índice
+                    Dimension *dim_node = sym->data.var_info.dimensions;  // Lista de dimensões do símbolo
+                    int checked_dims = 0;
+
+                    while (idx_node != NULL && dim_node != NULL) {
+                    // Verifica se índice é valor inteiro constante
+                        int val = idx_node->value.int_val;
+                        if (val < 0 || val >= dim_node->size) {
+                            printf("Erro Semântico: Índice [%d] fora dos limites da dimensão %d (tamanho = %d) do vetor '%s' (linha %d, coluna %d).\n",
+                            val, checked_dims + 1, dim_node->size, (yyvsp[(1) - (5)].id), line_number, column_number);
+                            semantic_errors++;
+                            (yyval.node) = NULL;
+                            break;
+                        }
+
+
+                    // Avança para próximo índice e próxima dimensão
+                    if (checked_dims == 0)
+                        idx_node = (yyvsp[(5) - (5)].node);     // var_auxiliar está no $5 (próximos índices)
+                    else
+                        idx_node = idx_node->next;
+
+                    dim_node = dim_node->next;
+                    checked_dims++;
+                    }
+
+                    Node *n = create_node();
+                    n->type = sym->type;
+                    n->symbol = sym;
+                    n->op = OP_INDEX;
+                    n->left = (yyvsp[(3) - (5)].node);     // primeiro índice
+                    n->right = (yyvsp[(5) - (5)].node);    // índices seguintes
+                    n->dim = sym->data.var_info.dimensions;
+
+                    // Se ainda restam dimensões após os índices, é um array
+                    n->is_array = (num_indices < num_dims);
+                    (yyval.node) = n;
+                }
+            }
         }
     ;}
     break;
@@ -2545,17 +2652,23 @@ yyreduce:
   case 95:
 
 /* Line 1455 of yacc.c  */
-#line 789 "parser.y"
+#line 896 "parser.y"
     {
-        if ((yyvsp[(1) - (4)].node) && (yyvsp[(1) - (4)].node)->type != TYPE_INT) {
+        if ((yyvsp[(3) - (4)].node) && (yyvsp[(3) - (4)].node)->type != TYPE_INT) {
             printf("Erro Semântico: Índice de vetor deve ser inteiro (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
-            (yyval.node) = NULL;
-        } else if ((yyvsp[(3) - (4)].node)) {
-            (yyvsp[(1) - (4)].node)->next = (yyvsp[(3) - (4)].node);
             (yyval.node) = (yyvsp[(1) - (4)].node);
         } else {
-            (yyval.node) = (yyvsp[(1) - (4)].node);
+            if ((yyvsp[(1) - (4)].node) == NULL) {
+                // Começando uma nova lista de dimensões
+                (yyval.node) = (yyvsp[(3) - (4)].node);
+            } else {
+                // Encadeia $3 no final da lista $1
+                Node *temp = (yyvsp[(1) - (4)].node);
+                while (temp->next != NULL) temp = temp->next;
+                temp->next = (yyvsp[(3) - (4)].node);
+                (yyval.node) = (yyvsp[(1) - (4)].node);
+            }
         }
     ;}
     break;
@@ -2563,7 +2676,7 @@ yyreduce:
   case 96:
 
 /* Line 1455 of yacc.c  */
-#line 802 "parser.y"
+#line 915 "parser.y"
     {
         (yyval.node) = NULL;
     ;}
@@ -2572,7 +2685,7 @@ yyreduce:
 
 
 /* Line 1455 of yacc.c  */
-#line 2576 "parser.tab.c"
+#line 2689 "parser.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2784,7 +2897,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 807 "parser.y"
+#line 920 "parser.y"
 
 
 
@@ -2817,9 +2930,9 @@ int main(int argc, char **argv) {
 
     printf("\n=== Resultado da Análise ===\n");
     if (result == 0) {
-        printf("ANALISE SINTATICA CONCLUIDA COM SUCESSO!\n");
+        printf("ANALISE CONCLUIDA COM SUCESSO!\n");
     } else {
-        printf("ANALISE SINTATICA FALHOU DEVIDO A ERROS!\n");
+        printf("ANALISE FALHOU DEVIDO A ERROS!\n");
     }
 
     printf("Total de erros léxicos: %d\n", lexical_errors);
@@ -2827,6 +2940,6 @@ int main(int argc, char **argv) {
     printf("Total de erros semânticos: %d\n", semantic_errors);
 
     fclose(compiled_arq);
-    destroy_scope_stack();
+    // destroy_scope_stack();
     return 0;
 }
