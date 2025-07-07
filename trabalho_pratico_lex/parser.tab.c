@@ -2677,15 +2677,13 @@ yyreduce:
 
 /* Line 1455 of yacc.c  */
 #line 915 "parser.y"
-    {
-        (yyval.node) = NULL;
-    ;}
+    { (yyval.node) = NULL; ;}
     break;
 
 
 
 /* Line 1455 of yacc.c  */
-#line 2689 "parser.tab.c"
+#line 2687 "parser.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2897,7 +2895,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 920 "parser.y"
+#line 918 "parser.y"
 
 
 

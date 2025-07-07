@@ -912,9 +912,7 @@ var_auxiliar
         }
     }
     | // vazio
-    {
-        $$ = NULL;
-    }
+    { $$ = NULL; }
     ;
 
 %%

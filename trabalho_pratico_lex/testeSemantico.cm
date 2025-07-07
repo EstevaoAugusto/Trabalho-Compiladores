@@ -3,13 +3,48 @@ int b;
 int c;
 int arr[5];
 
+struct exercito {
+    int qtdsoldados;
+    float forcamedia;
+} exer;
+
+int soma(int a, int b) {
+    return a + b;
+}
+
 int main(void) {
     
-    arr[0] = 1;
-    arr[1] = 2;
-    arr[2] = 3;
-    arr[3] = 4;
-    arr[4] = 5;
+    float d;
+    float multiplicacao;
+    int xis;
+
+    qtdsoldados = 25 + 2 * 9E2;         /* 1 - Tipos incompativeis na multiplicação (2 é inteiro e 9E2 é float) */
     
+    forcamedia = 25.8;                  /* 2 - Acesso não suportado para membros de Struct */
+
+    arr = soma(b,1);                    /* 3 - 'arr' é um arranjo sem índice */
+
+    i = 0;                              /* 4 - Identificador não declarado */
+
+    d = 0;
+    while (d < 5) {                     /* 5 - Tipos incompativeis na comparação (d < 5) */
+        arr[d] = arr[d] + 1;            /* 6 - Indices de vetores devem ser inteiros */
+        d = d + 1;                      /* 7 - Tipos imcompativeis na soma (d é float e 1 é inteiro) */
+    }
+
+    b = arr[6];                         /* 8 - Indice foram dos limites da dimensao do array */
+
+    arr[4][5];                          /* 9 - Vetor com dimensões demais (arr[5]) */
+
+    d = subtracao(c,2);                 /* 10 - Funcao 'subtracao' não foi declarada */
+
+    c = multiplicacao(a,6.6);           /* 11 - multiplicacao não é um função */
+
+    /* xis = soma(1);   REGRA DÁ SEGMENTATION FAULT  */
+
     a = b + c * a;
+}
+
+int soma(int a, int c) {                /* 12 - Função de soma já foi declarada anteriormente */
+    return a+c;
 }
