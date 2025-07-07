@@ -87,7 +87,7 @@
 
     void yyerror(const char *s);
     void erro_sintatico_previsto(const char *msg);
-    DataType current_function_type = TYPE_INVALID; 
+    DataType last_type_declared = TYPE_INVALID; 
 
 
 #line 94 "parser.tab.c"
@@ -518,7 +518,7 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  14
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   258
+#define YYLAST   259
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  37
@@ -578,16 +578,16 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,    85,    85,    90,    91,    92,    98,    99,   104,   130,
-     156,   158,   160,   165,   175,   185,   187,   193,   198,   203,
-     208,   213,   219,   225,   237,   253,   266,   273,   283,   287,
-     292,   294,   300,   302,   308,   318,   328,   334,   339,   340,
-     345,   346,   351,   352,   353,   354,   355,   356,   362,   369,
-     373,   380,   387,   393,   400,   406,   413,   420,   426,   443,
-     445,   451,   476,   482,   483,   484,   485,   486,   487,   492,
-     496,   515,   537,   541,   560,   579,   585,   595,   599,   604,
-     609,   617,   625,   633,   641,   653,   681,   687,   690,   695,
-     700,   708,   710,   716,   734,   766,   780
+       0,    85,    85,    90,    91,    92,    98,    99,   104,   134,
+     160,   162,   164,   169,   179,   189,   191,   197,   202,   207,
+     212,   217,   223,   229,   241,   257,   270,   277,   287,   291,
+     296,   298,   304,   306,   312,   323,   334,   340,   345,   346,
+     351,   352,   357,   358,   359,   360,   361,   362,   368,   375,
+     379,   386,   393,   399,   406,   412,   420,   428,   434,   467,
+     476,   482,   507,   513,   514,   515,   516,   517,   518,   523,
+     527,   546,   568,   572,   591,   610,   616,   626,   630,   635,
+     640,   648,   656,   664,   672,   684,   712,   718,   721,   726,
+     734,   742,   744,   750,   768,   869,   889
 };
 #endif
 
@@ -626,7 +626,7 @@ static const yytype_int16 yytoknum[] =
 };
 # endif
 
-#define YYPACT_NINF (-134)
+#define YYPACT_NINF (-79)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -640,23 +640,23 @@ static const yytype_int16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
-     229,  -134,  -134,  -134,  -134,     5,    19,   199,  -134,  -134,
-       6,  -134,   -19,    -8,  -134,    -7,  -134,    25,   168,   229,
-     229,  -134,   234,  -134,     7,    50,     4,   204,  -134,    26,
-     229,     8,     2,    40,    45,    41,    53,  -134,    48,  -134,
-      66,    76,    85,    91,   121,  -134,  -134,    84,   169,  -134,
-    -134,    52,    98,   229,  -134,   140,   140,    98,    98,   137,
-     160,  -134,  -134,  -134,  -134,  -134,  -134,  -134,  -134,  -134,
-    -134,   229,  -134,    15,   163,   174,   175,    36,  -134,    83,
-    -134,  -134,  -134,  -134,  -134,    33,  -134,  -134,  -134,  -134,
-    -134,  -134,   167,  -134,   205,   126,  -134,  -134,   181,  -134,
-      93,   102,   187,  -134,   190,  -134,   176,   192,   200,    65,
-    -134,   200,   200,  -134,  -134,  -134,  -134,  -134,  -134,   200,
-     200,   200,   111,   201,   202,   218,   219,  -134,  -134,  -134,
-    -134,   222,   221,  -134,   223,   198,   126,  -134,   126,   135,
-     138,   159,  -134,  -134,    56,    56,    56,    56,  -134,  -134,
-    -134,    74,  -134,  -134,  -134,   246,  -134,  -134,   227,  -134,
-     252,  -134,    56,   200,  -134,  -134,   228,  -134
+     203,   -79,   -79,   -79,   -79,    21,     4,   208,   -79,   -79,
+      27,   -79,   -16,    -5,   -79,   -19,   -79,   -13,   174,   203,
+     203,   -79,   244,   -79,     0,    50,     8,   219,   -79,    24,
+     203,    33,    46,    53,    29,    54,    76,   -79,    66,   -79,
+      97,   108,   109,   113,   127,   -79,   -79,   128,   155,   -79,
+     -79,   162,   136,   203,   -79,   139,   139,   136,   -79,   150,
+     152,   -79,   -79,   -79,   -79,   -79,   -79,   136,   -79,   -79,
+     203,   -79,   -79,    14,   -79,   156,   159,   161,    32,   -79,
+      78,   -79,   -79,   -79,   -79,   -79,    15,   -79,   -79,   -79,
+     -79,   -79,   -79,   160,   -79,   220,    11,   -79,   -79,   169,
+     -79,    87,    96,   164,   -79,   165,   167,   170,   215,    59,
+     -79,   215,   215,   -79,   -79,   -79,   -79,   -79,   -79,   215,
+     215,   215,   105,   172,   193,   195,   196,   -79,   -79,   -79,
+     -79,   171,   197,   -79,   206,   201,    11,   -79,    11,    23,
+     132,   153,   -79,   -79,    49,    49,    49,    49,   -79,   -79,
+     -79,    68,   -79,   -79,   -79,   198,   -79,   -79,   210,   -79,
+     242,   -79,    49,   215,   -79,   -79,   218,   -79
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -669,12 +669,12 @@ static const yytype_int8 yydefact[] =
        0,     5,     0,    12,     0,     0,     0,     0,     8,     0,
       23,     0,     0,     0,    20,     0,     0,    30,    32,    11,
        0,     0,     0,     0,     0,     9,    24,     0,     0,    22,
-      21,     0,     0,     0,    10,    15,    14,     0,     0,     0,
-       0,    28,    26,    33,    16,    13,    27,    25,    36,    35,
-      39,    41,    38,     0,     0,     0,     0,     0,    29,     0,
-      49,    81,    80,    82,    83,    93,    43,    40,    42,    44,
-      45,    46,     0,    60,    62,    69,    72,    79,    78,    47,
-       0,     0,     0,    55,     0,    37,     0,     0,     0,     0,
+      21,     0,     0,     0,    10,    15,    14,     0,    28,     0,
+       0,    39,    26,    33,    16,    13,    27,     0,    36,    35,
+      41,    29,    38,     0,    25,     0,     0,     0,     0,    37,
+       0,    49,    81,    80,    82,    83,    93,    43,    40,    42,
+      44,    45,    46,     0,    60,    62,    69,    72,    79,    78,
+      47,     0,     0,     0,    55,     0,     0,     0,     0,     0,
       48,     0,     0,    67,    68,    65,    66,    63,    64,     0,
        0,     0,     0,     0,     0,     0,     0,    57,    56,    84,
       77,     0,     0,    89,     0,    87,    70,    78,    71,    61,
@@ -686,19 +686,19 @@ static const yytype_int8 yydefact[] =
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int16 yypgoto[] =
 {
-    -134,  -134,  -134,   248,     1,   106,     3,    -3,  -134,  -134,
-    -134,   230,   203,  -134,   -24,  -134,  -134,  -133,  -134,  -134,
-    -134,  -134,   -77,  -134,  -134,   139,    70,    63,  -134,  -134,
-    -134,    11,  -134
+     -79,   -79,   -79,   238,     1,    19,     5,   -17,   -79,   -79,
+     -79,   229,   204,   -79,   -46,   -79,   -79,    60,   -79,   -79,
+     -79,   -79,   -78,   -79,   -79,   140,    13,    22,   -79,   -79,
+     -79,    -4,   -79
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int16 yydefgoto[] =
 {
-      -1,     6,     7,     8,    30,    29,    31,    32,    11,    70,
-     105,    36,    37,    38,    86,    71,    73,    87,    88,    89,
-      90,    91,    92,    93,   119,    94,    95,    96,    97,   134,
-     135,    98,   158
+      -1,     6,     7,     8,    30,    29,    31,    32,    11,    67,
+      74,    36,    37,    38,    87,    70,    73,    88,    89,    90,
+      91,    92,    93,    94,   119,    95,    96,    97,    98,   134,
+     135,    99,   158
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -706,62 +706,62 @@ static const yytype_int16 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int16 yytable[] =
 {
-     104,     9,   107,    10,    19,    41,    12,    17,     9,    47,
-      10,   154,   155,   156,   157,    20,    74,    33,    75,    14,
-      76,    77,    21,   124,   126,    35,    49,    46,    62,   165,
-      35,   131,   133,    66,    67,    42,    39,   102,    61,    78,
-      13,    18,    79,    48,    80,   143,    81,    82,    83,    84,
-      85,    40,    22,    59,    23,    45,    35,    74,   108,    75,
-     109,    76,    77,    79,    50,   103,   132,    81,    82,    83,
-      84,    85,    72,   -31,   161,   159,    51,    60,    53,    61,
-     -34,    52,   -34,    79,   106,    80,   166,    81,    82,    83,
-      84,    85,    79,   -88,   123,    54,    81,    82,    83,    84,
-      85,    79,    55,   125,   160,    81,    82,    83,    84,    85,
-      79,    56,   142,    23,    81,    82,    83,    84,    85,    57,
-      79,    61,   137,   137,    81,    82,    83,    84,    85,    79,
-     137,   137,   137,    81,    82,    83,    84,    85,    79,   152,
-     120,   121,    81,    82,    83,    84,    85,   111,   112,    58,
-     -74,   -74,   -74,   -74,   -74,   -74,   -74,   -74,   -74,   -74,
-     153,    64,    65,    68,   -74,    26,   -74,   -74,   -74,    24,
-      24,   -73,   -73,   -73,   -73,   -73,   -73,   -73,   -73,   -73,
-     -73,   136,   138,   140,   141,   -73,    69,   -73,   -73,   -73,
-      25,    25,    99,    26,    26,    27,   110,    28,    28,    -2,
-      15,   100,   101,   122,   129,    43,     1,     2,     3,     4,
-       5,     1,     2,     3,    34,     5,   127,   111,   112,   128,
-     130,   113,   114,   115,   116,   117,   118,    79,   151,   144,
-     145,    81,    82,    83,    84,    85,     1,     2,     3,     4,
-       5,     1,     2,     3,    34,     5,   146,   147,   148,   149,
-     162,   150,   163,   164,   167,    16,    63,    44,   139
+     105,     9,   107,    33,    14,    10,    62,    19,     9,    41,
+      21,    66,    10,    46,    22,    75,    23,    76,    20,    77,
+      78,    71,    12,   124,   126,   120,   121,    35,    17,    39,
+     131,   133,    35,   103,    47,   111,   112,    61,    79,    42,
+     108,    80,   109,    81,   143,    82,    83,    84,    85,    86,
+      75,    40,    76,    45,    77,    78,    13,   -31,    35,    80,
+     132,   104,    18,    82,    83,    84,    85,    86,    48,   159,
+      49,    72,    61,   161,    64,    65,    80,    50,    81,   106,
+      82,    83,    84,    85,    86,   166,    80,   -88,   123,    51,
+      82,    83,    84,    85,    86,    80,    53,   125,   160,    82,
+      83,    84,    85,    86,    52,    80,   142,   137,   137,    82,
+      83,    84,    85,    86,    80,   137,   137,   137,    82,    83,
+      84,    85,    86,    80,   136,   138,    54,    82,    83,    84,
+      85,    86,    80,   152,    55,    56,    82,    83,    84,    85,
+      86,    57,   140,   141,   -74,   -74,   -74,   -74,   -74,   -74,
+     -74,   -74,   -74,   -74,   153,    58,    24,    23,   -74,    61,
+     -74,   -74,   -74,    59,    26,   -73,   -73,   -73,   -73,   -73,
+     -73,   -73,   -73,   -73,   -73,    24,    68,    25,    69,   -73,
+      26,   -73,   -73,   -73,    28,   100,   101,    60,   102,   110,
+     -34,   122,   -34,   127,   128,   129,    25,   148,   130,    26,
+     144,    27,   162,    28,   154,   155,   156,   157,    -2,    15,
+       1,     2,     3,     4,     5,     1,     2,     3,     4,     5,
+      43,   145,   165,   146,   147,   149,     1,     2,     3,    34,
+       5,   151,   111,   112,   150,   163,   113,   114,   115,   116,
+     117,   118,    80,   164,   167,    16,    82,    83,    84,    85,
+      86,     1,     2,     3,    34,     5,    44,    63,     0,   139
 };
 
-static const yytype_uint8 yycheck[] =
+static const yytype_int16 yycheck[] =
 {
-      77,     0,    79,     0,    23,     1,     1,     1,     7,     1,
-       7,   144,   145,   146,   147,    23,     1,    20,     3,     0,
-       5,     6,    29,   100,   101,    22,    24,    30,    52,   162,
-      27,   108,   109,    57,    58,    31,    29,     1,    23,    24,
-      35,    35,    27,    35,    29,   122,    31,    32,    33,    34,
-      35,     1,    27,     1,    29,    29,    53,     1,    25,     3,
-      27,     5,     6,    27,    24,    29,     1,    31,    32,    33,
-      34,    35,    71,    28,   151,     1,    35,    25,    30,    23,
-      28,    28,    30,    27,     1,    29,   163,    31,    32,    33,
-      34,    35,    27,    28,     1,    29,    31,    32,    33,    34,
-      35,    27,    26,     1,    30,    31,    32,    33,    34,    35,
-      27,    26,     1,    29,    31,    32,    33,    34,    35,    28,
-      27,    23,   111,   112,    31,    32,    33,    34,    35,    27,
-     119,   120,   121,    31,    32,    33,    34,    35,    27,     1,
-      14,    15,    31,    32,    33,    34,    35,    12,    13,    28,
-      12,    13,    14,    15,    16,    17,    18,    19,    20,    21,
-       1,    55,    56,    26,    26,    25,    28,    29,    30,     1,
-       1,    12,    13,    14,    15,    16,    17,    18,    19,    20,
-      21,   111,   112,   120,   121,    26,    26,    28,    29,    30,
-      22,    22,    29,    25,    25,    27,    29,    29,    29,     0,
-       1,    27,    27,    22,    28,     1,     7,     8,     9,    10,
-      11,     7,     8,     9,    10,    11,    29,    12,    13,    29,
-      28,    16,    17,    18,    19,    20,    21,    27,    30,    28,
-      28,    31,    32,    33,    34,    35,     7,     8,     9,    10,
-      11,     7,     8,     9,    10,    11,    28,    28,    26,    28,
-       4,    28,    25,     1,    26,     7,    53,    27,   119
+      78,     0,    80,    20,     0,     0,    52,    23,     7,     1,
+      29,    57,     7,    30,    27,     1,    29,     3,    23,     5,
+       6,    67,     1,   101,   102,    14,    15,    22,     1,    29,
+     108,   109,    27,     1,     1,    12,    13,    23,    24,    31,
+      25,    27,    27,    29,   122,    31,    32,    33,    34,    35,
+       1,     1,     3,    29,     5,     6,    35,    28,    53,    27,
+       1,    29,    35,    31,    32,    33,    34,    35,    35,     1,
+      24,    70,    23,   151,    55,    56,    27,    24,    29,     1,
+      31,    32,    33,    34,    35,   163,    27,    28,     1,    35,
+      31,    32,    33,    34,    35,    27,    30,     1,    30,    31,
+      32,    33,    34,    35,    28,    27,     1,   111,   112,    31,
+      32,    33,    34,    35,    27,   119,   120,   121,    31,    32,
+      33,    34,    35,    27,   111,   112,    29,    31,    32,    33,
+      34,    35,    27,     1,    26,    26,    31,    32,    33,    34,
+      35,    28,   120,   121,    12,    13,    14,    15,    16,    17,
+      18,    19,    20,    21,     1,    28,     1,    29,    26,    23,
+      28,    29,    30,     1,    25,    12,    13,    14,    15,    16,
+      17,    18,    19,    20,    21,     1,    26,    22,    26,    26,
+      25,    28,    29,    30,    29,    29,    27,    25,    27,    29,
+      28,    22,    30,    29,    29,    28,    22,    26,    28,    25,
+      28,    27,     4,    29,   144,   145,   146,   147,     0,     1,
+       7,     8,     9,    10,    11,     7,     8,     9,    10,    11,
+       1,    28,   162,    28,    28,    28,     7,     8,     9,    10,
+      11,    30,    12,    13,    28,    25,    16,    17,    18,    19,
+      20,    21,    27,     1,    26,     7,    31,    32,    33,    34,
+      35,     7,     8,     9,    10,    11,    27,    53,    -1,   119
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
@@ -774,11 +774,11 @@ static const yytype_int8 yystos[] =
       41,    43,    44,    44,    10,    43,    48,    49,    50,    29,
        1,     1,    31,     1,    48,    29,    44,     1,    35,    24,
       24,    35,    28,    30,    29,    26,    26,    28,    28,     1,
-      25,    23,    51,    49,    42,    42,    51,    51,    26,    26,
-      46,    52,    41,    53,     1,     3,     5,     6,    24,    27,
-      29,    31,    32,    33,    34,    35,    51,    54,    55,    56,
-      57,    58,    59,    60,    62,    63,    64,    65,    68,    29,
-      27,    27,     1,    29,    59,    47,     1,    59,    25,    27,
+      25,    23,    51,    49,    42,    42,    51,    46,    26,    26,
+      52,    51,    41,    53,    47,     1,     3,     5,     6,    24,
+      27,    29,    31,    32,    33,    34,    35,    51,    54,    55,
+      56,    57,    58,    59,    60,    62,    63,    64,    65,    68,
+      29,    27,    27,     1,    29,    59,     1,    59,    25,    27,
       29,    12,    13,    16,    17,    18,    19,    20,    21,    61,
       14,    15,    22,     1,    59,     1,    59,    29,    29,    28,
       28,    59,     1,    59,    66,    67,    63,    68,    63,    62,
@@ -807,8 +807,8 @@ static const yytype_int8 yyr2[] =
 {
        0,     2,     1,     1,     2,     3,     1,     1,     3,     4,
        5,     4,     3,     4,     3,     3,     4,     1,     1,     1,
-       1,     5,     5,     1,     2,     6,     6,     6,     0,     0,
-       1,     1,     1,     3,     2,     4,     4,     6,     2,     0,
+       1,     5,     5,     1,     2,     8,     6,     6,     0,     0,
+       1,     1,     1,     3,     2,     4,     4,     4,     2,     0,
        2,     0,     1,     1,     1,     1,     1,     2,     2,     1,
        5,     7,     5,     5,     5,     2,     3,     3,     3,     3,
        1,     3,     1,     1,     1,     1,     1,     1,     1,     1,
@@ -1536,17 +1536,21 @@ yyreduce:
                 (yyval.symbol) = NULL;
             } else {
                 insert_variable((yyvsp[-1].id), (yyvsp[-2].symbol)->type, (yyvsp[-2].symbol)->name);
+                (yyval.symbol) = lookup_symbol((yyvsp[-1].id));
             }
         } else if (!insert_variable((yyvsp[-1].id), (yyvsp[-2].symbol)->type, NULL)) {
             printf("Erro Semântico: Variável '%s' já foi declarada (linha %d, coluna %d).\n", (yyvsp[-1].id), line_number, column_number);
             semantic_errors++;
+            (yyval.symbol) = NULL;
+        } else {
+            (yyval.symbol) = lookup_symbol((yyvsp[-1].id));
         }
     }
-#line 1546 "parser.tab.c"
+#line 1550 "parser.tab.c"
     break;
 
   case 9:
-#line 131 "parser.y"
+#line 135 "parser.y"
     {
         if((yyvsp[-3].symbol) == NULL){
             printf("Erro Semântico: Declaração de struct possui erro sintático (linha %d, coluna %d).\n", line_number, column_number);
@@ -1572,29 +1576,29 @@ yyreduce:
             semantic_errors++;
         }
     }
-#line 1576 "parser.tab.c"
+#line 1580 "parser.tab.c"
     break;
 
   case 10:
-#line 157 "parser.y"
+#line 161 "parser.y"
     { erro_sintatico_previsto("Erro Sintático: Inicialização de variável não suportada nesta linguagem"); (yyval.symbol) = NULL; yyerrok; }
-#line 1582 "parser.tab.c"
+#line 1586 "parser.tab.c"
     break;
 
   case 11:
-#line 159 "parser.y"
+#line 163 "parser.y"
     { erro_sintatico_previsto("Erro Sintático: Declaração de variável inválida"); (yyval.symbol) = NULL; yyerrok; }
-#line 1588 "parser.tab.c"
+#line 1592 "parser.tab.c"
     break;
 
   case 12:
-#line 161 "parser.y"
+#line 165 "parser.y"
     { erro_sintatico_previsto("Erro Sintático: Declaração de variável inválida"); (yyval.symbol) = NULL; yyerrok;  }
-#line 1594 "parser.tab.c"
+#line 1598 "parser.tab.c"
     break;
 
   case 13:
-#line 166 "parser.y"
+#line 170 "parser.y"
     {
         if((yyvsp[-2].intval) > 0){
             (yyval.dim) = new_dimension((yyvsp[-2].intval), (yyvsp[0].dim));
@@ -1604,11 +1608,11 @@ yyreduce:
             (yyval.dim) = NULL;
         }
     }
-#line 1608 "parser.tab.c"
+#line 1612 "parser.tab.c"
     break;
 
   case 14:
-#line 176 "parser.y"
+#line 180 "parser.y"
     {
         if((yyvsp[-1].intval) > 0){
             (yyval.dim) = new_dimension((yyvsp[-1].intval), NULL);
@@ -1618,75 +1622,75 @@ yyreduce:
             (yyval.dim) = NULL;
         }
     }
-#line 1622 "parser.tab.c"
+#line 1626 "parser.tab.c"
     break;
 
   case 15:
-#line 186 "parser.y"
+#line 190 "parser.y"
     { erro_sintatico_previsto("Erro Sintático: Dimensao do array invalida"); (yyval.dim) = NULL; yyerrok; }
-#line 1628 "parser.tab.c"
+#line 1632 "parser.tab.c"
     break;
 
   case 16:
-#line 188 "parser.y"
+#line 192 "parser.y"
     { erro_sintatico_previsto("Erro Sintático: Dimensao do array invalida"); (yyval.dim) = NULL; yyerrok; }
-#line 1634 "parser.tab.c"
+#line 1638 "parser.tab.c"
     break;
 
   case 17:
-#line 194 "parser.y"
+#line 198 "parser.y"
     {   
-        current_function_type = TYPE_INT;
+        last_type_declared = TYPE_INT;
         (yyval.symbol) = cria_symbol_temporario(TYPE_INT, KIND_VARIABLE);
     }
-#line 1643 "parser.tab.c"
+#line 1647 "parser.tab.c"
     break;
 
   case 18:
-#line 199 "parser.y"
+#line 203 "parser.y"
     {   
-        current_function_type = TYPE_FLOAT;
+        last_type_declared = TYPE_FLOAT;
         (yyval.symbol) = cria_symbol_temporario(TYPE_FLOAT, KIND_VARIABLE);
     }
-#line 1652 "parser.tab.c"
+#line 1656 "parser.tab.c"
     break;
 
   case 19:
-#line 204 "parser.y"
+#line 208 "parser.y"
     {   
-        current_function_type = TYPE_CHAR;
+        last_type_declared = TYPE_CHAR;
         (yyval.symbol) = cria_symbol_temporario(TYPE_CHAR, KIND_VARIABLE);
     }
-#line 1661 "parser.tab.c"
+#line 1665 "parser.tab.c"
     break;
 
   case 20:
-#line 209 "parser.y"
+#line 213 "parser.y"
     {   
-        current_function_type = TYPE_VOID;
+        last_type_declared = TYPE_VOID;
         (yyval.symbol) = cria_symbol_temporario(TYPE_VOID, KIND_VARIABLE);
     }
-#line 1670 "parser.tab.c"
+#line 1674 "parser.tab.c"
     break;
 
   case 21:
-#line 214 "parser.y"
+#line 218 "parser.y"
     {   
         (yyval.symbol) = cria_symbol_temporario(TYPE_STRUCT, KIND_STRUCT_DEF);
         (yyval.symbol)->name = strdup((yyvsp[-3].id));
         (yyval.symbol)->data.struct_info.members = (yyvsp[-1].members);
     }
-#line 1680 "parser.tab.c"
+#line 1684 "parser.tab.c"
     break;
 
   case 22:
-#line 220 "parser.y"
+#line 224 "parser.y"
     { erro_sintatico_previsto("Erro Sintático: Nome de struct ausente"); (yyval.symbol) = NULL;  yyerrok; }
-#line 1686 "parser.tab.c"
+#line 1690 "parser.tab.c"
     break;
 
   case 23:
-#line 226 "parser.y"
+#line 230 "parser.y"
     {
         HashTable* members = create_hash_table();
         if(((yyvsp[0].symbol) != NULL) && !insert_struct_members((yyvsp[0].symbol), members)){
@@ -1698,11 +1702,11 @@ yyreduce:
             (yyval.members) = members;
         }
     }
-#line 1702 "parser.tab.c"
+#line 1706 "parser.tab.c"
     break;
 
   case 24:
-#line 238 "parser.y"
+#line 242 "parser.y"
     {
         HashTable* members = (yyvsp[0].members);
         if(((yyvsp[-1].symbol) != NULL) && !insert_struct_members((yyvsp[-1].symbol), (yyval.members))){
@@ -1714,86 +1718,86 @@ yyreduce:
             (yyval.members) = members;
         }
     }
-#line 1718 "parser.tab.c"
+#line 1722 "parser.tab.c"
     break;
 
   case 25:
-#line 254 "parser.y"
+#line 258 "parser.y"
     {
-        if((yyvsp[-5].symbol) == NULL || (yyvsp[-5].symbol)->kind == KIND_STRUCT_DEF){
+        if((yyvsp[-7].symbol) == NULL || (yyvsp[-7].symbol)->kind == KIND_STRUCT_DEF){
             printf("Erro Semântico: Struct nao é aceito como tipo de retorno (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
         } else {
-            if(!insert_function((yyvsp[-4].id), (yyvsp[-5].symbol)->type, NULL, (yyvsp[-2].param))){
-                printf("Erro Semântico: Função '%s' já declarada (linha %d, coluna %d).\n", (yyvsp[-4].id), line_number, column_number);
+            if(!insert_function((yyvsp[-6].id), (yyvsp[-7].symbol)->type, NULL, (yyvsp[-4].param))){
+                printf("Erro Semântico: Função '%s' já declarada (linha %d, coluna %d).\n", (yyvsp[-6].id), line_number, column_number);
                 semantic_errors++;
-                current_function_type = TYPE_INVALID;
+                last_type_declared = TYPE_INVALID;
             }
         } 
     }
-#line 1735 "parser.tab.c"
+#line 1739 "parser.tab.c"
     break;
 
   case 26:
-#line 267 "parser.y"
+#line 271 "parser.y"
     { 
         erro_sintatico_previsto("Erro Sintático: Função inexistente ou invalida apos o tipo de retorno"); 
-        current_function_type = TYPE_INVALID; 
+        last_type_declared = TYPE_INVALID; 
         (yyval.symbol) = NULL; 
         yyerrok; 
     }
-#line 1746 "parser.tab.c"
+#line 1750 "parser.tab.c"
     break;
 
   case 27:
-#line 274 "parser.y"
+#line 278 "parser.y"
     { 
         erro_sintatico_previsto("Erro Sintático: Lista de parâmetros malformada na declaração de função"); 
-        current_function_type = TYPE_INVALID;
+        last_type_declared = TYPE_INVALID;
         (yyval.symbol) = NULL; 
         yyerrok; 
     }
-#line 1757 "parser.tab.c"
+#line 1761 "parser.tab.c"
     break;
 
   case 28:
-#line 283 "parser.y"
-            { open_scope(); }
-#line 1763 "parser.tab.c"
+#line 287 "parser.y"
+            { open_scope(last_type_declared); }
+#line 1767 "parser.tab.c"
     break;
 
   case 29:
-#line 287 "parser.y"
-            { close_scope(); current_function_type = TYPE_INVALID; }
-#line 1769 "parser.tab.c"
+#line 291 "parser.y"
+            { close_scope(); last_type_declared = TYPE_INVALID; }
+#line 1773 "parser.tab.c"
     break;
 
   case 30:
-#line 293 "parser.y"
+#line 297 "parser.y"
     { (yyval.param) = (yyvsp[0].param); }
-#line 1775 "parser.tab.c"
+#line 1779 "parser.tab.c"
     break;
 
   case 31:
-#line 295 "parser.y"
+#line 299 "parser.y"
     { (yyval.param) = NULL; }
-#line 1781 "parser.tab.c"
+#line 1785 "parser.tab.c"
     break;
 
   case 32:
-#line 301 "parser.y"
+#line 305 "parser.y"
     { (yyval.param) = (yyvsp[0].param); }
-#line 1787 "parser.tab.c"
+#line 1791 "parser.tab.c"
     break;
 
   case 33:
-#line 303 "parser.y"
+#line 307 "parser.y"
     { (yyvsp[-2].param)->next = (yyvsp[0].param); (yyval.param) = (yyvsp[-2].param); }
-#line 1793 "parser.tab.c"
+#line 1797 "parser.tab.c"
     break;
 
   case 34:
-#line 309 "parser.y"
+#line 313 "parser.y"
     {
         if((yyvsp[-1].symbol) == NULL || (yyvsp[-1].symbol)->kind == KIND_STRUCT_DEF){
             printf("Erro Semântico: Struct não pode ser utilizado como parametro (linha %d, coluna %d).", line_number, column_number);
@@ -1801,13 +1805,14 @@ yyreduce:
             (yyval.param) = NULL;
         } else {
             (yyval.param) = create_param((yyvsp[0].id), (yyvsp[-1].symbol)->type, (yyvsp[-1].symbol)->data.var_info.is_array);
+            insert_variable((yyvsp[0].id), (yyvsp[-1].symbol)->type, NULL);
         }
     }
-#line 1807 "parser.tab.c"
+#line 1812 "parser.tab.c"
     break;
 
   case 35:
-#line 319 "parser.y"
+#line 324 "parser.y"
     {
         if((yyvsp[-3].symbol) == NULL || (yyvsp[-3].symbol)->kind == KIND_STRUCT_DEF){
             printf("Erro Semântico: Struct não pode ser utilizado como parametro (linha %d, coluna %d).", line_number, column_number);
@@ -1815,142 +1820,168 @@ yyreduce:
             (yyval.param) = NULL;
         } else {
             (yyval.param) = create_param((yyvsp[-2].id), (yyvsp[-3].symbol)->type, (yyvsp[-3].symbol)->data.var_info.is_array);
+            insert_array((yyvsp[-2].id), (yyvsp[-3].symbol)->type, NULL, NULL);
         }
     }
-#line 1821 "parser.tab.c"
-    break;
-
-  case 36:
-#line 329 "parser.y"
-    { erro_sintatico_previsto("Erro Sintático: Falta de abrir colchetes"); (yyval.param) = NULL; yyerrok; }
 #line 1827 "parser.tab.c"
     break;
 
-  case 47:
-#line 357 "parser.y"
-    { erro_sintatico_previsto("Erro Sintático: Comando invalido sintaticamente ou incompleto"); yyerrok; }
+  case 36:
+#line 335 "parser.y"
+    { erro_sintatico_previsto("Erro Sintático: Falta de abrir colchetes"); (yyval.param) = NULL; yyerrok; }
 #line 1833 "parser.tab.c"
     break;
 
-  case 48:
+  case 47:
 #line 363 "parser.y"
+    { erro_sintatico_previsto("Erro Sintático: Comando invalido sintaticamente ou incompleto"); yyerrok; }
+#line 1839 "parser.tab.c"
+    break;
+
+  case 48:
+#line 369 "parser.y"
     {
         if (!(yyvsp[-1].node)) {
             printf("Erro Semântico: Expressão inválida na linha %d, coluna %d.\n", line_number, column_number);
             semantic_errors++;
         }
     }
-#line 1844 "parser.tab.c"
+#line 1850 "parser.tab.c"
     break;
 
   case 50:
-#line 374 "parser.y"
+#line 380 "parser.y"
     {
         if ((yyvsp[-2].node) && (yyvsp[-2].node)->type != TYPE_INT) {
             printf("Erro Semântico: Expressão condicional do 'if' deve ser do tipo int (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
         }
     }
-#line 1855 "parser.tab.c"
+#line 1861 "parser.tab.c"
     break;
 
   case 51:
-#line 381 "parser.y"
+#line 387 "parser.y"
     {
         if ((yyvsp[-4].node) && (yyvsp[-4].node)->type != TYPE_INT) {
             printf("Erro Semântico: Expressão condicional do 'if' deve ser do tipo int (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
         }
     }
-#line 1866 "parser.tab.c"
-    break;
-
-  case 52:
-#line 388 "parser.y"
-    { erro_sintatico_previsto("Erro Sintático: Condição errada no comando IF"); yyerrok;}
 #line 1872 "parser.tab.c"
     break;
 
-  case 53:
+  case 52:
 #line 394 "parser.y"
+    { erro_sintatico_previsto("Erro Sintático: Condição errada no comando IF"); yyerrok;}
+#line 1878 "parser.tab.c"
+    break;
+
+  case 53:
+#line 400 "parser.y"
     {
         if ((yyvsp[-2].node) && (yyvsp[-2].node)->type != TYPE_INT) {
             printf("Erro Semântico: Expressão condicional do 'if' deve ser do tipo int (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
         }
     }
-#line 1883 "parser.tab.c"
-    break;
-
-  case 54:
-#line 401 "parser.y"
-    { erro_sintatico_previsto("Erro Sintático: Comando WHILE invalido"); yyerrok; }
 #line 1889 "parser.tab.c"
     break;
 
-  case 55:
+  case 54:
 #line 407 "parser.y"
+    { erro_sintatico_previsto("Erro Sintático: Comando WHILE invalido"); yyerrok; }
+#line 1895 "parser.tab.c"
+    break;
+
+  case 55:
+#line 413 "parser.y"
     {
-        if (current_function_type != TYPE_VOID) {
+        DataType type = find_current_function_type();
+        if (type != TYPE_VOID) {
             printf("Erro Semântico: Retorno sem valor em função que exige retorno (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
         }
     }
-#line 1900 "parser.tab.c"
+#line 1907 "parser.tab.c"
     break;
 
   case 56:
-#line 414 "parser.y"
+#line 421 "parser.y"
     {
-        if ((yyvsp[-1].node) && (yyvsp[-1].node)->type != current_function_type) {
+        DataType type = find_current_function_type();
+        if ((yyvsp[-1].node) && (yyvsp[-1].node)->type != type) {
             printf("Erro Semântico: Tipo do valor de retorno incompatível com a função (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
         }
     }
-#line 1911 "parser.tab.c"
+#line 1919 "parser.tab.c"
     break;
 
   case 57:
-#line 421 "parser.y"
+#line 429 "parser.y"
     { erro_sintatico_previsto("Erro Sintático: Retorno invalido"); yyerrok;}
-#line 1917 "parser.tab.c"
+#line 1925 "parser.tab.c"
     break;
 
   case 58:
-#line 427 "parser.y"
+#line 435 "parser.y"
     {
         if ((yyvsp[-2].node) && (yyvsp[0].node)) {
-            DataType tipo_var = (yyvsp[-2].node)->type;
-            DataType tipo_expr = (yyvsp[0].node)->type;
-
-            if (tipo_var != tipo_expr) {
-                printf("Erro Semântico: Tipos incompatíveis na atribuição (linha %d, coluna %d).\n", line_number, column_number);
+            if((yyvsp[-2].node)->symbol->data.var_info.is_from_struct){
+                printf("Erro Semântico: Acesso a membros de struct não suportado pela gramática (linha %d, coluna %d).\n", line_number, column_number);
                 semantic_errors++;
                 (yyval.node) = NULL;
             } else {
-                (yyval.node) = (yyvsp[-2].node);
+                DataType tipo_var = (yyvsp[-2].node)->type;
+                DataType tipo_expr = (yyvsp[0].node)->type;
+
+                bool tipos_compativeis = false;
+
+                if (tipo_var == tipo_expr) {
+                    tipos_compativeis = true;
+                } else if ((tipo_var == TYPE_FLOAT && tipo_expr == TYPE_INT) ||  (tipo_var == TYPE_INT && tipo_expr == TYPE_FLOAT)) {
+                    tipos_compativeis = true;
+                } else {
+                    tipos_compativeis = false;
+                }
+
+                if (!tipos_compativeis) {
+                    printf("Erro Semântico: Tipos incompatíveis na atribuição (linha %d, coluna %d).\n", line_number, column_number);
+                    semantic_errors++;
+                    (yyval.node) = NULL;
+                } else {
+                    (yyval.node) = (yyvsp[-2].node);
+                }
             }
         } else {
             (yyval.node) = NULL;
         }
     }
-#line 1938 "parser.tab.c"
+#line 1962 "parser.tab.c"
     break;
 
   case 59:
-#line 444 "parser.y"
-    { erro_sintatico_previsto("Erro Sintático: Atribuição sem expressão à direita"); (yyval.node) = NULL; yyerrok; }
-#line 1944 "parser.tab.c"
+#line 468 "parser.y"
+    { 
+        erro_sintatico_previsto("Erro Sintático: Atribuição sem expressão à direita"); 
+        if((yyvsp[-2].node) && (yyvsp[-2].node)->symbol->data.var_info.is_from_struct){
+            printf("Erro Semântico: Acesso a membros de struct não suportado pela gramática (linha %d, coluna %d).\n", line_number, column_number);
+            semantic_errors++;
+        }
+        (yyval.node) = NULL; 
+        yyerrok; }
+#line 1975 "parser.tab.c"
     break;
 
   case 60:
-#line 446 "parser.y"
+#line 477 "parser.y"
     { (yyval.node) = (yyvsp[0].node); }
-#line 1950 "parser.tab.c"
+#line 1981 "parser.tab.c"
     break;
 
   case 61:
-#line 452 "parser.y"
+#line 483 "parser.y"
     {
         if ((yyvsp[-2].node) && (yyvsp[0].node)) {
             if ((yyvsp[-2].node)->type != (yyvsp[0].node)->type) {
@@ -1975,61 +2006,61 @@ yyreduce:
             (yyval.node) = NULL;
         }
     }
-#line 1979 "parser.tab.c"
+#line 2010 "parser.tab.c"
     break;
 
   case 62:
-#line 477 "parser.y"
+#line 508 "parser.y"
     { (yyval.node) = (yyvsp[0].node); }
-#line 1985 "parser.tab.c"
+#line 2016 "parser.tab.c"
     break;
 
   case 63:
-#line 482 "parser.y"
+#line 513 "parser.y"
                         {   (yyval.sval) = (yyvsp[0].sval);    }
-#line 1991 "parser.tab.c"
+#line 2022 "parser.tab.c"
     break;
 
   case 64:
-#line 483 "parser.y"
+#line 514 "parser.y"
                         {   (yyval.sval) = (yyvsp[0].sval);    }
-#line 1997 "parser.tab.c"
+#line 2028 "parser.tab.c"
     break;
 
   case 65:
-#line 484 "parser.y"
+#line 515 "parser.y"
                         {   (yyval.sval) = (yyvsp[0].sval);    }
-#line 2003 "parser.tab.c"
+#line 2034 "parser.tab.c"
     break;
 
   case 66:
-#line 485 "parser.y"
+#line 516 "parser.y"
                         {   (yyval.sval) = (yyvsp[0].sval);    }
-#line 2009 "parser.tab.c"
+#line 2040 "parser.tab.c"
     break;
 
   case 67:
-#line 486 "parser.y"
+#line 517 "parser.y"
                         {   (yyval.sval) = (yyvsp[0].sval);    }
-#line 2015 "parser.tab.c"
+#line 2046 "parser.tab.c"
     break;
 
   case 68:
-#line 487 "parser.y"
+#line 518 "parser.y"
                         {   (yyval.sval) = (yyvsp[0].sval);    }
-#line 2021 "parser.tab.c"
+#line 2052 "parser.tab.c"
     break;
 
   case 69:
-#line 493 "parser.y"
+#line 524 "parser.y"
     {
         (yyval.node) = (yyvsp[0].node);  // Apenas passa o node do termo para cima
     }
-#line 2029 "parser.tab.c"
+#line 2060 "parser.tab.c"
     break;
 
   case 70:
-#line 497 "parser.y"
+#line 528 "parser.y"
     {
         if ((yyvsp[-2].node) && (yyvsp[0].node)) {
             if ((yyvsp[-2].node)->type != (yyvsp[0].node)->type) {
@@ -2048,11 +2079,11 @@ yyreduce:
             (yyval.node) = NULL;
         }
     }
-#line 2052 "parser.tab.c"
+#line 2083 "parser.tab.c"
     break;
 
   case 71:
-#line 516 "parser.y"
+#line 547 "parser.y"
     {
         if ((yyvsp[-2].node) && (yyvsp[0].node)) {
             if ((yyvsp[-2].node)->type != (yyvsp[0].node)->type) {
@@ -2071,19 +2102,19 @@ yyreduce:
             (yyval.node) = NULL;
         }
     }
-#line 2075 "parser.tab.c"
+#line 2106 "parser.tab.c"
     break;
 
   case 72:
-#line 538 "parser.y"
+#line 569 "parser.y"
     {
         (yyval.node) = (yyvsp[0].node);  // Só propaga o node do fator
     }
-#line 2083 "parser.tab.c"
+#line 2114 "parser.tab.c"
     break;
 
   case 73:
-#line 542 "parser.y"
+#line 573 "parser.y"
     {
         if ((yyvsp[-2].node) && (yyvsp[0].node)) {
             if ((yyvsp[-2].node)->type != (yyvsp[0].node)->type) {
@@ -2102,11 +2133,11 @@ yyreduce:
             (yyval.node) = NULL;
         }
     }
-#line 2106 "parser.tab.c"
+#line 2137 "parser.tab.c"
     break;
 
   case 74:
-#line 561 "parser.y"
+#line 592 "parser.y"
     {
         if ((yyvsp[-2].node) && (yyvsp[0].node)) {
             if ((yyvsp[-2].node)->type != (yyvsp[0].node)->type) {
@@ -2125,57 +2156,57 @@ yyreduce:
             (yyval.node) = NULL;
         }
     }
-#line 2129 "parser.tab.c"
+#line 2160 "parser.tab.c"
     break;
 
   case 75:
-#line 580 "parser.y"
+#line 611 "parser.y"
     {
         erro_sintatico_previsto("Erro Sintático: Operação de '*' sem o fator");
         yyerrok;
         (yyval.node) = NULL;
     }
-#line 2139 "parser.tab.c"
+#line 2170 "parser.tab.c"
     break;
 
   case 76:
-#line 586 "parser.y"
+#line 617 "parser.y"
     {
         erro_sintatico_previsto("Erro Sintático: Operação de '/' sem o fator");
         yyerrok;
         (yyval.node) = NULL;
     }
-#line 2149 "parser.tab.c"
+#line 2180 "parser.tab.c"
     break;
 
   case 77:
-#line 596 "parser.y"
+#line 627 "parser.y"
     {
         (yyval.node) = (yyvsp[-1].node);  // Apenas propaga o Node da expressão
     }
-#line 2157 "parser.tab.c"
+#line 2188 "parser.tab.c"
     break;
 
   case 78:
-#line 600 "parser.y"
+#line 631 "parser.y"
     {
         // var retorna Node*, já preenchido com o símbolo e tipo
         (yyval.node) = (yyvsp[0].node);
     }
-#line 2166 "parser.tab.c"
+#line 2197 "parser.tab.c"
     break;
 
   case 79:
-#line 605 "parser.y"
+#line 636 "parser.y"
     {
         // ativacao retorna Node* com símbolo da função e tipo de retorno
         (yyval.node) = (yyvsp[0].node);
     }
-#line 2175 "parser.tab.c"
+#line 2206 "parser.tab.c"
     break;
 
   case 80:
-#line 610 "parser.y"
+#line 641 "parser.y"
     {
         Node *n = create_node();
         n->type = TYPE_FLOAT;
@@ -2183,11 +2214,11 @@ yyreduce:
         n->value.float_val = (yyvsp[0].floatval);
         (yyval.node) = n;
     }
-#line 2187 "parser.tab.c"
+#line 2218 "parser.tab.c"
     break;
 
   case 81:
-#line 618 "parser.y"
+#line 649 "parser.y"
     {
         Node *n = create_node();
         n->type = TYPE_INT;
@@ -2195,11 +2226,11 @@ yyreduce:
         n->value.int_val = (yyvsp[0].intval); // ou $1
         (yyval.node) = n;
     }
-#line 2199 "parser.tab.c"
+#line 2230 "parser.tab.c"
     break;
 
   case 82:
-#line 626 "parser.y"
+#line 657 "parser.y"
     {
         Node *n = create_node();
         n->type = TYPE_CHAR;
@@ -2207,33 +2238,33 @@ yyreduce:
         n->value.char_val = (yyvsp[0].charval); // ignora aspas simples
         (yyval.node) = n;
     }
-#line 2211 "parser.tab.c"
+#line 2242 "parser.tab.c"
     break;
 
   case 83:
-#line 634 "parser.y"
+#line 665 "parser.y"
     {
         Node *n = create_node();
         n->type = TYPE_STRING; // defina esse tipo se ainda não existir
         n->op = OP_NONE;
-        n->value.string_val = (yyvsp[0].sval); // copia a string
+        n->value.string_val = strdup((yyvsp[0].sval)); // copia a string
         (yyval.node) = n;
     }
-#line 2223 "parser.tab.c"
+#line 2254 "parser.tab.c"
     break;
 
   case 84:
-#line 642 "parser.y"
+#line 673 "parser.y"
     {
         erro_sintatico_previsto("Erro Sintático: Expressão vazia entre parênteses");
         yyerrok;
         (yyval.node) = NULL;
     }
-#line 2233 "parser.tab.c"
+#line 2264 "parser.tab.c"
     break;
 
   case 85:
-#line 654 "parser.y"
+#line 685 "parser.y"
     {
         Symbol *sym = lookup_symbol((yyvsp[-3].id));
         if (!sym) {
@@ -2261,38 +2292,41 @@ yyreduce:
             }
         }
     }
-#line 2265 "parser.tab.c"
+#line 2296 "parser.tab.c"
     break;
 
   case 86:
-#line 682 "parser.y"
+#line 713 "parser.y"
     { erro_sintatico_previsto("Erro Sintático: Argumentos invalidos no retorno da funcao"); (yyval.node) = NULL; yyerrok; }
-#line 2271 "parser.tab.c"
+#line 2302 "parser.tab.c"
     break;
 
   case 87:
-#line 688 "parser.y"
+#line 719 "parser.y"
       { (yyval.node) = (yyvsp[0].node); }
-#line 2277 "parser.tab.c"
+#line 2308 "parser.tab.c"
     break;
 
   case 88:
-#line 690 "parser.y"
+#line 721 "parser.y"
       { (yyval.node) = NULL; }
-#line 2283 "parser.tab.c"
+#line 2314 "parser.tab.c"
     break;
 
   case 89:
-#line 696 "parser.y"
+#line 727 "parser.y"
     {
-          (yyval.node) = (yyvsp[0].node);
-          (yyvsp[0].node)->next = NULL;
+        if((yyvsp[0].node)->kind == KIND_VARIABLE){
+            insert_variable((yyvsp[0].node)->symbol->name, (yyvsp[0].node)->type, NULL);
+        }
+        (yyval.node) = (yyvsp[0].node);
+        (yyvsp[0].node)->next = NULL;
     }
-#line 2292 "parser.tab.c"
+#line 2326 "parser.tab.c"
     break;
 
   case 90:
-#line 701 "parser.y"
+#line 735 "parser.y"
     {
         Node *last = (yyvsp[-2].node);
         while (last->next) last = last->next;
@@ -2300,27 +2334,27 @@ yyreduce:
         (yyvsp[0].node)->next = NULL;
         (yyval.node) = (yyvsp[-2].node);
     }
-#line 2304 "parser.tab.c"
+#line 2338 "parser.tab.c"
     break;
 
   case 91:
-#line 709 "parser.y"
+#line 743 "parser.y"
     { erro_sintatico_previsto("Erro Sintático: Falta de parametro"); yyerrok; (yyval.node) = NULL; }
-#line 2310 "parser.tab.c"
+#line 2344 "parser.tab.c"
     break;
 
   case 92:
-#line 711 "parser.y"
+#line 745 "parser.y"
     { erro_sintatico_previsto("Erro Sintático: Virgula excedente ao final da lista de parametros"); yyerrok; (yyval.node) = NULL; }
-#line 2316 "parser.tab.c"
+#line 2350 "parser.tab.c"
     break;
 
   case 93:
-#line 717 "parser.y"
+#line 751 "parser.y"
     {
         Symbol *sym = lookup_symbol((yyvsp[0].id));
         if(!sym){
-            printf("Erro: Identificador '%s' não foi declarado (linha %d, coluna %d).\n", (yyvsp[0].id), line_number, column_number);
+            printf("Erro Semântico: Identificador não foi declarado (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
             (yyval.node) = NULL;
         } else {
@@ -2334,15 +2368,15 @@ yyreduce:
             (yyval.node) = n;
         }
     }
-#line 2338 "parser.tab.c"
+#line 2372 "parser.tab.c"
     break;
 
   case 94:
-#line 735 "parser.y"
+#line 769 "parser.y"
     {
         Symbol *sym = lookup_symbol((yyvsp[-4].id));
         if (!sym) {
-            printf("Erro: Identificador '%s' não foi declarado (linha %d, coluna %d).\n", (yyvsp[-4].id), line_number, column_number);
+            printf("Erro Semântico: Identificador não foi declarado (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
             (yyval.node) = NULL;
         } else if (!sym->data.var_info.is_array) {
@@ -2354,47 +2388,122 @@ yyreduce:
             semantic_errors++;
             (yyval.node) = NULL;
         } else {
-            Node *n = create_node();
-            n->type = sym->type;
-            n->symbol = sym;
-            n->op = OP_INDEX;
-            n->left = (yyvsp[-2].node);  // expressão de índice
-            n->right = (yyvsp[0].node); // profundidade adicional
-            n->is_array = true; // se ainda tiver dimensões restantes
-            n->dim = sym->data.var_info.dimensions != NULL ? sym->data.var_info.dimensions->next : NULL;
-            (yyval.node) = n;
+            // Verificar se todos os índices são inteiros
+            Node *temp = (yyvsp[0].node);
+            bool all_int = ((yyvsp[-2].node) && (yyvsp[-2].node)->type == TYPE_INT);
+            while (temp && all_int) {
+                if (temp->type != TYPE_INT) {
+                    all_int = false;
+                    break;
+                }
+                temp = temp->next;
+            }
+
+            if (!all_int) {
+                printf("Erro Semântico: Índices de vetor devem ser inteiros (linha %d, coluna %d).\n", line_number, column_number);
+                semantic_errors++;
+                (yyval.node) = NULL;
+            } else {
+                // Contar número de índices fornecidos
+                int num_indices = 1;
+                Node *current = (yyvsp[0].node);
+                while (current) {
+                    num_indices++;
+                    current = current->next;
+                }
+
+                // Contar número de dimensões esperadas
+                int num_dims = 0;
+                Dimension *d = sym->data.var_info.dimensions;
+                while (d) {
+                    num_dims++;
+                    d = d->next;
+                }
+
+                if (num_indices > num_dims) {
+                    printf("Erro Semântico: Vetor '%s' possui dimensões demais (fornecido %d, esperado %d) (linha %d, coluna %d).\n",
+                        (yyvsp[-4].id), num_indices, num_dims, line_number, column_number);
+                    semantic_errors++;
+                    (yyval.node) = NULL;
+                } else {
+
+                    Node *idx_node = (yyvsp[-2].node);                     // Primeiro índice
+                    Dimension *dim_node = sym->data.var_info.dimensions;  // Lista de dimensões do símbolo
+                    int checked_dims = 0;
+
+                    while (idx_node != NULL && dim_node != NULL) {
+                    // Verifica se índice é valor inteiro constante
+                        int val = idx_node->value.int_val;
+                        if (val < 0 || val >= dim_node->size) {
+                            printf("Erro Semântico: Índice [%d] fora dos limites da dimensão %d (tamanho = %d) do vetor '%s' (linha %d, coluna %d).\n",
+                            val, checked_dims + 1, dim_node->size, (yyvsp[-4].id), line_number, column_number);
+                            semantic_errors++;
+                            (yyval.node) = NULL;
+                            break;
+                        }
+                    
+    
+                    // Avança para próximo índice e próxima dimensão
+                    if (checked_dims == 0)
+                        idx_node = (yyvsp[0].node);     // var_auxiliar está no $5 (próximos índices)
+                    else
+                        idx_node = idx_node->next;
+    
+                    dim_node = dim_node->next;
+                    checked_dims++;
+                    }
+
+                    Node *n = create_node();
+                    n->type = sym->type;
+                    n->symbol = sym;
+                    n->op = OP_INDEX;
+                    n->left = (yyvsp[-2].node);     // primeiro índice
+                    n->right = (yyvsp[0].node);    // índices seguintes
+                    n->dim = sym->data.var_info.dimensions;
+
+                    // Se ainda restam dimensões após os índices, é um array
+                    n->is_array = (num_indices < num_dims);
+                    (yyval.node) = n;
+                }
+            }
         }
     }
-#line 2369 "parser.tab.c"
+#line 2472 "parser.tab.c"
     break;
 
   case 95:
-#line 767 "parser.y"
+#line 870 "parser.y"
     {
-        if ((yyvsp[-3].node) && (yyvsp[-3].node)->type != TYPE_INT) {
+        if ((yyvsp[-1].node) && (yyvsp[-1].node)->type != TYPE_INT) {
             printf("Erro Semântico: Índice de vetor deve ser inteiro (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
-            (yyval.node) = NULL;
-        } else if ((yyvsp[-1].node)) {
-            (yyvsp[-3].node)->next = (yyvsp[-1].node);
             (yyval.node) = (yyvsp[-3].node);
         } else {
-            (yyval.node) = (yyvsp[-3].node);
+            if ((yyvsp[-3].node) == NULL) {
+                // Começando uma nova lista de dimensões
+                (yyval.node) = (yyvsp[-1].node);
+            } else {
+                // Encadeia $3 no final da lista $1
+                Node *temp = (yyvsp[-3].node);
+                while (temp->next != NULL) temp = temp->next;
+                temp->next = (yyvsp[-1].node);
+                (yyval.node) = (yyvsp[-3].node);
+            }
         }
     }
-#line 2386 "parser.tab.c"
+#line 2495 "parser.tab.c"
     break;
 
   case 96:
-#line 780 "parser.y"
+#line 889 "parser.y"
     {
         (yyval.node) = NULL;
     }
-#line 2394 "parser.tab.c"
+#line 2503 "parser.tab.c"
     break;
 
 
-#line 2398 "parser.tab.c"
+#line 2507 "parser.tab.c"
 
       default: break;
     }
@@ -2626,7 +2735,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 785 "parser.y"
+#line 894 "parser.y"
 
 
 
@@ -2659,9 +2768,9 @@ int main(int argc, char **argv) {
 
     printf("\n=== Resultado da Análise ===\n");
     if (result == 0) {
-        printf("ANALISE SINTATICA CONCLUIDA COM SUCESSO!\n");
+        printf("ANALISE CONCLUIDA COM SUCESSO!\n");
     } else {
-        printf("ANALISE SINTATICA FALHOU DEVIDO A ERROS!\n");
+        printf("ANALISE FALHOU DEVIDO A ERROS!\n");
     }
 
     printf("Total de erros léxicos: %d\n", lexical_errors);
@@ -2669,6 +2778,6 @@ int main(int argc, char **argv) {
     printf("Total de erros semânticos: %d\n", semantic_errors);
 
     fclose(compiled_arq);
-    destroy_scope_stack();
+    // destroy_scope_stack();
     return 0;
 }
