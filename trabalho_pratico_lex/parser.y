@@ -254,7 +254,7 @@ varDeclList
 
 /*----- 7° -----*/
 func_declaracao
-    : tipo_especificador IDENTIFIER LEFT_PAREN params RIGHT_PAREN abre_escopo_funcao composto_decl fecha_escopo_funcao
+    : tipo_especificador IDENTIFIER LEFT_PAREN params RIGHT_PAREN composto_decl
     {
         if($1 == NULL || $1->kind == KIND_STRUCT_DEF){
             printf("Erro Semântico: Struct nao é aceito como tipo de retorno (linha %d, coluna %d).\n", line_number, column_number);
@@ -337,7 +337,7 @@ param
 
 /*----- 11° -----*/
 composto_decl
-    : LEFT_BRACE local_declaracoes comando_lista RIGHT_BRACE
+    : LEFT_BRACE abre_escopo_funcao local_declaracoes comando_lista RIGHT_BRACE fecha_escopo_funcao
     ;
 
 /*----- 12° -----*/
@@ -752,6 +752,10 @@ var
         Symbol *sym = lookup_symbol($1);
         if(!sym){
             printf("Erro Semântico: Identificador não foi declarado (linha %d, coluna %d).\n", line_number, column_number);
+            semantic_errors++;
+            $$ = NULL;
+        } else if(sym->data.var_info.is_array){
+            printf("Erro Semântico: Problema de Atribuição, uma das variaveis é um arranjo, mas nenhum indice foi colocado (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
             $$ = NULL;
         } else {

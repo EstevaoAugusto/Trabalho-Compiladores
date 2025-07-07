@@ -506,23 +506,33 @@ int verifica_argumentos(Symbol *func, Node *args) {
     int index = 1;  // Para indicar qual argumento está sendo verificado
 
     while (param && arg) {
-        // Verifica se os tipos batem
-        if (!types_compatible(param->type, arg->type)) {
-            printf("Erro Semântico: Tipos incompatíveis no argumento %d da função '%s'.\n", index, func->name);
-            return 0;
-        }
+        // Se o argumento for OP_NONE, é um valor isolado (como literal), então só verifica o tipo
+        if (arg->op != OP_NONE) {
+            // Verifica se o tipo é compatível
+            if (!types_compatible(param->type, arg->type)) {
+                printf("Erro Semântico: Tipos incompatíveis no argumento %d da função '%s'.\n", index, func->name);
+                return 0;
+            }
 
-        // Verifica se ambos são arrays ou não
-        if (param->is_array != arg->is_array) {
-            printf("Erro Semântico: Argumento %d da função '%s' deve %s array, mas recebeu %s array ",
-                index, func->name,
-                param->is_array ? "" : "não ",
-                arg->is_array ? "" : "não ");
-            return 0;
+            // Verifica se ambos são arrays ou não
+            if (param->is_array != arg->is_array) {
+                printf("Erro Semântico: Argumento %d da função '%s' deve %sarray, mas recebeu %sarray.\n",
+                    index, func->name,
+                    param->is_array ? "" : "não ",
+                    arg->is_array ? "" : "não ");
+                return 0;
+            }
+        } else {
+            // Caso OP_NONE, apenas verifica se o tipo do valor combina
+            if (!types_compatible(param->type, arg->type)) {
+                printf("Erro Semântico: Tipo do argumento literal %d incompatível com o esperado pela função '%s'.\n", index, func->name);
+                return 0;
+            }
+            // Nenhuma verificação de array é necessária
         }
 
         param = param->next;
-        arg = arg->right;  // Avança para o próximo argumento
+        arg = arg->right;
         index++;
     }
 
