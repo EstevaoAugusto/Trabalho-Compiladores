@@ -364,7 +364,7 @@ expressao_decl
         if (!$1) {
             printf("Erro Semântico: Expressão inválida na linha %d, coluna %d.\n", line_number, column_number);
             semantic_errors++;
-        }
+        } else { generate_code($1); }
     }
     | SEMICOLON
     ;
@@ -413,6 +413,9 @@ retorno_decl
         if ($2 && $2->type != current_function_type) {
             printf("Erro Semântico: Tipo do valor de retorno incompatível com a função (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
+        } else if ($2) {
+        char* temp = generate_code($2);
+        printf("return %s\n", temp);
         }
     }
     | RETURN error SEMICOLON
@@ -472,6 +475,7 @@ expressao_simples
                 node->right = $3;
 
                 $$ = node;
+                node->place = generate_code(node);
             }
         } else { $$ = NULL; }
     }
@@ -521,6 +525,7 @@ exp_soma
                 node->left = $1;
                 node->right = $3;
                 $$ = node;
+                node->place = generate_code(node);
             }
         } else { $$ = NULL; }
     }
@@ -541,6 +546,7 @@ termo
                 node->left = $1;
                 node->right = $3;
                 $$ = node;
+                node->place = generate_code(node);
             }
         } else { $$ = NULL; }
     }

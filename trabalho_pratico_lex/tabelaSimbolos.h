@@ -176,6 +176,8 @@ char* generate_code(Node* node);
 const char* op_to_str(Operator op);
 char* new_temp();
 
+int count_args(Node* args);
+
 // Essa funcao serve para checar se existem identificadores iguais em structs
 bool lookup_struct_hash_table(const Symbol* symbol, const HashTable* table);
 

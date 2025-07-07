@@ -2,5 +2,5 @@ int a;
 int b;
 int c;
 int main(void) {
-    a = b + c;
+    a = b + c * a;
 }

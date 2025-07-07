@@ -365,6 +365,15 @@ Node* create_node() {
     return node;
 }
 
+int count_args(Node* args) {
+    int count = 0;
+    while (args) {
+        count++;
+        args = args->next;
+    }
+    return count;
+}
+
 bool types_compatible(const DataType* a, const DataType* b){
     if (*a == *b) {
         return true;
@@ -521,7 +530,7 @@ const char* op_to_str(Operator op) {
 char* generate_code(Node* node) {
     if (!node) return NULL;
 
-    // ⚠️ Evita gerar código mais de uma vez
+    // Evita gerar código mais de uma vez
     if (node->place) return node->place;
 
     char *left, *right, *temp;
@@ -555,6 +564,19 @@ char* generate_code(Node* node) {
             node->place = node->symbol->name;
             return node->place;
 
+        case OP_CALL: {
+            Node *arg = node->right;
+            while (arg) {
+                char* param_place = generate_code(arg);
+                printf("param %s\n", param_place);
+                arg = arg->next;
+            }
+            temp = new_temp();
+            printf("%s = call %s, %d\n", temp, node->symbol->name, count_args(node->right));
+            node->place = temp;
+            return temp;
+        }
+        
         case OP_NONE:
             temp = new_temp();
             switch (node->type) {
