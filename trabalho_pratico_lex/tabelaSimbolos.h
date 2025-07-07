@@ -64,6 +64,8 @@ typedef struct Node {
     bool is_array;
     Dimension* dim;
     char *struct_name;
+    char* true_label;
+    char* false_label;
 
     union {
         int int_val;
@@ -177,6 +179,8 @@ const char* op_to_str(Operator op);
 char* new_temp();
 
 int count_args(Node* args);
+
+char* new_label();
 
 // Essa funcao serve para checar se existem identificadores iguais em structs
 bool lookup_struct_hash_table(const Symbol* symbol, const HashTable* table);

@@ -536,11 +536,11 @@ static const yytype_uint16 yyrline[] =
      208,   213,   219,   225,   237,   253,   266,   273,   283,   287,
      292,   294,   300,   302,   308,   318,   328,   334,   339,   340,
      345,   346,   351,   352,   353,   354,   355,   356,   362,   369,
-     373,   380,   387,   393,   400,   406,   412,   421,   427,   452,
-     454,   459,   482,   487,   488,   489,   490,   491,   492,   497,
-     498,   515,   535,   536,   553,   569,   574,   583,   587,   592,
-     597,   605,   613,   621,   629,   641,   669,   675,   678,   683,
-     688,   696,   698,   704,   722,   754,   768
+     373,   389,   409,   415,   434,   440,   446,   455,   461,   486,
+     488,   493,   516,   521,   522,   523,   524,   525,   526,   531,
+     532,   549,   569,   570,   587,   603,   608,   617,   621,   626,
+     631,   639,   647,   655,   663,   675,   703,   709,   712,   717,
+     722,   730,   732,   738,   756,   788,   802
 };
 #endif
 
@@ -1946,51 +1946,85 @@ yyreduce:
             printf("Erro Semântico: Expressão condicional do 'if' deve ser do tipo int (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
         }
+        char* Ltrue = new_label();
+        char* Lend = new_label();
+        char* cond = generate_code((yyvsp[(3) - (5)].node));
+
+        printf("if %s goto %s\n", cond, Ltrue);
+        printf("goto %s\n", Lend);
+        printf("%s:\n", Ltrue);
+        // código do comando ($5) será gerado automaticamente
+        printf("%s:\n", Lend);
     ;}
     break;
 
   case 51:
 
 /* Line 1455 of yacc.c  */
-#line 381 "parser.y"
+#line 390 "parser.y"
     {
         if ((yyvsp[(3) - (7)].node) && (yyvsp[(3) - (7)].node)->type != TYPE_INT) {
             printf("Erro Semântico: Expressão condicional do 'if' deve ser do tipo int (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
         }
+        char* Ltrue = new_label();
+        char* Lfalse = new_label();
+        char* Lend = new_label();
+        char* cond = generate_code((yyvsp[(3) - (7)].node));
+
+        printf("if %s goto %s\n", cond, Ltrue);
+        printf("goto %s\n", Lfalse);
+        printf("%s:\n", Ltrue);
+        // código do comando $5
+        printf("goto %s\n", Lend);
+        printf("%s:\n", Lfalse);
+        // código do comando $7
+        printf("%s:\n", Lend);
     ;}
     break;
 
   case 52:
 
 /* Line 1455 of yacc.c  */
-#line 388 "parser.y"
+#line 410 "parser.y"
     { erro_sintatico_previsto("Erro Sintático: Condição errada no comando IF"); yyerrok;;}
     break;
 
   case 53:
 
 /* Line 1455 of yacc.c  */
-#line 394 "parser.y"
+#line 416 "parser.y"
     {
         if ((yyvsp[(3) - (5)].node) && (yyvsp[(3) - (5)].node)->type != TYPE_INT) {
-            printf("Erro Semântico: Expressão condicional do 'if' deve ser do tipo int (linha %d, coluna %d).\n", line_number, column_number);
+            printf("Erro Semântico: Expressão condicional do 'while' deve ser do tipo int (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
         }
+        char* Lstart = new_label();
+        char* Lcond = new_label();
+        char* Lend = new_label();
+
+        printf("%s:\n", Lcond);
+        char* cond = generate_code((yyvsp[(3) - (5)].node));
+        printf("if %s goto %s\n", cond, Lstart);
+        printf("goto %s\n", Lend);
+        printf("%s:\n", Lstart);
+        // código do comando $5
+        printf("goto %s\n", Lcond);
+        printf("%s:\n", Lend);
     ;}
     break;
 
   case 54:
 
 /* Line 1455 of yacc.c  */
-#line 401 "parser.y"
+#line 435 "parser.y"
     { erro_sintatico_previsto("Erro Sintático: Comando WHILE invalido"); yyerrok; ;}
     break;
 
   case 55:
 
 /* Line 1455 of yacc.c  */
-#line 406 "parser.y"
+#line 440 "parser.y"
     {
         if (current_function_type != TYPE_VOID) {
             printf("Erro Semântico: Retorno sem valor em função que exige retorno (linha %d, coluna %d).\n", line_number, column_number);
@@ -2002,7 +2036,7 @@ yyreduce:
   case 56:
 
 /* Line 1455 of yacc.c  */
-#line 412 "parser.y"
+#line 446 "parser.y"
     {
         if ((yyvsp[(2) - (3)].node) && (yyvsp[(2) - (3)].node)->type != current_function_type) {
             printf("Erro Semântico: Tipo do valor de retorno incompatível com a função (linha %d, coluna %d).\n", line_number, column_number);
@@ -2017,14 +2051,14 @@ yyreduce:
   case 57:
 
 /* Line 1455 of yacc.c  */
-#line 422 "parser.y"
+#line 456 "parser.y"
     { erro_sintatico_previsto("Erro Sintático: Retorno invalido"); yyerrok;;}
     break;
 
   case 58:
 
 /* Line 1455 of yacc.c  */
-#line 428 "parser.y"
+#line 462 "parser.y"
     {
         if ((yyvsp[(1) - (3)].node) && (yyvsp[(3) - (3)].node)) {
             DataType tipo_var = (yyvsp[(1) - (3)].node)->type;
@@ -2054,21 +2088,21 @@ yyreduce:
   case 59:
 
 /* Line 1455 of yacc.c  */
-#line 453 "parser.y"
+#line 487 "parser.y"
     { erro_sintatico_previsto("Erro Sintático: Atribuição sem expressão à direita"); (yyval.node) = NULL; yyerrok; ;}
     break;
 
   case 60:
 
 /* Line 1455 of yacc.c  */
-#line 454 "parser.y"
+#line 488 "parser.y"
     { (yyval.node) = (yyvsp[(1) - (1)].node); ;}
     break;
 
   case 61:
 
 /* Line 1455 of yacc.c  */
-#line 459 "parser.y"
+#line 493 "parser.y"
     {
         if ((yyvsp[(1) - (3)].node) && (yyvsp[(3) - (3)].node)) {
             if ((yyvsp[(1) - (3)].node)->type != (yyvsp[(3) - (3)].node)->type) {
@@ -2097,63 +2131,63 @@ yyreduce:
   case 62:
 
 /* Line 1455 of yacc.c  */
-#line 482 "parser.y"
+#line 516 "parser.y"
     { (yyval.node) = (yyvsp[(1) - (1)].node); ;}
     break;
 
   case 63:
 
 /* Line 1455 of yacc.c  */
-#line 487 "parser.y"
+#line 521 "parser.y"
     {   (yyval.sval) = (yyvsp[(1) - (1)].sval);    ;}
     break;
 
   case 64:
 
 /* Line 1455 of yacc.c  */
-#line 488 "parser.y"
+#line 522 "parser.y"
     {   (yyval.sval) = (yyvsp[(1) - (1)].sval);    ;}
     break;
 
   case 65:
 
 /* Line 1455 of yacc.c  */
-#line 489 "parser.y"
+#line 523 "parser.y"
     {   (yyval.sval) = (yyvsp[(1) - (1)].sval);    ;}
     break;
 
   case 66:
 
 /* Line 1455 of yacc.c  */
-#line 490 "parser.y"
+#line 524 "parser.y"
     {   (yyval.sval) = (yyvsp[(1) - (1)].sval);    ;}
     break;
 
   case 67:
 
 /* Line 1455 of yacc.c  */
-#line 491 "parser.y"
+#line 525 "parser.y"
     {   (yyval.sval) = (yyvsp[(1) - (1)].sval);    ;}
     break;
 
   case 68:
 
 /* Line 1455 of yacc.c  */
-#line 492 "parser.y"
+#line 526 "parser.y"
     {   (yyval.sval) = (yyvsp[(1) - (1)].sval);    ;}
     break;
 
   case 69:
 
 /* Line 1455 of yacc.c  */
-#line 497 "parser.y"
+#line 531 "parser.y"
     { (yyval.node) = (yyvsp[(1) - (1)].node); ;}
     break;
 
   case 70:
 
 /* Line 1455 of yacc.c  */
-#line 498 "parser.y"
+#line 532 "parser.y"
     {
         if ((yyvsp[(1) - (3)].node) && (yyvsp[(3) - (3)].node)) {
             if ((yyvsp[(1) - (3)].node)->type != (yyvsp[(3) - (3)].node)->type) {
@@ -2176,7 +2210,7 @@ yyreduce:
   case 71:
 
 /* Line 1455 of yacc.c  */
-#line 515 "parser.y"
+#line 549 "parser.y"
     {
         if ((yyvsp[(1) - (3)].node) && (yyvsp[(3) - (3)].node)) {
             if ((yyvsp[(1) - (3)].node)->type != (yyvsp[(3) - (3)].node)->type) {
@@ -2199,14 +2233,14 @@ yyreduce:
   case 72:
 
 /* Line 1455 of yacc.c  */
-#line 535 "parser.y"
+#line 569 "parser.y"
     { (yyval.node) = (yyvsp[(1) - (1)].node); ;}
     break;
 
   case 73:
 
 /* Line 1455 of yacc.c  */
-#line 536 "parser.y"
+#line 570 "parser.y"
     {
         if ((yyvsp[(1) - (3)].node) && (yyvsp[(3) - (3)].node)) {
             if ((yyvsp[(1) - (3)].node)->type != (yyvsp[(3) - (3)].node)->type) {
@@ -2229,7 +2263,7 @@ yyreduce:
   case 74:
 
 /* Line 1455 of yacc.c  */
-#line 553 "parser.y"
+#line 587 "parser.y"
     {
         if ((yyvsp[(1) - (3)].node) && (yyvsp[(3) - (3)].node)) {
             if ((yyvsp[(1) - (3)].node)->type != (yyvsp[(3) - (3)].node)->type) {
@@ -2251,7 +2285,7 @@ yyreduce:
   case 75:
 
 /* Line 1455 of yacc.c  */
-#line 569 "parser.y"
+#line 603 "parser.y"
     {
         erro_sintatico_previsto("Erro Sintático: Operação de '*' sem o fator");
         yyerrok;
@@ -2262,7 +2296,7 @@ yyreduce:
   case 76:
 
 /* Line 1455 of yacc.c  */
-#line 574 "parser.y"
+#line 608 "parser.y"
     {
         erro_sintatico_previsto("Erro Sintático: Operação de '/' sem o fator");
         yyerrok;
@@ -2273,7 +2307,7 @@ yyreduce:
   case 77:
 
 /* Line 1455 of yacc.c  */
-#line 584 "parser.y"
+#line 618 "parser.y"
     {
         (yyval.node) = (yyvsp[(2) - (3)].node);  // Apenas propaga o Node da expressão
     ;}
@@ -2282,7 +2316,7 @@ yyreduce:
   case 78:
 
 /* Line 1455 of yacc.c  */
-#line 588 "parser.y"
+#line 622 "parser.y"
     {
         // var retorna Node*, já preenchido com o símbolo e tipo
         (yyval.node) = (yyvsp[(1) - (1)].node);
@@ -2292,7 +2326,7 @@ yyreduce:
   case 79:
 
 /* Line 1455 of yacc.c  */
-#line 593 "parser.y"
+#line 627 "parser.y"
     {
         // ativacao retorna Node* com símbolo da função e tipo de retorno
         (yyval.node) = (yyvsp[(1) - (1)].node);
@@ -2302,7 +2336,7 @@ yyreduce:
   case 80:
 
 /* Line 1455 of yacc.c  */
-#line 598 "parser.y"
+#line 632 "parser.y"
     {
         Node *n = create_node();
         n->type = TYPE_FLOAT;
@@ -2315,7 +2349,7 @@ yyreduce:
   case 81:
 
 /* Line 1455 of yacc.c  */
-#line 606 "parser.y"
+#line 640 "parser.y"
     {
         Node *n = create_node();
         n->type = TYPE_INT;
@@ -2328,7 +2362,7 @@ yyreduce:
   case 82:
 
 /* Line 1455 of yacc.c  */
-#line 614 "parser.y"
+#line 648 "parser.y"
     {
         Node *n = create_node();
         n->type = TYPE_CHAR;
@@ -2341,7 +2375,7 @@ yyreduce:
   case 83:
 
 /* Line 1455 of yacc.c  */
-#line 622 "parser.y"
+#line 656 "parser.y"
     {
         Node *n = create_node();
         n->type = TYPE_STRING; // defina esse tipo se ainda não existir
@@ -2354,7 +2388,7 @@ yyreduce:
   case 84:
 
 /* Line 1455 of yacc.c  */
-#line 630 "parser.y"
+#line 664 "parser.y"
     {
         erro_sintatico_previsto("Erro Sintático: Expressão vazia entre parênteses");
         yyerrok;
@@ -2365,7 +2399,7 @@ yyreduce:
   case 85:
 
 /* Line 1455 of yacc.c  */
-#line 642 "parser.y"
+#line 676 "parser.y"
     {
         Symbol *sym = lookup_symbol((yyvsp[(1) - (4)].id));
         if (!sym) {
@@ -2398,28 +2432,28 @@ yyreduce:
   case 86:
 
 /* Line 1455 of yacc.c  */
-#line 670 "parser.y"
+#line 704 "parser.y"
     { erro_sintatico_previsto("Erro Sintático: Argumentos invalidos no retorno da funcao"); (yyval.node) = NULL; yyerrok; ;}
     break;
 
   case 87:
 
 /* Line 1455 of yacc.c  */
-#line 676 "parser.y"
+#line 710 "parser.y"
     { (yyval.node) = (yyvsp[(1) - (1)].node); ;}
     break;
 
   case 88:
 
 /* Line 1455 of yacc.c  */
-#line 678 "parser.y"
+#line 712 "parser.y"
     { (yyval.node) = NULL; ;}
     break;
 
   case 89:
 
 /* Line 1455 of yacc.c  */
-#line 684 "parser.y"
+#line 718 "parser.y"
     {
           (yyval.node) = (yyvsp[(1) - (1)].node);
           (yyvsp[(1) - (1)].node)->next = NULL;
@@ -2429,7 +2463,7 @@ yyreduce:
   case 90:
 
 /* Line 1455 of yacc.c  */
-#line 689 "parser.y"
+#line 723 "parser.y"
     {
         Node *last = (yyvsp[(1) - (3)].node);
         while (last->next) last = last->next;
@@ -2442,21 +2476,21 @@ yyreduce:
   case 91:
 
 /* Line 1455 of yacc.c  */
-#line 697 "parser.y"
+#line 731 "parser.y"
     { erro_sintatico_previsto("Erro Sintático: Falta de parametro"); yyerrok; (yyval.node) = NULL; ;}
     break;
 
   case 92:
 
 /* Line 1455 of yacc.c  */
-#line 699 "parser.y"
+#line 733 "parser.y"
     { erro_sintatico_previsto("Erro Sintático: Virgula excedente ao final da lista de parametros"); yyerrok; (yyval.node) = NULL; ;}
     break;
 
   case 93:
 
 /* Line 1455 of yacc.c  */
-#line 705 "parser.y"
+#line 739 "parser.y"
     {
         Symbol *sym = lookup_symbol((yyvsp[(1) - (1)].id));
         if(!sym){
@@ -2479,7 +2513,7 @@ yyreduce:
   case 94:
 
 /* Line 1455 of yacc.c  */
-#line 723 "parser.y"
+#line 757 "parser.y"
     {
         Symbol *sym = lookup_symbol((yyvsp[(1) - (5)].id));
         if (!sym) {
@@ -2511,7 +2545,7 @@ yyreduce:
   case 95:
 
 /* Line 1455 of yacc.c  */
-#line 755 "parser.y"
+#line 789 "parser.y"
     {
         if ((yyvsp[(1) - (4)].node) && (yyvsp[(1) - (4)].node)->type != TYPE_INT) {
             printf("Erro Semântico: Índice de vetor deve ser inteiro (linha %d, coluna %d).\n", line_number, column_number);
@@ -2529,7 +2563,7 @@ yyreduce:
   case 96:
 
 /* Line 1455 of yacc.c  */
-#line 768 "parser.y"
+#line 802 "parser.y"
     {
         (yyval.node) = NULL;
     ;}
@@ -2538,7 +2572,7 @@ yyreduce:
 
 
 /* Line 1455 of yacc.c  */
-#line 2542 "parser.tab.c"
+#line 2576 "parser.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -2750,7 +2784,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 773 "parser.y"
+#line 807 "parser.y"
 
 
 

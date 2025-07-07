@@ -376,6 +376,15 @@ selecao_decl
             printf("Erro Semântico: Expressão condicional do 'if' deve ser do tipo int (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
         }
+        char* Ltrue = new_label();
+        char* Lend = new_label();
+        char* cond = generate_code($3);
+
+        printf("if %s goto %s\n", cond, Ltrue);
+        printf("goto %s\n", Lend);
+        printf("%s:\n", Ltrue);
+        // código do comando ($5) será gerado automaticamente
+        printf("%s:\n", Lend);
     }
     | IF LEFT_PAREN expressao RIGHT_PAREN comando ELSE comando
     {
@@ -383,6 +392,19 @@ selecao_decl
             printf("Erro Semântico: Expressão condicional do 'if' deve ser do tipo int (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
         }
+        char* Ltrue = new_label();
+        char* Lfalse = new_label();
+        char* Lend = new_label();
+        char* cond = generate_code($3);
+
+        printf("if %s goto %s\n", cond, Ltrue);
+        printf("goto %s\n", Lfalse);
+        printf("%s:\n", Ltrue);
+        // código do comando $5
+        printf("goto %s\n", Lend);
+        printf("%s:\n", Lfalse);
+        // código do comando $7
+        printf("%s:\n", Lend);
     }
     | IF LEFT_PAREN error RIGHT_PAREN comando
     { erro_sintatico_previsto("Erro Sintático: Condição errada no comando IF"); yyerrok;}
@@ -393,9 +415,21 @@ iteracao_decl
     : WHILE LEFT_PAREN expressao RIGHT_PAREN comando
     {
         if ($3 && $3->type != TYPE_INT) {
-            printf("Erro Semântico: Expressão condicional do 'if' deve ser do tipo int (linha %d, coluna %d).\n", line_number, column_number);
+            printf("Erro Semântico: Expressão condicional do 'while' deve ser do tipo int (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
         }
+        char* Lstart = new_label();
+        char* Lcond = new_label();
+        char* Lend = new_label();
+
+        printf("%s:\n", Lcond);
+        char* cond = generate_code($3);
+        printf("if %s goto %s\n", cond, Lstart);
+        printf("goto %s\n", Lend);
+        printf("%s:\n", Lstart);
+        // código do comando $5
+        printf("goto %s\n", Lcond);
+        printf("%s:\n", Lend);
     }
     | WHILE LEFT_PAREN error RIGHT_PAREN comando
     { erro_sintatico_previsto("Erro Sintático: Comando WHILE invalido"); yyerrok; }

@@ -577,6 +577,15 @@ char* generate_code(Node* node) {
             return temp;
         }
         
+        case OP_INDEX: {
+            char* base = node->symbol->name;              // nome do vetor
+            char* index_code = generate_code(node->left); // expressão de índice
+            temp = new_temp();
+            printf("%s = %s[%s]\n", temp, base, index_code);
+            node->place = temp;
+            return temp;
+        }
+
         case OP_NONE:
             temp = new_temp();
             switch (node->type) {
@@ -597,4 +606,12 @@ char* generate_code(Node* node) {
         default:
             return NULL;
     }
+}
+
+static int label_count = 0;
+
+char* new_label() {
+    char* label = (char*)malloc(20);
+    sprintf(label, "L%d", label_count++);
+    return label;
 }
