@@ -40,9 +40,6 @@ int main(void) {
 
     c = multiplicacao(a,6.6);           /* 11 - multiplicacao não é um função */
 
-    /* xis = soma(1);   REGRA DÁ SEGMENTATION FAULT  */
-
-    a = b + c * a;
 }
 
 int soma(int a, int c) {                /* 12 - Função de soma já foi declarada anteriormente */
