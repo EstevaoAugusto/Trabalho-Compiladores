@@ -386,11 +386,11 @@ selecao_decl
         char* Lend = new_label();
         char* cond = generate_code($3);
 
-        printf("if %s goto %s\n", cond, Ltrue);
-        printf("goto %s\n", Lend);
-        printf("%s:\n", Ltrue);
+        fprintf(code_output, "if %s goto %s\n", cond, Ltrue);
+        fprintf(code_output, "goto %s\n", Lend);
+        fprintf(code_output, "%s:\n", Ltrue);
         // código do comando ($5) será gerado automaticamente
-        printf("%s:\n", Lend);
+        fprintf(code_output, "%s:\n", Lend);
     }
     | IF LEFT_PAREN expressao RIGHT_PAREN comando ELSE comando
     {
@@ -403,14 +403,14 @@ selecao_decl
         char* Lend = new_label();
         char* cond = generate_code($3);
 
-        printf("if %s goto %s\n", cond, Ltrue);
-        printf("goto %s\n", Lfalse);
-        printf("%s:\n", Ltrue);
+        fprintf(code_output, "if %s goto %s\n", cond, Ltrue);
+        fprintf(code_output, "goto %s\n", Lfalse);
+        fprintf(code_output, "%s:\n", Ltrue);
         // código do comando $5
-        printf("goto %s\n", Lend);
-        printf("%s:\n", Lfalse);
+        fprintf(code_output, "goto %s\n", Lend);
+        fprintf(code_output, "%s:\n", Lfalse);
         // código do comando $7
-        printf("%s:\n", Lend);
+        fprintf(code_output, "%s:\n", Lend);
     }
     | IF LEFT_PAREN error RIGHT_PAREN comando
     { erro_sintatico_previsto("Erro Sintático: Condição errada no comando IF"); yyerrok;}
@@ -428,14 +428,14 @@ iteracao_decl
         char* Lcond = new_label();
         char* Lend = new_label();
 
-        printf("%s:\n", Lcond);
+        fprintf(code_output, "%s:\n", Lcond);
         char* cond = generate_code($3);
-        printf("if %s goto %s\n", cond, Lstart);
-        printf("goto %s\n", Lend);
-        printf("%s:\n", Lstart);
+        fprintf(code_output, "if %s goto %s\n", cond, Lstart);
+        fprintf(code_output, "goto %s\n", Lend);
+        fprintf(code_output, "%s:\n", Lstart);
         // código do comando $5
-        printf("goto %s\n", Lcond);
-        printf("%s:\n", Lend);
+        fprintf(code_output, "goto %s\n", Lcond);
+        fprintf(code_output, "%s:\n", Lend);
     }
     | WHILE LEFT_PAREN error RIGHT_PAREN comando
     { erro_sintatico_previsto("Erro Sintático: Comando WHILE invalido"); yyerrok; }
@@ -457,7 +457,7 @@ retorno_decl
             semantic_errors++;
         } else if ($2) {
         char* temp = generate_code($2);
-        printf("return %s\n", temp);
+        fprintf(code_output, "return %s\n", temp);
         }
     }
     | RETURN error SEMICOLON
@@ -517,7 +517,7 @@ expressao
         $$ = NULL; 
         yyerrok; }
     | expressao_simples    { $$ = $1; }
-    ;
+;
 
 /*----- 20° -----*/
 expressao_simples
@@ -698,8 +698,6 @@ fator
         $$ = NULL;
     }
 ;
-
-
 
 /*----- 25° -----*/
 ativacao
@@ -930,6 +928,12 @@ void erro_sintatico_previsto(const char *msg) {
 }
 
 int main(int argc, char **argv) {
+    code_output = fopen("saida.3ac", "w");
+    if (!code_output) {
+        perror("Erro ao abrir o arquivo de saída do código intermediário");
+        return -3;
+    }
+    
     if (argc < 2) {
         printf("Provenha o arquivo de entrada para o compilador.\n");
         return -1;
@@ -957,6 +961,7 @@ int main(int argc, char **argv) {
     printf("Total de erros semânticos: %d\n", semantic_errors);
 
     fclose(compiled_arq);
+    fclose(code_output);
     // destroy_scope_stack();
     return 0;
 }

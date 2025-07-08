@@ -2,6 +2,9 @@
 #define SYMBOL_TABLE_H_
 
 #include <stdbool.h> // Para usar o tipo 'bool'
+#include <stdio.h> // Para reconhecer o FILE e fazer o processo de tacar no saida.3ac
+
+extern FILE* code_output;
 
 // ... (as seções 1 e 2 com Enums e structs Param/Dimension continuam iguais) ...
 

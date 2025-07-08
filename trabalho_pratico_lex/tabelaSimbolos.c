@@ -3,6 +3,9 @@
 #include <string.h>
 #include <stdio.h>
 
+// Para o arquivo que vai ficar o código de 3 endereços
+FILE* code_output = NULL;
+
 // A variável global estática para o topo da pilha.
 Scope* current_scope = NULL;
 
@@ -681,14 +684,14 @@ char* generate_code(Node* node) {
             left = generate_code(node->left);
             right = generate_code(node->right);
             temp = new_temp();
-            printf("%s = %s %s %s\n", temp, left, op_to_str(node->op), right);
+            fprintf(code_output, "%s = %s %s %s\n", temp, left, op_to_str(node->op), right);
             node->place = temp;
             return temp;
 
         case OP_ASSIGN:
             left = generate_code(node->left);
             right = generate_code(node->right);
-            printf("%s = %s\n", left, right);
+            fprintf(code_output, "%s = %s\n", left, right);
             node->place = strdup(left);
             return node->place;
 
@@ -700,11 +703,11 @@ char* generate_code(Node* node) {
             Node *arg = node->right;
             while (arg) {
                 char* param_place = generate_code(arg);
-                printf("param %s\n", param_place);
+                fprintf(code_output, "param %s\n", param_place);
                 arg = arg->next;
             }
             temp = new_temp();
-            printf("%s = call %s, %d\n", temp, node->symbol->name, count_args(node->right));
+            fprintf(code_output, "%s = call %s, %d\n", temp, node->symbol->name, count_args(node->right));
             node->place = temp;
             return temp;
         }
@@ -713,7 +716,7 @@ char* generate_code(Node* node) {
             char* base = node->symbol->name;              // nome do vetor
             char* index_code = generate_code(node->left); // expressão de índice
             temp = new_temp();
-            printf("%s = %s[%s]\n", temp, base, index_code);
+            fprintf(code_output, "%s = %s[%s]\n", temp, base, index_code);
             node->place = temp;
             return temp;
         }
@@ -722,15 +725,15 @@ char* generate_code(Node* node) {
             temp = new_temp();
             switch (node->type) {
                 case TYPE_INT:
-                    printf("%s = %d\n", temp, node->value.int_val); break;
+                    fprintf(code_output, "%s = %d\n", temp, node->value.int_val); break;
                 case TYPE_FLOAT:
-                    printf("%s = %f\n", temp, node->value.float_val); break;
+                    fprintf(code_output, "%s = %f\n", temp, node->value.float_val); break;
                 case TYPE_CHAR:
-                    printf("%s = '%c'\n", temp, node->value.char_val); break;
+                    fprintf(code_output, "%s = '%c'\n", temp, node->value.char_val); break;
                 case TYPE_STRING:
-                    printf("%s = \"%s\"\n", temp, node->value.string_val); break;
+                    fprintf(code_output, "%s = \"%s\"\n", temp, node->value.string_val); break;
                 default:
-                    printf("%s = <valor inválido>\n", temp);
+                    fprintf(code_output, "%s = <valor inválido>\n", temp);
             }
             node->place = temp;
             return temp;

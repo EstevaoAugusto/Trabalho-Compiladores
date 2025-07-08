@@ -539,8 +539,8 @@ static const yytype_uint16 yyrline[] =
      379,   395,   415,   421,   440,   446,   453,   463,   469,   510,
      519,   524,   547,   552,   553,   554,   555,   556,   557,   562,
      563,   580,   600,   601,   618,   634,   639,   648,   652,   657,
-     662,   670,   678,   686,   694,   706,   734,   740,   743,   748,
-     756,   764,   766,   772,   794,   895,   915
+     662,   670,   678,   686,   694,   704,   732,   738,   741,   746,
+     754,   762,   764,   770,   792,   893,   913
 };
 #endif
 
@@ -1956,11 +1956,11 @@ yyreduce:
         char* Lend = new_label();
         char* cond = generate_code((yyvsp[(3) - (5)].node));
 
-        printf("if %s goto %s\n", cond, Ltrue);
-        printf("goto %s\n", Lend);
-        printf("%s:\n", Ltrue);
+        fprintf(code_output, "if %s goto %s\n", cond, Ltrue);
+        fprintf(code_output, "goto %s\n", Lend);
+        fprintf(code_output, "%s:\n", Ltrue);
         // código do comando ($5) será gerado automaticamente
-        printf("%s:\n", Lend);
+        fprintf(code_output, "%s:\n", Lend);
     ;}
     break;
 
@@ -1978,14 +1978,14 @@ yyreduce:
         char* Lend = new_label();
         char* cond = generate_code((yyvsp[(3) - (7)].node));
 
-        printf("if %s goto %s\n", cond, Ltrue);
-        printf("goto %s\n", Lfalse);
-        printf("%s:\n", Ltrue);
+        fprintf(code_output, "if %s goto %s\n", cond, Ltrue);
+        fprintf(code_output, "goto %s\n", Lfalse);
+        fprintf(code_output, "%s:\n", Ltrue);
         // código do comando $5
-        printf("goto %s\n", Lend);
-        printf("%s:\n", Lfalse);
+        fprintf(code_output, "goto %s\n", Lend);
+        fprintf(code_output, "%s:\n", Lfalse);
         // código do comando $7
-        printf("%s:\n", Lend);
+        fprintf(code_output, "%s:\n", Lend);
     ;}
     break;
 
@@ -2009,14 +2009,14 @@ yyreduce:
         char* Lcond = new_label();
         char* Lend = new_label();
 
-        printf("%s:\n", Lcond);
+        fprintf(code_output, "%s:\n", Lcond);
         char* cond = generate_code((yyvsp[(3) - (5)].node));
-        printf("if %s goto %s\n", cond, Lstart);
-        printf("goto %s\n", Lend);
-        printf("%s:\n", Lstart);
+        fprintf(code_output, "if %s goto %s\n", cond, Lstart);
+        fprintf(code_output, "goto %s\n", Lend);
+        fprintf(code_output, "%s:\n", Lstart);
         // código do comando $5
-        printf("goto %s\n", Lcond);
-        printf("%s:\n", Lend);
+        fprintf(code_output, "goto %s\n", Lcond);
+        fprintf(code_output, "%s:\n", Lend);
     ;}
     break;
 
@@ -2051,7 +2051,7 @@ yyreduce:
             semantic_errors++;
         } else if ((yyvsp[(2) - (3)].node)) {
         char* temp = generate_code((yyvsp[(2) - (3)].node));
-        printf("return %s\n", temp);
+        fprintf(code_output, "return %s\n", temp);
         }
     ;}
     break;
@@ -2430,7 +2430,7 @@ yyreduce:
   case 85:
 
 /* Line 1455 of yacc.c  */
-#line 707 "parser.y"
+#line 705 "parser.y"
     {
         Symbol *sym = lookup_symbol((yyvsp[(1) - (4)].id));
         if (!sym) {
@@ -2463,28 +2463,28 @@ yyreduce:
   case 86:
 
 /* Line 1455 of yacc.c  */
-#line 735 "parser.y"
+#line 733 "parser.y"
     { erro_sintatico_previsto("Erro Sintático: Argumentos invalidos no retorno da funcao"); (yyval.node) = NULL; yyerrok; ;}
     break;
 
   case 87:
 
 /* Line 1455 of yacc.c  */
-#line 741 "parser.y"
+#line 739 "parser.y"
     { (yyval.node) = (yyvsp[(1) - (1)].node); ;}
     break;
 
   case 88:
 
 /* Line 1455 of yacc.c  */
-#line 743 "parser.y"
+#line 741 "parser.y"
     { (yyval.node) = NULL; ;}
     break;
 
   case 89:
 
 /* Line 1455 of yacc.c  */
-#line 749 "parser.y"
+#line 747 "parser.y"
     {
         if((yyvsp[(1) - (1)].node)->kind == KIND_VARIABLE){
             insert_variable((yyvsp[(1) - (1)].node)->symbol->name, (yyvsp[(1) - (1)].node)->type, NULL);
@@ -2497,7 +2497,7 @@ yyreduce:
   case 90:
 
 /* Line 1455 of yacc.c  */
-#line 757 "parser.y"
+#line 755 "parser.y"
     {
         Node *last = (yyvsp[(1) - (3)].node);
         while (last->next) last = last->next;
@@ -2510,21 +2510,21 @@ yyreduce:
   case 91:
 
 /* Line 1455 of yacc.c  */
-#line 765 "parser.y"
+#line 763 "parser.y"
     { erro_sintatico_previsto("Erro Sintático: Falta de parametro"); yyerrok; (yyval.node) = NULL; ;}
     break;
 
   case 92:
 
 /* Line 1455 of yacc.c  */
-#line 767 "parser.y"
+#line 765 "parser.y"
     { erro_sintatico_previsto("Erro Sintático: Virgula excedente ao final da lista de parametros"); yyerrok; (yyval.node) = NULL; ;}
     break;
 
   case 93:
 
 /* Line 1455 of yacc.c  */
-#line 773 "parser.y"
+#line 771 "parser.y"
     {
         Symbol *sym = lookup_symbol((yyvsp[(1) - (1)].id));
         if(!sym){
@@ -2551,7 +2551,7 @@ yyreduce:
   case 94:
 
 /* Line 1455 of yacc.c  */
-#line 795 "parser.y"
+#line 793 "parser.y"
     {
         Symbol *sym = lookup_symbol((yyvsp[(1) - (5)].id));
         if (!sym) {
@@ -2652,7 +2652,7 @@ yyreduce:
   case 95:
 
 /* Line 1455 of yacc.c  */
-#line 896 "parser.y"
+#line 894 "parser.y"
     {
         if ((yyvsp[(3) - (4)].node) && (yyvsp[(3) - (4)].node)->type != TYPE_INT) {
             printf("Erro Semântico: Índice de vetor deve ser inteiro (linha %d, coluna %d).\n", line_number, column_number);
@@ -2676,7 +2676,7 @@ yyreduce:
   case 96:
 
 /* Line 1455 of yacc.c  */
-#line 915 "parser.y"
+#line 913 "parser.y"
     { (yyval.node) = NULL; ;}
     break;
 
@@ -2895,7 +2895,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 918 "parser.y"
+#line 916 "parser.y"
 
 
 
@@ -2911,6 +2911,12 @@ void erro_sintatico_previsto(const char *msg) {
 }
 
 int main(int argc, char **argv) {
+    code_output = fopen("saida.3ac", "w");
+    if (!code_output) {
+        perror("Erro ao abrir o arquivo de saída do código intermediário");
+        return -3;
+    }
+    
     if (argc < 2) {
         printf("Provenha o arquivo de entrada para o compilador.\n");
         return -1;
@@ -2938,6 +2944,7 @@ int main(int argc, char **argv) {
     printf("Total de erros semânticos: %d\n", semantic_errors);
 
     fclose(compiled_arq);
+    fclose(code_output);
     // destroy_scope_stack();
     return 0;
 }

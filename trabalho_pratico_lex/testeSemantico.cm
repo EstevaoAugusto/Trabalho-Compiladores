@@ -13,7 +13,7 @@ int soma(int a, int b) {
 }
 
 int main(void) {
-    
+
     float d;
     float multiplicacao;
     int xis;

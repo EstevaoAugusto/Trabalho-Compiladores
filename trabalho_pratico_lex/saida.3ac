@@ -1,0 +1,20 @@
+t0 = a + b
+return t0
+t1 = 25.799999
+forcamedia = t1
+t2 = 0
+d = t2
+L1:
+if (null) goto L0
+goto L2
+L0:
+goto L1
+L2:
+t3 = 6
+t4 = arr[t3]
+b = t4
+t5 = c * a
+t6 = b + t5
+a = t6
+t7 = a + c
+return t7
