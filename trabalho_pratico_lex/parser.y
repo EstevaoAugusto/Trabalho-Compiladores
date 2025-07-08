@@ -104,19 +104,19 @@ var_declaracao
     : tipo_especificador IDENTIFIER SEMICOLON
     {
         if($1 == NULL){
-            printf("Erro Semântico: Declaração de struct possui erro sintático (linha %d, coluna %d).\n", line_number, column_number);
+            printf("\nErro Sintático: Declaração de struct possui erro sintático (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
         } else if($1->type == TYPE_VOID){
-            printf("Erro Semântico: Variavel não pode ser declarada com tipo VOID (linha %d, coluna %d).\n", line_number, column_number);
+            printf("\nErro Semântico: Variavel não pode ser declarada com tipo VOID (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
             $$ = NULL;
         } else if($1->kind == KIND_STRUCT_DEF){
             if(!insert_struct_def($1->name, $1->data.struct_info.members)){
-                printf("Erro Semântico: Struct '%s' já foi declarada (linha %d, coluna %d).\n", $1->name, line_number, column_number);
+                printf("\nErro Semântico: Struct '%s' já foi declarada (linha %d, coluna %d).\n", $1->name, line_number, column_number);
                 semantic_errors++;
                 $$ = NULL;
             } else if(strcmp($1->name, $2)  == 0){
-                printf("Erro Semântico: O identificador '%s' é o mesmo da struct declarada (linha %d, coluna %d).\n", $2, line_number, column_number);
+                printf("\nErro Semântico: O identificador '%s' é o mesmo da struct declarada (linha %d, coluna %d).\n", $2, line_number, column_number);
                 semantic_errors++;
                 $$ = NULL;
             } else {
@@ -124,7 +124,7 @@ var_declaracao
                 $$ = lookup_symbol($2);
             }
         } else if (!insert_variable($2, $1->type, NULL)) {
-            printf("Erro Semântico: Variável '%s' já foi declarada (linha %d, coluna %d).\n", $2, line_number, column_number);
+            printf("\nErro Semântico: Variável '%s' já foi declarada (linha %d, coluna %d).\n", $2, line_number, column_number);
             semantic_errors++;
             $$ = NULL;
         } else {
@@ -134,26 +134,26 @@ var_declaracao
     | tipo_especificador IDENTIFIER arrayDimensao SEMICOLON
     {
         if($1 == NULL){
-            printf("Erro Semântico: Declaração de struct possui erro sintático (linha %d, coluna %d).\n", line_number, column_number);
+            printf("\nErro Semântico: Declaração de struct possui erro sintático (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
         } else if($1->type == TYPE_VOID) {
-            printf("Erro Semântico: Variavel não pode ser declarada com tipo VOID (linha %d, coluna %d).\n", line_number, column_number);
+            printf("\nErro Semântico: Variavel não pode ser declarada com tipo VOID (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
             $$ = NULL;
         } else if($1->kind == KIND_STRUCT_DEF){
             if(!insert_struct_def($1->name, $1->data.struct_info.members)){
-                printf("Erro Semântico: Struct '%s' já foi declarada (linha %d, coluna %d).\n", $1->name, line_number, column_number);
+                printf("\nErro Semântico: Struct '%s' já foi declarada (linha %d, coluna %d).\n", $1->name, line_number, column_number);
                 semantic_errors++;
                 $$ = NULL;
             } else if(strcmp($1->name, $2) == 0){
-                printf("Erro Semântico: O identificador '%s' é o mesmo da struct declarada (linha %d, coluna %d).\n", $2, line_number, column_number);
+                printf("\nErro Semântico: O identificador '%s' é o mesmo da struct declarada (linha %d, coluna %d).\n", $2, line_number, column_number);
                 semantic_errors++;
                 $$ = NULL;
             } else {
                 insert_array($2, $1->type, $1->name, $3);
             }
         } else if (!insert_array($2, $1->type, NULL, $3)) {
-            printf("Erro Semântico: Variável '%s' já foi declarada (linha %d, coluna %d).\n", $2, line_number, column_number);
+            printf("\nErro Semântico: Variável '%s' já foi declarada (linha %d, coluna %d).\n", $2, line_number, column_number);
             semantic_errors++;
         }
     }
@@ -171,7 +171,7 @@ arrayDimensao
         if($2 > 0){
             $$ = new_dimension($2, $4);
         } else {
-            printf("Erro Semântico: Vetor com tamanho 0 é invalido (linha %d, coluna %d).\n", line_number, column_number);
+            printf("\nErro Semântico: Vetor com tamanho 0 é invalido (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
             $$ = NULL;
         }
@@ -181,7 +181,7 @@ arrayDimensao
         if($2 > 0){
             $$ = new_dimension($2, NULL);
         } else {
-            printf("Erro Semântico: Vetor com tamanho 0 é invalido (linha %d, coluna %d).\n", line_number, column_number);
+            printf("\nErro Semântico: Vetor com tamanho 0 é invalido (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
             $$ = NULL;
         }
@@ -230,7 +230,7 @@ varDeclList
     {
         HashTable* members = create_hash_table();
         if(($1 != NULL) && !insert_struct_members($1, members)){
-            printf("Erro Semântico: O identificador '%s' já existe dentro da struct (linha %d, coluna %d).\n", $1->name, line_number, column_number);
+            printf("\nErro Semântico: O identificador '%s' já existe dentro da struct (linha %d, coluna %d).\n", $1->name, line_number, column_number);
             semantic_errors++;
             free(members);
             $$ = NULL;
@@ -241,8 +241,8 @@ varDeclList
     | var_declaracao varDeclList
     {
         HashTable* members = $2;
-        if(($1 != NULL) && !insert_struct_members($1, $$)){
-            printf("Erro Semântico: O identificador '%s' já existe dentro da struct (linha %d, coluna %d).\n", $1->name, line_number, column_number);
+        if(($1 != NULL) && !insert_struct_members($1, members)){
+            printf("\nErro Semântico: O identificador '%s' já existe dentro da struct (linha %d, coluna %d).\n", $1->name, line_number, column_number);
             semantic_errors++;
             free(members);
             $$ = NULL;
@@ -257,11 +257,11 @@ func_declaracao
     : tipo_especificador IDENTIFIER LEFT_PAREN params RIGHT_PAREN composto_decl
     {
         if($1 == NULL || $1->kind == KIND_STRUCT_DEF){
-            printf("Erro Semântico: Struct nao é aceito como tipo de retorno (linha %d, coluna %d).\n", line_number, column_number);
+            printf("\nErro Semântico: Struct nao é aceito como tipo de retorno (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
         } else {
             if(!insert_function($2, $1->type, NULL, $4)){
-                printf("Erro Semântico: Função '%s' já declarada (linha %d, coluna %d).\n", $2, line_number, column_number);
+                printf("\nErro Semântico: Função '%s' já declarada (linha %d, coluna %d).\n", $2, line_number, column_number);
                 semantic_errors++;
                 last_type_declared = TYPE_INVALID;
             }
@@ -312,7 +312,7 @@ param
     : tipo_especificador IDENTIFIER
     {
         if($1 == NULL || $1->kind == KIND_STRUCT_DEF){
-            printf("Erro Semântico: Struct não pode ser utilizado como parametro (linha %d, coluna %d).", line_number, column_number);
+            printf("\nErro Semântico: Struct não pode ser utilizado como parametro (linha %d, coluna %d).", line_number, column_number);
             semantic_errors++;
             $$ = NULL;
         } else {
@@ -323,7 +323,7 @@ param
     | tipo_especificador IDENTIFIER LEFT_BRACKET RIGHT_BRACKET
     {
         if($1 == NULL || $1->kind == KIND_STRUCT_DEF){
-            printf("Erro Semântico: Struct não pode ser utilizado como parametro (linha %d, coluna %d).", line_number, column_number);
+            printf("\nErro Semântico: Struct não pode ser utilizado como parametro (linha %d, coluna %d).", line_number, column_number);
             semantic_errors++;
             $$ = NULL;
         } else {
@@ -360,17 +360,16 @@ comando
     | iteracao_decl
     | retorno_decl
     | error SEMICOLON
-    { erro_sintatico_previsto("Erro Sintático: Comando invalido sintaticamente ou incompleto"); yyerrok; }
+    { erro_sintatico_previsto("\nErro Sintático: Comando invalido sintaticamente ou incompleto"); yyerrok; }
     ;
 
 /*----- 15° -----*/
 expressao_decl
     : expressao SEMICOLON
     {
-        if (!$1) {
-            printf("Erro Semântico: Expressão inválida na linha %d, coluna %d.\n", line_number, column_number);
-            semantic_errors++;
-        } else { generate_code($1); }
+        if ($1) {
+            generate_code($1);
+        }
     }
     | SEMICOLON
     ;
@@ -379,7 +378,7 @@ selecao_decl
     : IF LEFT_PAREN expressao RIGHT_PAREN comando %prec LOWER_THAN_ELSE
     {
         if ($3 && $3->type != TYPE_INT) {
-            printf("Erro Semântico: Expressão condicional do 'if' deve ser do tipo int (linha %d, coluna %d).\n", line_number, column_number);
+            printf("\nErro Semântico: Expressão condicional do 'if' deve ser do tipo int (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
         }
         char* Ltrue = new_label();
@@ -395,7 +394,7 @@ selecao_decl
     | IF LEFT_PAREN expressao RIGHT_PAREN comando ELSE comando
     {
         if ($3 && $3->type != TYPE_INT) {
-            printf("Erro Semântico: Expressão condicional do 'if' deve ser do tipo int (linha %d, coluna %d).\n", line_number, column_number);
+            printf("\nErro Semântico: Expressão condicional do 'if' deve ser do tipo int (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
         }
         char* Ltrue = new_label();
@@ -421,7 +420,7 @@ iteracao_decl
     : WHILE LEFT_PAREN expressao RIGHT_PAREN comando
     {
         if ($3 && $3->type != TYPE_INT) {
-            printf("Erro Semântico: Expressão condicional do 'while' deve ser do tipo int (linha %d, coluna %d).\n", line_number, column_number);
+            printf("\nErro Semântico: Expressão condicional do 'while' deve ser do tipo int (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
         }
         char* Lstart = new_label();
@@ -446,14 +445,14 @@ retorno_decl
     : RETURN SEMICOLON    {
         DataType type = find_current_function_type();
         if (type != TYPE_VOID) {
-            printf("Erro Semântico: Retorno sem valor em função que exige retorno (linha %d, coluna %d).\n", line_number, column_number);
+            printf("\nErro Semântico: Retorno sem valor em função que exige retorno (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
         }
     }
     | RETURN expressao SEMICOLON    {
         DataType type = find_current_function_type();
         if ($2 && $2->type != type) {
-            printf("Erro Semântico: Tipo do valor de retorno incompatível com a função (linha %d, coluna %d).\n", line_number, column_number);
+            printf("\nErro Semântico: Tipo do valor de retorno incompatível com a função (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
         } else if ($2) {
         char* temp = generate_code($2);
@@ -478,7 +477,7 @@ expressao
             $$ = node;
 
             if($1->symbol->data.var_info.is_from_struct){
-                printf("Erro Semântico: Acesso a membros de struct não suportado pela gramática (linha %d, coluna %d).\n", line_number, column_number);
+                printf("\nErro Semântico: Acesso a membros de struct não suportado pela gramática (linha %d, coluna %d).\n", line_number, column_number);
                 semantic_errors++;
                 $$ = NULL;
             } else {
@@ -496,7 +495,7 @@ expressao
                 }
 
                 if (!tipos_compativeis) {
-                    printf("Erro Semântico: Tipos incompatíveis na atribuição (linha %d, coluna %d).\n", line_number, column_number);
+                    printf("\nErro Semântico: Tipos incompatíveis na atribuição (linha %d, coluna %d).\n", line_number, column_number);
                     semantic_errors++;
                     $$ = NULL;
                 } else {
@@ -511,7 +510,7 @@ expressao
     { 
         erro_sintatico_previsto("Erro Sintático: Atribuição sem expressão à direita"); 
         if($1 && $1->symbol->data.var_info.is_from_struct){
-            printf("Erro Semântico: Acesso a membros de struct não suportado pela gramática (linha %d, coluna %d).\n", line_number, column_number);
+            printf("\nErro Semântico: Acesso a membros de struct não suportado pela gramática (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
         }
         $$ = NULL; 
@@ -524,7 +523,7 @@ expressao_simples
     : exp_soma relacional exp_soma    {
         if ($1 && $3) {
             if ($1->type != $3->type) {
-                printf("Erro Semântico: Tipos incompatíveis na comparação (linha %d, coluna %d).\n", line_number, column_number);
+                printf("\nErro Semântico: Tipos incompatíveis na comparação (linha %d, coluna %d).\n", line_number, column_number);
                 semantic_errors++;
                 $$ = NULL;
             } else {
@@ -563,7 +562,7 @@ exp_soma
     | exp_soma PLUS termo    {
         if ($1 && $3) {
             if ($1->type != $3->type) {
-                printf("Erro Semântico: tipos incompatíveis na soma (linha %d, coluna %d).\n", line_number, column_number);
+                printf("\nErro Semântico: tipos incompatíveis na soma (linha %d, coluna %d).\n", line_number, column_number);
                 semantic_errors++;
                 $$ = NULL;
             } else {
@@ -580,7 +579,7 @@ exp_soma
     | exp_soma MINUS termo    {
         if ($1 && $3) {
             if ($1->type != $3->type) {
-                printf("Erro Semântico: tipos incompatíveis na subtração (linha %d, coluna %d).\n", line_number, column_number);
+                printf("\nErro Semântico: tipos incompatíveis na subtração (linha %d, coluna %d).\n", line_number, column_number);
                 semantic_errors++;
                 $$ = NULL;
             } else {
@@ -601,7 +600,7 @@ termo
     | termo MULTIPLY fator    {
         if ($1 && $3) {
             if ($1->type != $3->type) {
-                printf("Erro Semântico: tipos incompatíveis na multiplicação (linha %d, coluna %d).\n", line_number, column_number);
+                printf("\nErro Semântico: tipos incompatíveis na multiplicação (linha %d, coluna %d).\n", line_number, column_number);
                 semantic_errors++;
                 $$ = NULL;
             } else {
@@ -618,7 +617,7 @@ termo
     | termo DIVISION fator    {
         if ($1 && $3) {
             if ($1->type != $3->type) {
-                printf("Erro Semântico: tipos incompatíveis na divisão (linha %d, coluna %d).\n", line_number, column_number);
+                printf("\nErro Semântico: tipos incompatíveis na divisão (linha %d, coluna %d).\n", line_number, column_number);
                 semantic_errors++;
                 $$ = NULL;
             } else {
@@ -705,11 +704,11 @@ ativacao
     {
         Symbol *sym = lookup_symbol($1);
         if (!sym) {
-            printf("Erro Semântico: Função '%s' não declarada (linha %d, coluna %d).\n", $1, line_number, column_number);
+            printf("\nErro Semântico: Função '%s' não declarada (linha %d, coluna %d).\n", $1, line_number, column_number);
             semantic_errors++;
             $$ = NULL;
         } else if (sym->kind != KIND_FUNCTION) {
-            printf("Erro Semântico: '%s' não é uma função (linha %d, coluna %d).\n", $1, line_number, column_number);
+            printf("\nErro Semântico: '%s' não é uma função (linha %d, coluna %d).\n", $1, line_number, column_number);
             semantic_errors++;
             $$ = NULL;
         } else if (!verifica_argumentos(sym, $3)) {
@@ -771,11 +770,11 @@ var
     {
         Symbol *sym = lookup_symbol($1);
         if(!sym){
-            printf("Erro Semântico: Identificador não foi declarado (linha %d, coluna %d).\n", line_number, column_number);
+            printf("\nErro Semântico: Identificador não foi declarado (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
             $$ = NULL;
         } else if(sym->data.var_info.is_array){
-            printf("Erro Semântico: Problema de Atribuição, uma das variaveis é um arranjo, mas nenhum indice foi colocado (linha %d, coluna %d).\n", line_number, column_number);
+            printf("\nErro Semântico: Problema de Atribuição, uma das variaveis é um arranjo, mas nenhum indice foi colocado (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
             $$ = NULL;
         } else {
@@ -793,15 +792,15 @@ var
     {
         Symbol *sym = lookup_symbol($1);
         if (!sym) {
-            printf("Erro Semântico: Identificador não foi declarado (linha %d, coluna %d).\n", line_number, column_number);
+            printf("\nErro Semântico: Identificador não foi declarado (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
             $$ = NULL;
         } else if (!sym->data.var_info.is_array) {
-            printf("Erro Semântico: Identificador '%s' não é um vetor (linha %d, coluna %d).\n", $1, line_number, column_number);
+            printf("\nErro Semântico: Identificador '%s' não é um vetor (linha %d, coluna %d).\n", $1, line_number, column_number);
             semantic_errors++;
             $$ = NULL;
         } else if ($3 && $3->type != TYPE_INT) {
-            printf("Erro Semântico: Índice de vetor deve ser inteiro (linha %d, coluna %d).\n", line_number, column_number);
+            printf("\nErro Semântico: Índice de vetor deve ser inteiro (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
             $$ = NULL;
         } else {
@@ -817,7 +816,7 @@ var
             }
 
             if (!all_int) {
-                printf("Erro Semântico: Índices de vetor devem ser inteiros (linha %d, coluna %d).\n", line_number, column_number);
+                printf("\nErro Semântico: Índices de vetor devem ser inteiros (linha %d, coluna %d).\n", line_number, column_number);
                 semantic_errors++;
                 $$ = NULL;
             } else {
@@ -838,7 +837,7 @@ var
                 }
 
                 if (num_indices > num_dims) {
-                    printf("Erro Semântico: Vetor '%s' possui dimensões demais (fornecido %d, esperado %d) (linha %d, coluna %d).\n",
+                    printf("\nErro Semântico: Vetor '%s' possui dimensões demais (fornecido %d, esperado %d) (linha %d, coluna %d).\n",
                         $1, num_indices, num_dims, line_number, column_number);
                     semantic_errors++;
                     $$ = NULL;
@@ -852,7 +851,7 @@ var
                     // Verifica se índice é valor inteiro constante
                         int val = idx_node->value.int_val;
                         if (val < 0 || val >= dim_node->size) {
-                            printf("Erro Semântico: Índice [%d] fora dos limites da dimensão %d (tamanho = %d) do vetor '%s' (linha %d, coluna %d).\n",
+                            printf("\nErro Semântico: Índice [%d] fora dos limites da dimensão %d (tamanho = %d) do vetor '%s' (linha %d, coluna %d).\n",
                             val, checked_dims + 1, dim_node->size, $1, line_number, column_number);
                             semantic_errors++;
                             $$ = NULL;
@@ -893,7 +892,7 @@ var_auxiliar
     : var_auxiliar LEFT_BRACKET expressao RIGHT_BRACKET
     {
         if ($3 && $3->type != TYPE_INT) {
-            printf("Erro Semântico: Índice de vetor deve ser inteiro (linha %d, coluna %d).\n", line_number, column_number);
+            printf("\nErro Semântico: Índice de vetor deve ser inteiro (linha %d, coluna %d).\n", line_number, column_number);
             semantic_errors++;
             $$ = $1;
         } else {
@@ -949,7 +948,7 @@ int main(int argc, char **argv) {
     yyin = compiled_arq;
     int result = yyparse();
 
-    printf("\n=== Resultado da Análise ===\n");
+    printf("\n==== Resultado da Análise ====\n");
     if (result == 0) {
         printf("ANALISE CONCLUIDA COM SUCESSO!\n");
     } else {
@@ -959,6 +958,8 @@ int main(int argc, char **argv) {
     printf("Total de erros léxicos: %d\n", lexical_errors);
     printf("Total de erros sintáticos: %d\n", syntax_errors);
     printf("Total de erros semânticos: %d\n", semantic_errors);
+
+    printf("\n Código de 3 Endereços Gravado em saida.3ac \n");
 
     fclose(compiled_arq);
     fclose(code_output);

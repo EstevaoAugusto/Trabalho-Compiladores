@@ -13,8 +13,5 @@ L2:
 t3 = 6
 t4 = arr[t3]
 b = t4
-t5 = c * a
-t6 = b + t5
-a = t6
-t7 = a + c
-return t7
+t5 = a + c
+return t5

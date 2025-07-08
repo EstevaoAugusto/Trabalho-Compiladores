@@ -16,7 +16,6 @@ int main(void) {
 
     float d;
     float multiplicacao;
-    int xis;
 
     qtdsoldados = 25 + 2 * 9E2;         /* 1 - Tipos incompativeis na multiplicação (2 é inteiro e 9E2 é float) */
     
