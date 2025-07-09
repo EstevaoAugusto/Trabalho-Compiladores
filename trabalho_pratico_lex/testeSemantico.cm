@@ -2,6 +2,7 @@ int a;
 int b;
 int c;
 int arr[5];
+int matriz[100][100];
 
 struct exercito {
     int qtdsoldados;
@@ -31,6 +32,26 @@ int main(void) {
         d = d + 1;                      /* 7 - Tipos imcompativeis na soma (d é float e 1 é inteiro) */
     }
 
+    if (a < 10){
+        int e;
+        d = d + 1.6;
+    } else{
+        d = d + 2.0;
+    }
+
+    matriz[0][0] = 1;
+    matriz[0][1] = 2;
+    matriz[1][0] = 3;
+    matriz[13][29] = 4;
+
+    a = matriz[1][1];
+
+    e = c + 89;
+    d = 2;
+    a = 9.8;
+
+    terra = 6;
+
     b = arr[6];                         /* 8 - Indice foram dos limites da dimensao do array */
 
     arr[4][5];                          /* 9 - Vetor com dimensões demais (arr[5]) */
@@ -42,5 +63,5 @@ int main(void) {
 }
 
 int soma(int a, int c) {                /* 12 - Função de soma já foi declarada anteriormente */
-    return a+c;
+    return a+c;
 }
